@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "allowedPrompts": [
+    {
+      "tool": "Bash",
+      "prompt": "run tests"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "build the project"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "install dependencies"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run linter"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "format code"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git status"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git diff"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git log"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git branch"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git add files"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git commit"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git push"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "list files"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "read file contents"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "start development server"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "stop development server"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "check process status"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run database migrations"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "check database status"
+    }
+  ],
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path' | { read file_path; prettier --write \"$file_path\" 2>/dev/null || eslint --fix \"$file_path\" 2>/dev/null || exit 0; }"
+          }
+        ]
+      }
+    ]
+  },
+  "model": "opus",
+  "thinkingEnabled": true,
+  "autoAcceptEdits": false
+}
