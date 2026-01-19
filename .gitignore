@@ -1,0 +1,69 @@
+# Local git config (contains personal info)
+.git/config.local
+
+# Local Claude settings (may contain API keys or personal preferences)
+.claude/settings.local.json
+
+# Claude plans (may contain work-in-progress or sensitive planning)
+.claude/plans/
+
+# MCP cache
+.mcp/cache/
+.mcp/logs/
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Build outputs (common patterns - adjust for your project)
+dist/
+build/
+out/
+target/
+*.pyc
+__pycache__/
+*.so
+*.dylib
+
+# Package manager locks (uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

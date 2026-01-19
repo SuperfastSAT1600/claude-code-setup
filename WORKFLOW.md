@@ -40,16 +40,17 @@ This document explains how to implement Boris Cherny's comprehensive Claude Code
 **Example Terminal Setup (Windows Terminal)**:
 ```json
 // In Windows Terminal settings.json, create profiles for each Claude session
+// Replace /c/YOUR/PROJECT/PATH with your actual project directory path
 {
   "profiles": {
     "list": [
       {
-        "name": "Claude 1",
-        "commandline": "bash -c 'cd /c/Users/Jason/Documents/test\\ proj && claude'"
+        "name": "Claude Project 1",
+        "commandline": "bash -c 'cd /c/YOUR/PROJECT/PATH && claude'"
       },
       {
-        "name": "Claude 2",
-        "commandline": "bash -c 'cd /c/Users/Jason/Documents/project2 && claude'"
+        "name": "Claude Project 2",
+        "commandline": "bash -c 'cd /c/YOUR/OTHER/PROJECT && claude'"
       }
       // ... up to 5
     ]
