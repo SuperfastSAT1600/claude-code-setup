@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "opus",
+  "thinkingEnabled": true,
+  "autoAcceptEdits": false,
+  "allowedPrompts": [
+    {
+      "tool": "Bash",
+      "prompt": "git status"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git diff"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git log"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git branch"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "list files"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "read file contents"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "check process status"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "view deployment status"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run read-only database queries"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "view database schema"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "backup database"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "view docker logs"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run security scans"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "check for vulnerabilities"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "audit dependencies"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run static analysis"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "view logs"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "tail logs"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "search logs"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run tests"
+    }
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "tool == \"Write\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] PRODUCTION ENVIRONMENT - Write operations require explicit approval!' >&2 && exit 1"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Edit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] PRODUCTION ENVIRONMENT - Edit operations require explicit approval!' >&2 && exit 1"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"(rm|delete|drop|truncate)\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] PRODUCTION ENVIRONMENT - Destructive operations are blocked!' >&2 && exit 1"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] PRODUCTION ENVIRONMENT - Direct pushes are not allowed!' >&2 && exit 1"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -4,8 +4,9 @@ This repository is a ready-to-use template implementing the Boris Cherny workflo
 
 ## What This Template Provides
 
-- **Custom Commands**: `/commit-push-pr`, `/review-changes`, `/test-and-build`
-- **Custom Agents**: Code simplifier, app verification
+- **Custom Commands**: `/commit-push-pr`, `/review-changes`, `/test-and-build`, `/security-review`
+- **Custom Agents**: Code simplifier, app verification, security reviewer
+- **Security Rules**: Mandatory security guidelines (OWASP Top 10, secret detection)
 - **Team Guidelines**: CLAUDE.md for project-specific best practices
 - **MCP Configuration**: Filesystem server setup
 - **Workflow Documentation**: Comprehensive guides and quickstart
@@ -191,6 +192,134 @@ After applying the template (new or existing project), customize:
 
 ---
 
+## Security Best Practices
+
+### Built-in Security Features
+
+This template includes comprehensive security guidelines and tools:
+
+#### Security Rules (`.claude/rules/security.md`)
+Mandatory security checks enforced automatically:
+- **No Hardcoded Secrets**: API keys, passwords must use environment variables
+- **Input Validation**: All user input must be validated and sanitized
+- **SQL Injection Prevention**: Use parameterized queries
+- **XSS Prevention**: Proper output encoding and sanitization
+- **Authentication/Authorization**: Proper checks before operations
+- **HTTPS in Production**: Secure transport layer
+- **Dependency Security**: Regular vulnerability scanning
+- **Rate Limiting**: Prevent brute force attacks
+- **Error Handling**: Don't expose internals in error messages
+- **Security Logging**: Log security events without sensitive data
+
+#### Security Reviewer Agent
+Specialized agent for security audits:
+- OWASP Top 10 vulnerability detection
+- Static code analysis for security issues
+- Hardcoded secret detection
+- Dependency vulnerability scanning
+- Generates prioritized remediation report
+
+### Running Security Audits
+
+#### Before Every Commit (Security-Critical Code)
+```bash
+# In Claude Code session
+/security-review src/auth/
+```
+
+#### Weekly/Monthly Audits
+```bash
+# Full codebase security scan
+/security-review
+
+# Or specific modules
+/security-review src/api/
+/security-review src/database/
+```
+
+#### In CI/CD Pipeline
+```yaml
+# .github/workflows/security.yml
+name: Security Audit
+on: [pull_request]
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Dependency audit
+        run: npm audit --audit-level=moderate
+      - name: Static analysis
+        run: npx eslint . --ext .ts,.tsx
+```
+
+### Security Checklist
+
+Before deploying:
+- [ ] Ran `/security-review` on security-critical code
+- [ ] No hardcoded secrets in codebase
+- [ ] All user inputs validated and sanitized
+- [ ] Authentication/authorization checks in place
+- [ ] HTTPS enforced in production
+- [ ] Dependencies scanned for vulnerabilities (`npm audit`)
+- [ ] Rate limiting on sensitive endpoints
+- [ ] Error messages don't expose internals
+- [ ] Security logging configured
+- [ ] `.env` file in `.gitignore`
+
+### Common Security Issues to Avoid
+
+#### 1. Hardcoded Secrets
+```typescript
+// ❌ WRONG: Hardcoded
+const apiKey = "sk-1234567890";
+
+// ✅ CORRECT: Environment variable
+const apiKey = process.env.API_KEY;
+if (!apiKey) throw new Error('API_KEY not configured');
+```
+
+#### 2. SQL Injection
+```typescript
+// ❌ WRONG: String concatenation
+db.query(`SELECT * FROM users WHERE id = ${userId}`);
+
+// ✅ CORRECT: Parameterized query
+db.query('SELECT * FROM users WHERE id = $1', [userId]);
+```
+
+#### 3. XSS Vulnerabilities
+```typescript
+// ❌ WRONG: Unsanitized HTML
+<div dangerouslySetInnerHTML={{__html: userInput}} />
+
+// ✅ CORRECT: Sanitized or escaped
+<div>{escapeHtml(userInput)}</div>
+// Or use DOMPurify for HTML content
+```
+
+#### 4. Missing Rate Limiting
+```typescript
+// ❌ WRONG: No rate limit
+app.post('/api/login', loginHandler);
+
+// ✅ CORRECT: Rate limited
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5
+});
+app.post('/api/login', limiter, loginHandler);
+```
+
+### Security Resources
+
+- **OWASP Top 10**: https://owasp.org/www-project-top-ten/
+- **Security Rules**: See `.claude/rules/security.md`
+- **Security Agent**: See `.claude/agents/security-reviewer.md`
+- **Security Command**: See `.claude/commands/security-review.md`
+
+---
+
 ## Troubleshooting
 
 ### MCP Not Working
@@ -238,11 +367,21 @@ After applying the template (new or existing project), customize:
 ├── .claude/
 │   ├── agents/                    # Custom agents
 │   │   ├── code-simplifier.md
+│   │   ├── security-reviewer.md   # Security audit agent
 │   │   └── verify-app.md
 │   ├── commands/                  # Custom commands
 │   │   ├── commit-push-pr.md
 │   │   ├── review-changes.md
+│   │   ├── security-review.md     # Security audit command
 │   │   └── test-and-build.md
+│   ├── rules/                     # Always-follow guidelines
+│   │   ├── security.md            # Security best practices
+│   │   ├── coding-style.md        # Code style rules
+│   │   ├── testing.md             # Testing requirements
+│   │   ├── git-workflow.md        # Git conventions
+│   │   ├── performance.md         # Performance optimization
+│   │   ├── agents.md              # Agent delegation rules
+│   │   └── hooks.md               # Hook documentation
 │   ├── settings.json              # Shared settings
 │   ├── settings.local.json        # Local settings (gitignored)
 │   └── SETUP_COMPLETE.md          # Setup documentation

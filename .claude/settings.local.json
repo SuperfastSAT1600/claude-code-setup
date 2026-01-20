@@ -8,7 +8,17 @@
       "Bash(winget install:*)",
       "Bash(git config:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__read_multiple_files",
+      "Bash(git cherry-pick:*)",
+      "mcp__filesystem__read_text_file",
+      "mcp__filesystem__list_directory",
+      "Bash(ls:*)",
+      "Bash(iconv:*)"
     ]
   }
 }

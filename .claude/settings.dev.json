@@ -1,5 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "sonnet",
+  "thinkingEnabled": false,
+  "autoAcceptEdits": true,
   "allowedPrompts": [
     {
       "tool": "Bash",
@@ -111,19 +114,11 @@
     },
     {
       "tool": "Bash",
-      "prompt": "deploy to staging"
+      "prompt": "reset local database"
     },
     {
       "tool": "Bash",
-      "prompt": "deploy to development"
-    },
-    {
-      "tool": "Bash",
-      "prompt": "view deployment status"
-    },
-    {
-      "tool": "Bash",
-      "prompt": "rollback deployment"
+      "prompt": "seed database with test data"
     },
     {
       "tool": "Bash",
@@ -196,34 +191,24 @@
     {
       "tool": "Bash",
       "prompt": "run unit tests"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "clear cache"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "restart services"
     }
   ],
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\ngrep -n 'console\\.log' \"$file_path\" 2>/dev/null && echo '[Hook] Warning: console.log detected - consider using a logger' >&2 || true"
-          }
-        ]
-      },
-      {
         "matcher": "tool == \"Bash\" && tool_input.command matches \"git push.*(main|master)\"",
         "hooks": [
           {
             "type": "command",
-            "command": "echo '[Hook] Pushing to main/master branch - ensure tests pass and code is reviewed!' >&2"
-          }
-        ]
-      },
-      {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(env|credentials|secret)\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] Warning: Modifying sensitive file - ensure it is in .gitignore!' >&2"
+            "command": "echo '[Hook] Pushing to main/master branch - ensure tests pass!' >&2"
           }
         ]
       }
@@ -239,8 +224,5 @@
         ]
       }
     ]
-  },
-  "model": "opus",
-  "thinkingEnabled": true,
-  "autoAcceptEdits": false
+  }
 }
