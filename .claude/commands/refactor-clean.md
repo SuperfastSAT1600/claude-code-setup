@@ -1,3 +1,8 @@
+---
+description: Remove dead code and modernize legacy patterns
+allowed-tools: Bash(npm test:*), Bash(npm run build:*), Bash(npx eslint:*), Read, Edit, Write, Grep, Glob
+---
+
 # Refactor Clean Command
 
 Remove dead code and modernize legacy patterns.

@@ -1,3 +1,8 @@
+---
+description: Guide through Test-Driven Development workflow
+allowed-tools: Bash(npm test:*), Bash(pytest:*), Bash(cargo test:*), Bash(go test:*), Read, Edit, Write
+---
+
 # TDD Command
 
 Guide through Test-Driven Development workflow.

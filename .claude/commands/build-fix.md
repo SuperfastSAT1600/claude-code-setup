@@ -1,3 +1,8 @@
+---
+description: Automatically fix build errors systematically
+allowed-tools: Bash(npm run build:*), Bash(yarn build:*), Bash(tsc:*), Bash(cargo build:*), Bash(go build:*), Bash(mvn compile:*), Read, Edit, Write
+---
+
 # Build Fix Command
 
 Automatically fix build errors systematically.

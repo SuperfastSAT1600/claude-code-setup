@@ -1,3 +1,10 @@
+---
+name: verify-app
+description: Verifies application works correctly after changes through end-to-end testing
+model: sonnet
+allowed-tools: Bash(npm run dev:*), Bash(npm start:*), Bash(curl:*), Bash(git diff:*), Read, Grep, Glob
+---
+
 # Verify App Agent
 
 This agent verifies that the application works correctly after changes.

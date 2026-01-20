@@ -1,3 +1,8 @@
+---
+description: Create detailed implementation plans for features
+allowed-tools: Read, Grep, Glob
+---
+
 # Plan Command
 
 Create detailed implementation plans for features.

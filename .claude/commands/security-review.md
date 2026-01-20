@@ -1,3 +1,8 @@
+---
+description: Run a comprehensive security audit on your codebase
+allowed-tools: Bash(npm audit:*), Bash(npx eslint:*), Read, Grep, Glob
+---
+
 # Security Review Command
 
 Runs a comprehensive security audit on your codebase using the security-reviewer agent.

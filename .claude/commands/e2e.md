@@ -1,3 +1,8 @@
+---
+description: Generate and run end-to-end tests for user workflows
+allowed-tools: Bash(npx playwright:*), Bash(npx cypress:*), Bash(npm test:*), Bash(npm run e2e:*), Read, Edit, Write, Glob
+---
+
 # E2E Command
 
 Generate and run end-to-end tests for user workflows.

@@ -1,3 +1,8 @@
+---
+description: Analyze test coverage and improve untested code
+allowed-tools: Bash(npm test:*), Bash(pytest:*), Bash(cargo test:*), Bash(go test:*), Read, Edit, Write, Grep, Glob
+---
+
 # Test Coverage Command
 
 Analyze test coverage and improve untested code.

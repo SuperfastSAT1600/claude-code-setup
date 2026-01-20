@@ -1,3 +1,10 @@
+---
+name: code-simplifier
+description: Reviews and simplifies code by removing unnecessary complexity and abstractions
+model: opus
+allowed-tools: Bash(git diff:*), Bash(git status:*), Bash(npm test:*), Read, Edit, Write, Grep, Glob
+---
+
 # Code Simplifier Agent
 
 This agent reviews and simplifies code after implementation is complete.

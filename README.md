@@ -10,15 +10,37 @@ This template provides a complete development workflow setup that can be applied
 - **New projects**: Use as a starting point with all configurations ready
 - **Existing projects**: Integrate seamlessly without disrupting your current setup
 
-### Quick Start
+### Quick Start (All Platforms)
+
+```bash
+# 1. Clone the repository
+git clone <this-repo> my-project
+cd my-project
+
+# 2. Run the setup wizard
+node setup.js
+
+# 3. Start Claude Code
+claude
+```
+
+The setup wizard will:
+- Detect your platform (Windows/macOS/Linux) and configure MCP servers accordingly
+- Ask which MCP servers you want to enable
+- Collect API keys securely (stored in gitignored `.mcp.json`)
+- Create your `.env` file from the template
+- Optionally install dependencies
+
+### Manual Setup (Alternative)
 
 **For New Projects**:
 ```bash
-# Clone and start fresh
 git clone <this-repo> my-project
 cd my-project
 rm -rf .git && git init
-# Customize CLAUDE.md and README.md for your project
+cp .mcp.template.json .mcp.json
+cp .env.example .env
+# Edit .mcp.json and .env with your API keys
 ```
 
 **For Existing Projects**:
@@ -49,7 +71,9 @@ rm -rf .git && git init
 
 ### Configuration
 - `.claude/settings.json` - Shared team settings
-- `.mcp.json` - MCP filesystem server setup
+- `.mcp.template.json` - MCP server template (cross-platform)
+- `.env.example` - Environment variables template
+- `setup.js` - Cross-platform setup wizard
 - `.gitignore` - Sensible defaults for various project types
 
 ---
@@ -110,13 +134,18 @@ See [WORKFLOW.md](WORKFLOW.md) Section 7 for the complete customization roadmap.
 ├── .claude/
 │   ├── agents/               # Custom agents
 │   ├── commands/             # Custom commands
+│   ├── rules/                # Auto-enforced guidelines
+│   ├── skills/               # Reference knowledge
 │   ├── settings.json         # Shared settings
-│   └── settings.local.json   # Local overrides
-├── .mcp.json                 # MCP configuration
+│   └── settings.local.json   # Local overrides (gitignored)
+├── .mcp.template.json        # MCP template (committed)
+├── .mcp.json                 # MCP config with keys (gitignored, generated)
+├── .env.example              # Environment template
+├── .env                      # Your secrets (gitignored, generated)
+├── setup.js                  # Cross-platform setup wizard
 ├── CLAUDE.md                 # Team guidelines ⚠️ CUSTOMIZE
 ├── WORKFLOW.md               # Complete guide
 ├── QUICKSTART.md             # Quick reference
-├── TEMPLATE_SETUP.md         # Setup instructions
 └── README.md                 # This file
 ```
 
