@@ -26,57 +26,70 @@ Know when to delegate tasks to specialized agents for better results and context
 
 ---
 
-## 2. Available Agents
+## 2. Available Agents (28 Total)
 
-### Security Reviewer
-**When to use**: Before commits, security-critical changes
-**What it does**: OWASP checks, vulnerability scanning, secret detection
-**Command**: Use `/security-review` or delegate directly
+### Core Workflow Agents
 
-### Code Simplifier
-**When to use**: Over-engineered code, unnecessary abstractions
-**What it does**: Removes complexity, inlines single-use functions
-**Command**: Delegate with specific file/module
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **planner** | New features, unclear requirements | Creates implementation plans, identifies dependencies | `/plan` |
+| **architect** | System design, architectural decisions | Evaluates trade-offs, suggests patterns | Delegate directly |
+| **security-reviewer** | Before commits, security-critical changes | OWASP checks, vulnerability scanning, secret detection | `/security-review` |
+| **code-reviewer** | Comprehensive code review before PRs | Reviews code quality, patterns, potential issues | `/review-changes` |
+| **verify-app** | After significant changes, before deployment | End-to-end testing, integration checks | Delegate directly |
 
-### Verify App
-**When to use**: After significant changes, before deployment
-**What it does**: End-to-end testing, integration checks
-**Command**: Delegate with test scenarios
+### Code Quality Agents
 
-### Planner
-**When to use**: New features, unclear requirements
-**What it does**: Creates implementation plans, identifies dependencies
-**Command**: Use `/plan` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **code-simplifier** | Over-engineered code, unnecessary abstractions | Removes complexity, inlines single-use functions | Delegate directly |
+| **refactor-cleaner** | Legacy code, dead code removal | Modernizes code, removes unused code | `/refactor-clean` |
+| **tech-debt-analyzer** | Technical debt assessment | Identifies and prioritizes technical debt | Delegate directly |
+| **type-safety-enforcer** | TypeScript issues, `any` types | Eliminates `any`, enforces strict TypeScript | `/type-check` |
 
-### Architect
-**When to use**: System design, architectural decisions
-**What it does**: Evaluates trade-offs, suggests patterns
-**Command**: Delegate with design questions
+### Testing Agents
 
-### TDD Guide
-**When to use**: Implementing new features with tests
-**What it does**: Guides through Red-Green-Refactor cycle
-**Command**: Use `/tdd` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **tdd-guide** | Implementing new features with tests | Guides through Red-Green-Refactor cycle | `/tdd` |
+| **unit-test-writer** | Unit test generation | Generates unit tests with AAA pattern | Delegate directly |
+| **integration-test-writer** | API/database tests | Creates API/database integration tests | Delegate directly |
+| **e2e-runner** | Web applications, user workflows | Generates and runs Playwright/Cypress tests | `/e2e` |
+| **load-test-specialist** | Performance testing | Creates k6/Artillery load tests | Delegate directly |
 
-### Build Error Resolver
-**When to use**: Multiple build errors, complex compiler issues
-**What it does**: Iteratively fixes build errors
-**Command**: Use `/build-fix` or delegate
+### Development Agents
 
-### Refactor Cleaner
-**When to use**: Legacy code, dead code removal
-**What it does**: Modernizes code, removes unused code
-**Command**: Use `/refactor-clean` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **api-designer** | REST/GraphQL API design | Designs APIs, creates OpenAPI specs | Delegate directly |
+| **database-architect** | Schema design, migrations | Designs schemas, ERDs, migrations | Delegate directly |
+| **auth-specialist** | Authentication features | Implements JWT/OAuth/session auth | Delegate directly |
+| **graphql-specialist** | GraphQL implementation | Designs GraphQL schemas, optimizes resolvers | Delegate directly |
+| **websocket-specialist** | Real-time features | Implements Socket.io real-time features | Delegate directly |
 
-### Doc Updater
-**When to use**: After implementation, before PR
-**What it does**: Syncs documentation with code changes
-**Command**: Use `/update-docs` or delegate
+### Operations Agents
 
-### E2E Runner
-**When to use**: Web applications, user workflows
-**What it does**: Generates and runs Playwright/Cypress tests
-**Command**: Use `/e2e` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **build-error-resolver** | Multiple build errors, complex compiler issues | Iteratively fixes build errors | `/build-fix` |
+| **ci-cd-specialist** | Pipeline setup, GitHub Actions | Creates/optimizes CI/CD pipelines | Delegate directly |
+| **docker-specialist** | Containerization | Writes Dockerfiles, optimizes builds | Delegate directly |
+| **migration-specialist** | Database migrations | Safe database migrations with rollback | `/create-migration` |
+| **dependency-manager** | Dependency issues | Audits, updates, manages dependencies | `/audit-deps` |
+
+### Accessibility & i18n Agents
+
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **accessibility-auditor** | A11y compliance | WCAG 2.1 AA compliance audits | Delegate directly |
+| **i18n-specialist** | Internationalization | Internationalization with next-intl | Delegate directly |
+
+### Documentation Agents
+
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **doc-updater** | After implementation, before PR | Syncs documentation with code changes | `/update-docs` |
+| **performance-optimizer** | Slow applications | Profile and optimize code, fix N+1 queries | Delegate directly |
 
 ---
 
@@ -211,18 +224,61 @@ You: Review findings, prioritize fixes, implement
 
 ## 9. Agent Selection Matrix
 
+### Core Tasks
 | Task | Agent | Reason |
 |------|-------|--------|
-| Security audit | security-reviewer | Specialized security knowledge |
-| Remove complexity | code-simplifier | Focused on simplification |
 | Plan feature | planner | Breaks down requirements |
 | Design system | architect | Evaluates architecture |
-| Write tests | tdd-guide | TDD expertise |
-| Fix build | build-error-resolver | Iterative error fixing |
-| Clean code | refactor-cleaner | Modernization patterns |
-| Update docs | doc-updater | Code-doc sync |
-| E2E tests | e2e-runner | Playwright/Cypress |
+| Security audit | security-reviewer | Specialized security knowledge |
+| Code review | code-reviewer | Quality patterns, best practices |
 | Verify changes | verify-app | End-to-end testing |
+
+### Code Quality Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Remove complexity | code-simplifier | Focused on simplification |
+| Clean code | refactor-cleaner | Modernization patterns |
+| Analyze tech debt | tech-debt-analyzer | Prioritizes technical debt |
+| Fix TypeScript | type-safety-enforcer | Strict type checking |
+
+### Testing Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| TDD workflow | tdd-guide | Red-Green-Refactor expertise |
+| Unit tests | unit-test-writer | AAA pattern, coverage |
+| Integration tests | integration-test-writer | API/database testing |
+| E2E tests | e2e-runner | Playwright/Cypress |
+| Load tests | load-test-specialist | k6/Artillery |
+
+### Development Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| API design | api-designer | REST/GraphQL patterns |
+| Database design | database-architect | Schema, migrations, ERDs |
+| Authentication | auth-specialist | JWT/OAuth expertise |
+| GraphQL | graphql-specialist | Schema, resolvers |
+| WebSocket | websocket-specialist | Socket.io real-time |
+
+### Operations Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Fix build | build-error-resolver | Iterative error fixing |
+| CI/CD setup | ci-cd-specialist | GitHub Actions pipelines |
+| Containerization | docker-specialist | Dockerfile optimization |
+| DB migrations | migration-specialist | Safe migrations with rollback |
+| Dependency issues | dependency-manager | Audit, update, manage deps |
+
+### Accessibility & i18n Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| A11y audit | accessibility-auditor | WCAG 2.1 AA compliance |
+| Internationalization | i18n-specialist | next-intl patterns |
+
+### Documentation Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Update docs | doc-updater | Code-doc sync |
+| Optimize performance | performance-optimizer | Profiling, N+1 fixes |
 
 ---
 

@@ -4,45 +4,67 @@
 
 ---
 
-## 🤖 Agents (18)
+## 🤖 Agents (28)
 
-### Code Development
+### Core Workflow
+| Agent | When to Use | Model |
+|-------|-------------|-------|
+| **planner** | New features, unclear requirements | opus |
+| **architect** | System design, architectural decisions | opus |
+| **security-reviewer** | Before commits, security-critical changes | opus |
+| **code-reviewer** | Comprehensive code review before PRs | opus |
+| **verify-app** | After significant changes, before deployment | sonnet |
+
+### Code Quality
+| Agent | When to Use | Model |
+|-------|-------------|-------|
+| **code-simplifier** | Over-engineered code, unnecessary abstractions | opus |
+| **refactor-cleaner** | Legacy code, dead code removal | sonnet |
+| **tech-debt-analyzer** | Identify and prioritize technical debt | sonnet |
+| **type-safety-enforcer** | Eliminate `any`, enforce strict TypeScript | haiku |
+
+### Testing
+| Agent | When to Use | Model |
+|-------|-------------|-------|
+| **tdd-guide** | Implementing new features with tests | sonnet |
+| **unit-test-writer** | Generate unit tests with AAA pattern | sonnet |
+| **integration-test-writer** | Create API/database integration tests | sonnet |
+| **e2e-runner** | Web applications, user workflows | sonnet |
+| **load-test-specialist** | Create k6/Artillery load tests | sonnet |
+
+### Development
 | Agent | When to Use | Model |
 |-------|-------------|-------|
 | **api-designer** | Design REST/GraphQL APIs, create OpenAPI specs | opus |
-| **code-reviewer** | Comprehensive code review before PRs | opus |
-| **unit-test-writer** | Generate unit tests with AAA pattern | sonnet |
-| **integration-test-writer** | Create API/database integration tests | sonnet |
-| **auth-specialist** | Implement JWT/OAuth/session auth | opus |
 | **database-architect** | Design schemas, migrations, ERDs | opus |
-| **type-safety-enforcer** | Eliminate `any`, enforce strict TypeScript | haiku |
+| **auth-specialist** | Implement JWT/OAuth/session auth | opus |
+| **graphql-specialist** | Design GraphQL schemas, optimize resolvers | sonnet |
+| **websocket-specialist** | Implement Socket.io real-time features | sonnet |
 
-### Quality & Performance
+### Operations
 | Agent | When to Use | Model |
 |-------|-------------|-------|
-| **performance-optimizer** | Profile and optimize code, fix N+1 queries | sonnet |
-| **accessibility-auditor** | WCAG 2.1 AA compliance audits | sonnet |
-| **i18n-specialist** | Internationalization with next-intl | sonnet |
-| **tech-debt-analyzer** | Identify and prioritize technical debt | sonnet |
-| **dependency-manager** | Audit, update, manage dependencies | haiku |
-
-### DevOps & Infrastructure
-| Agent | When to Use | Model |
-|-------|-------------|-------|
+| **build-error-resolver** | Multiple build errors, complex compiler issues | opus |
 | **ci-cd-specialist** | Create/optimize GitHub Actions pipelines | sonnet |
 | **docker-specialist** | Write Dockerfiles, optimize builds | sonnet |
 | **migration-specialist** | Safe database migrations with rollback | sonnet |
+| **dependency-manager** | Audit, update, manage dependencies | haiku |
 
-### Testing Specialists
+### Accessibility & i18n
 | Agent | When to Use | Model |
 |-------|-------------|-------|
-| **load-test-specialist** | Create k6/Artillery load tests | sonnet |
-| **websocket-specialist** | Implement Socket.io real-time features | sonnet |
-| **graphql-specialist** | Design GraphQL schemas, optimize resolvers | sonnet |
+| **accessibility-auditor** | WCAG 2.1 AA compliance audits | sonnet |
+| **i18n-specialist** | Internationalization with next-intl | sonnet |
+
+### Documentation
+| Agent | When to Use | Model |
+|-------|-------------|-------|
+| **doc-updater** | After implementation, before PR | sonnet |
+| **performance-optimizer** | Profile and optimize code, fix N+1 queries | sonnet |
 
 ---
 
-## ⚡ Commands (15)
+## ⚡ Commands (20)
 
 ### Workflow Orchestration
 | Command | Purpose | Duration |
@@ -94,7 +116,7 @@
 
 ---
 
-## ✅ Checklists (6)
+## ✅ Checklists (7)
 
 | Checklist | Items | Purpose |
 |-----------|-------|---------|
@@ -104,6 +126,7 @@
 | **accessibility-audit** | 30 items | WCAG 2.1 AA compliance |
 | **pre-release** | 45 items | Release readiness verification |
 | **onboarding** | 50+ items | New developer setup |
+| **ai-code-review** | 30+ items | Detect AI-generated code patterns and inconsistencies |
 
 ---
 
@@ -131,8 +154,9 @@
 
 ---
 
-## 📚 Skills (8)
+## 📚 Skills (14)
 
+### Framework-Specific Skills
 | Skill | Coverage | Lines |
 |-------|----------|-------|
 | **react-patterns** | Hooks, memoization, compound components, error boundaries | 650 |
@@ -140,9 +164,23 @@
 | **nodejs-patterns** | Express, error handling, validation, logging | 550 |
 | **prisma-patterns** | Schema design, queries, transactions, migrations | 600 |
 | **github-actions** | Workflows, matrix builds, caching, deployment | 500 |
+
+### API & Real-time Skills
+| Skill | Coverage | Lines |
+|-------|----------|-------|
 | **rest-api-design** | Resource naming, HTTP methods, pagination, versioning | 524 |
 | **graphql-patterns** | Schema, resolvers, DataLoader, subscriptions | 602 |
 | **websocket-patterns** | Socket.io, rooms, reconnection, scaling | 547 |
+
+### Meta Skills
+| Skill | Coverage | Lines |
+|-------|----------|-------|
+| **coding-standards** | SOLID, DRY, KISS, language-specific best practices | 600 |
+| **backend-patterns** | Repository pattern, caching, auth, error handling | 550 |
+| **frontend-patterns** | React patterns, state management, performance | 500 |
+| **tdd-workflow** | Red-Green-Refactor cycle, test patterns, TDD methodology | 450 |
+| **project-guidelines** | Template for project-specific customization | 300 |
+| **user-intent-patterns** | Natural language intent detection and routing | 400 |
 
 ---
 
@@ -251,13 +289,13 @@ Creates GitHub Actions with:
 ```
 .claude/
 ├── INDEX.md (this file) ← START HERE
-├── GUIDE.md (coming soon) ← Consolidated README
-├── agents/ (18 agents)
-├── commands/ (15 commands)
-├── rules/ (9 rules - always enforced)
-├── skills/ (8 skills - reference knowledge)
+├── GUIDE.md ← Consolidated README
+├── agents/ (28 agents)
+├── commands/ (20 commands)
+├── rules/ (14 rules - always enforced)
+├── skills/ (14 skills - reference knowledge)
 ├── workflows/ (5 workflows)
-├── checklists/ (6 checklists)
+├── checklists/ (7 checklists)
 ├── templates/ (5 templates)
 └── scripts/ (5 scripts)
 ```

@@ -45,7 +45,7 @@ When you need specialized help, delegate to an agent:
 "Have the security-reviewer agent audit the authentication system"
 ```
 
-**Available agents**: api-designer, code-reviewer, unit-test-writer, integration-test-writer, auth-specialist, database-architect, performance-optimizer, accessibility-auditor, ci-cd-specialist, docker-specialist, and more. See INDEX.md for full list.
+**Available agents (28 total)**: planner, architect, security-reviewer, code-reviewer, verify-app, code-simplifier, refactor-cleaner, tech-debt-analyzer, type-safety-enforcer, tdd-guide, unit-test-writer, integration-test-writer, e2e-runner, load-test-specialist, api-designer, database-architect, auth-specialist, graphql-specialist, websocket-specialist, build-error-resolver, ci-cd-specialist, docker-specialist, migration-specialist, dependency-manager, accessibility-auditor, i18n-specialist, doc-updater, performance-optimizer. See INDEX.md for full list.
 
 ### 📚 Knowledge Base
 - **Skills** (`.claude/skills/`) - Reference patterns: react-patterns, nextjs-patterns, rest-api-design, graphql-patterns, websocket-patterns, and more
@@ -72,6 +72,75 @@ When you need specialized help, delegate to an agent:
 | Load testing | `load-test-specialist` agent |
 
 **Can't find what you need?** Check INDEX.md or ask: "How do I [task] with Claude Code?"
+
+---
+
+## Automatic Intent Detection (Non-Technical Mode)
+
+**You don't need to know commands or agent names.** Just describe what you want in plain English, and the appropriate automation will be selected automatically.
+
+### How It Works
+
+Simply describe what you want to accomplish:
+
+| You say... | What happens |
+|------------|--------------|
+| "I want users to log in" | Automatically runs full-feature workflow with auth-specialist |
+| "The checkout is broken" | Automatically runs quick-fix workflow |
+| "Is this code secure?" | Automatically runs security review |
+| "Make the page faster" | Automatically delegates to performance-optimizer |
+| "Add tests for this" | Automatically runs test-coverage |
+| "Clean up this code" | Automatically runs refactor-clean |
+
+### Intent Keywords
+
+**Features** (triggers /full-feature):
+- "I want...", "Add...", "Create...", "Build...", "Enable..."
+
+**Bug Fixes** (triggers /quick-fix):
+- "Fix...", "Broken...", "Not working...", "Error...", "Bug..."
+
+**Reviews** (triggers /review-changes):
+- "Review...", "Check...", "Is this okay?", "How does this look?"
+
+**Security** (triggers /security-review):
+- "Secure?", "Safe?", "Vulnerable?", "Audit..."
+
+**Performance** (delegates to performance-optimizer):
+- "Slow...", "Fast...", "Speed up...", "Optimize..."
+
+**Testing** (triggers /test-coverage or tdd-guide):
+- "Test...", "Coverage...", "Make sure it works..."
+
+### Progress Updates
+
+Progress is reported in plain English:
+```
+Building your login feature:
+
+[Done] Step 1: Planning what to build
+[Done] Step 2: Writing the code
+[Working] Step 3: Testing to make sure it works...
+[Pending] Step 4: Checking for security
+[Pending] Step 5: Preparing for review
+```
+
+### When Intent Is Unclear
+
+If your request could mean multiple things, you'll be asked a simple clarifying question:
+```
+What would you like to do?
+1. Build something new (feature)
+2. Fix something broken (bug)
+3. Improve existing code (refactor)
+4. Check code quality (review)
+```
+
+### For Power Users
+
+Commands and agent names still work if you prefer explicit control:
+- Use `/full-feature description` for explicit command
+- Use "delegate to X agent" for explicit delegation
 
 ---
 
