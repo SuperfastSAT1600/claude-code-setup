@@ -1,53 +1,176 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
-      "Bash(echo:*)",
-      "Bash(tree:*)",
-      "Bash(node -e:*)",
-      "Bash(winget --version:*)",
-      "Bash(winget install:*)",
-      "Bash(git config:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(gh:*)",
       "Bash(git checkout:*)",
-      "Bash(git branch:*)",
-      "mcp__filesystem__directory_tree",
-      "mcp__filesystem__read_multiple_files",
-      "Bash(git cherry-pick:*)",
-      "mcp__filesystem__read_text_file",
-      "mcp__filesystem__list_directory",
-      "Bash(ls:*)",
-      "Bash(iconv:*)",
-      "Bash(grep:*)",
-      "Bash(for file in \"C:/Users/Jason/Documents/test proj/.claude/agents/\"*.md)",
-      "Bash(do)",
-      "Bash(if ! head -1 \"$file\")",
-      "Bash(then)",
-      "Bash(fi)",
-      "Bash(done)",
-      "Bash(for file in \"C:/Users/Jason/Documents/test proj/.claude/commands/\"*.md)",
-      "Bash(if head -1 \"$file\")",
-      "Bash(else)",
-      "Bash(for file in \"C:/Users/Jason/Documents/test proj/.claude/skills/\"*.md)",
-      "Bash(node setup.js:*)",
-      "Bash(printf:*)",
-      "Bash(git rm:*)",
-      "WebSearch",
-      "Bash(npm install)",
-      "Bash(npx prettier:*)",
-      "Bash(npx eslint:*)",
-      "Bash(npm --version:*)",
-      "Bash(cmd /c \"npm install\")",
-      "Bash(cmd /c \"dir node_modules\")",
-      "Bash(npm config list:*)",
-      "Bash(npm install:*)",
-      "Bash(npm cache clean:*)",
-      "Bash(tee:*)",
-      "Bash(where npm:*)"
+      "Bash(wc:*)"
     ]
   },
-  "disabledMcpjsonServers": [
+  "model": "opus",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git push.*(main|master)\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Pushing to main/master branch - ensure tests pass and code is reviewed!' >&2"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|json|css|scss|md)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nnpx prettier --write \"$file_path\" 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nnpx eslint --fix \"$file_path\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
+  "thinkingEnabled": true,
+  "autoAcceptEdits": false,
+  "allowedPrompts": [
+    {
+      "tool": "Bash",
+      "prompt": "run tests"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "build the project"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "install dependencies"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run linter"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "format code"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git status"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git diff"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git log"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git branch"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git add files"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git commit"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git push"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git checkout"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git cherry-pick"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git rm"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "git config"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "list files"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "read file contents"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "search files"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "view directory tree"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run node scripts"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run setup wizard"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "check npm version"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "npm config"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "npm cache operations"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run prettier"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run eslint"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "check winget version"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "winget install"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "gh cli commands"
+    },
+    {
+      "tool": "WebSearch",
+      "prompt": "web search"
+    }
+  ],
+  "disabledMcpServers": [
     "filesystem",
     "github",
     "postgres",

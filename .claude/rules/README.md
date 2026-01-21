@@ -187,6 +187,70 @@ fixed stuff
 
 ---
 
+### [`ai-code-detection.md`](ai-code-detection.md)
+**Purpose**: Identify and fix AI-generated code inconsistencies
+
+**Enforces**:
+- Structural consistency across similar files
+- Detection of over-engineering patterns
+- Verbose code identification
+- Template smell detection
+- Naming consistency
+
+**When It Applies**: During code review and refactoring
+
+**Example Issues Detected**:
+- Mixed export styles in same layer
+- Single-use interfaces (over-engineering)
+- Obvious comments stating what code does
+- Handling impossible error cases
+- Copy-paste drift with inconsistent implementations
+
+---
+
+### [`intent-routing.md`](intent-routing.md)
+**Purpose**: Auto-classify user intent and route to appropriate automation
+
+**Enforces**:
+- Natural language intent detection
+- Automatic command/agent selection
+- Disambiguation when intent is unclear
+- Zero-friction experience for non-developers
+
+**When It Applies**: When processing user requests
+
+**Intent Classifications**:
+| User Says | Routes To |
+|-----------|-----------|
+| "I want...", "Add...", "Build..." | `/full-feature` |
+| "Fix...", "Broken...", "Error..." | `/quick-fix` |
+| "Secure?", "Safe?", "Audit..." | `/security-review` |
+| "Slow...", "Fast...", "Optimize..." | `performance-optimizer` agent |
+| "Test...", "Coverage..." | `/test-coverage` |
+
+---
+
+### [`non-technical-mode.md`](non-technical-mode.md)
+**Purpose**: Translate technical output to plain English for non-developers
+
+**Enforces**:
+- Plain English progress updates
+- Technical term translation
+- Simple yes/no confirmations
+- User-friendly error messages
+
+**When It Applies**: Always, for all communications
+
+**Example Translations**:
+| Technical | Plain English |
+|-----------|---------------|
+| "Running /full-feature" | "Building your new feature..." |
+| "Delegating to security-reviewer" | "Checking for security issues..." |
+| "git commit" | "Saving changes..." |
+| "Tests passing" | "All checks passed!" |
+
+---
+
 ## How Rules Work
 
 ### Auto-Enforcement

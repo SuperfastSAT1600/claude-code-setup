@@ -17,7 +17,7 @@ Skills differ from rules:
 
 ---
 
-## Available Skills
+## Available Skills (14 Total)
 
 ### [`coding-standards.md`](coding-standards.md)
 **Purpose**: Language-specific best practices and patterns
@@ -230,6 +230,38 @@ Error:
 ```
 
 **When to Reference**: Starting work on project, documenting decisions
+
+---
+
+### [`user-intent-patterns.md`](user-intent-patterns.md)
+**Purpose**: Natural language intent detection and routing
+
+**Contains**:
+- Intent classification patterns
+- Keyword-to-action mappings
+- Disambiguation strategies
+- Non-technical communication patterns
+
+**Used By**:
+- Intent routing rules
+- Non-technical mode rules
+- All user-facing interactions
+
+**Example Topics**:
+```markdown
+## Intent Keywords
+
+**Feature Requests**: "I want...", "Add...", "Build...", "Create..."
+→ Routes to /full-feature workflow
+
+**Bug Reports**: "Fix...", "Broken...", "Error...", "Not working..."
+→ Routes to /quick-fix workflow
+
+**Security Concerns**: "Secure?", "Safe?", "Vulnerable?"
+→ Routes to /security-review command
+```
+
+**When to Reference**: Processing user requests, determining appropriate automation
 
 ---
 
@@ -546,11 +578,25 @@ Caching is good. Use Redis.
 
 ## Resources
 
+### Meta Skills
 - [Coding Standards](coding-standards.md)
 - [Backend Patterns](backend-patterns.md)
 - [Frontend Patterns](frontend-patterns.md)
 - [TDD Workflow](tdd-workflow.md)
 - [Project Guidelines](project-guidelines.md)
+- [User Intent Patterns](user-intent-patterns.md)
+
+### Framework Skills
+- [React Patterns](react-patterns.md)
+- [Next.js Patterns](nextjs-patterns.md)
+- [Node.js Patterns](nodejs-patterns.md)
+- [Prisma Patterns](prisma-patterns.md)
+- [GitHub Actions](github-actions.md)
+
+### API & Real-time Skills
+- [REST API Design](rest-api-design.md)
+- [GraphQL Patterns](graphql-patterns.md)
+- [WebSocket Patterns](websocket-patterns.md)
 
 ---
 

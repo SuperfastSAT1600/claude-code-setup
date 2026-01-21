@@ -266,7 +266,7 @@
         ]
       },
       {
-        "matcher": "mcp__github__create_pull_request",
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"gh pr create\"",
         "hooks": [
           {
             "type": "command",
@@ -311,15 +311,13 @@
             "command": "#!/bin/bash\nnpx eslint --fix \"$file_path\" 2>/dev/null || true"
           }
         ]
-      }
-    ],
-    "SubagentStop": [
+      },
       {
-        "matcher": "agent == \"security-reviewer\"",
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"npm install|yarn add|pnpm add\"",
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\nif [ -f \".claude/scripts/log-security-review.sh\" ]; then\n  ./.claude/scripts/log-security-review.sh\nfi"
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/sync-deps.sh\" ]; then\n  ./.claude/scripts/sync-deps.sh 2>&1 | head -20\nfi || true"
           }
         ]
       }

@@ -4,9 +4,51 @@ Know when to delegate tasks to specialized agents for better results and context
 
 ---
 
+## 0. Orchestrator-First Principle
+
+**CRITICAL**: The main model is an orchestrator. Delegate ALL implementation work.
+
+### Default Behavior
+
+```
+Parse intent → Select agent(s) → Delegate → Coordinate → Report
+```
+
+**NEVER** implement directly unless truly trivial (1-2 lines).
+
+### Delegation Thresholds (LOWERED)
+
+| Previous | NEW |
+|----------|-----|
+| Delegate if >10 files or complex | Delegate if >2 steps or ANY implementation |
+| Consider delegation for specialized | MUST delegate for ANY implementation |
+| Optional for simple tasks | Only trivial (1-2 line) changes handled directly |
+
+### Orchestrator Does
+
+- Routes tasks to agents
+- Provides context (files, templates, skills)
+- Coordinates parallel execution
+- Aggregates results
+- Reports to user
+- Git operations (commit, push, PR)
+
+### Orchestrator Does NOT
+
+- Write production code
+- Implement features
+- Fix bugs directly
+- Write tests
+- Read >10 files without delegating
+- Perform specialized analysis
+
+**See**: `.claude/rules/orchestrator.md` for complete orchestration rules.
+
+---
+
 ## 1. When to Use Agents
 
-**Rule**: Delegate complex, specialized, or context-heavy tasks to agents.
+**Rule**: Delegate complex, specialized, or context-heavy tasks to agents. With orchestrator-first, delegate MOST tasks.
 
 ### Use Agents For:
 - ✅ Security audits (isolated security context)
@@ -26,57 +68,81 @@ Know when to delegate tasks to specialized agents for better results and context
 
 ---
 
-## 2. Available Agents
+## 2. Available Agents (34 Total)
 
-### Security Reviewer
-**When to use**: Before commits, security-critical changes
-**What it does**: OWASP checks, vulnerability scanning, secret detection
-**Command**: Use `/security-review` or delegate directly
+### Core Workflow Agents
 
-### Code Simplifier
-**When to use**: Over-engineered code, unnecessary abstractions
-**What it does**: Removes complexity, inlines single-use functions
-**Command**: Delegate with specific file/module
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **planner** | New features, unclear requirements | Creates implementation plans, identifies dependencies | `/plan` |
+| **architect** | System design, architectural decisions | Evaluates trade-offs, suggests patterns | Delegate directly |
+| **security-reviewer** | Before commits, security-critical changes | OWASP checks, vulnerability scanning, secret detection | `/security-review` |
+| **code-reviewer** | Comprehensive code review before PRs | Reviews code quality, patterns, potential issues | `/review-changes` |
+| **verify-app** | After significant changes, before deployment | End-to-end testing, integration checks | Delegate directly |
 
-### Verify App
-**When to use**: After significant changes, before deployment
-**What it does**: End-to-end testing, integration checks
-**Command**: Delegate with test scenarios
+### Code Quality Agents
 
-### Planner
-**When to use**: New features, unclear requirements
-**What it does**: Creates implementation plans, identifies dependencies
-**Command**: Use `/plan` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **code-simplifier** | Over-engineered code, unnecessary abstractions | Removes complexity, inlines single-use functions | Delegate directly |
+| **refactor-cleaner** | Legacy code, dead code removal | Modernizes code, removes unused code | `/refactor-clean` |
+| **tech-debt-analyzer** | Technical debt assessment | Identifies and prioritizes technical debt | Delegate directly |
+| **type-safety-enforcer** | TypeScript issues, `any` types | Eliminates `any`, enforces strict TypeScript | `/type-check` |
 
-### Architect
-**When to use**: System design, architectural decisions
-**What it does**: Evaluates trade-offs, suggests patterns
-**Command**: Delegate with design questions
+### Testing Agents
 
-### TDD Guide
-**When to use**: Implementing new features with tests
-**What it does**: Guides through Red-Green-Refactor cycle
-**Command**: Use `/tdd` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **tdd-guide** | Implementing new features with tests | Guides through Red-Green-Refactor cycle | `/tdd` |
+| **unit-test-writer** | Unit test generation | Generates unit tests with AAA pattern | Delegate directly |
+| **integration-test-writer** | API/database tests | Creates API/database integration tests | Delegate directly |
+| **e2e-runner** | Web applications, user workflows | Generates and runs Playwright/Cypress tests | `/e2e` |
+| **load-test-specialist** | Performance testing | Creates k6/Artillery load tests | Delegate directly |
 
-### Build Error Resolver
-**When to use**: Multiple build errors, complex compiler issues
-**What it does**: Iteratively fixes build errors
-**Command**: Use `/build-fix` or delegate
+### Development Agents
 
-### Refactor Cleaner
-**When to use**: Legacy code, dead code removal
-**What it does**: Modernizes code, removes unused code
-**Command**: Use `/refactor-clean` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **implementer** | General coding tasks | Implements features following plans and patterns | Delegate directly |
+| **api-designer** | REST/GraphQL API design AND documentation | Designs APIs, creates OpenAPI specs, generates API docs | Delegate directly |
+| **database-architect** | Schema design, migrations | Designs schemas, ERDs, migrations | Delegate directly |
+| **auth-specialist** | Authentication features | Implements JWT/OAuth/session auth | Delegate directly |
+| **graphql-specialist** | GraphQL implementation | Designs GraphQL schemas, optimizes resolvers | Delegate directly |
+| **websocket-specialist** | Real-time features | Implements Socket.io real-time features | Delegate directly |
 
-### Doc Updater
-**When to use**: After implementation, before PR
-**What it does**: Syncs documentation with code changes
-**Command**: Use `/update-docs` or delegate
+### Operations Agents
 
-### E2E Runner
-**When to use**: Web applications, user workflows
-**What it does**: Generates and runs Playwright/Cypress tests
-**Command**: Use `/e2e` or delegate
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **build-error-resolver** | Multiple build errors, complex compiler issues | Iteratively fixes build errors | `/build-fix` |
+| **ci-cd-specialist** | Pipeline setup, GitHub Actions | Creates/optimizes CI/CD pipelines | Delegate directly |
+| **docker-specialist** | Containerization | Writes Dockerfiles, optimizes builds | Delegate directly |
+| **migration-specialist** | Database migrations | Safe database migrations with rollback | `/create-migration` |
+| **dependency-manager** | Dependency issues | Audits, updates, manages dependencies | `/audit-deps` |
+
+### Accessibility & i18n Agents
+
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **accessibility-auditor** | A11y compliance | WCAG 2.1 AA compliance audits | Delegate directly |
+| **i18n-specialist** | Internationalization | Internationalization with next-intl | Delegate directly |
+
+### Documentation & Observability Agents
+
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **doc-updater** | After implementation, before PR | Syncs documentation with code changes | `/update-docs` |
+| **performance-optimizer** | Slow applications | Profile and optimize code, fix N+1 queries | Delegate directly |
+| **monitoring-architect** | Observability setup, alerting | Sets up logging, metrics, dashboards, APM | Delegate directly |
+| **runbook-writer** | Operational documentation | Creates deployment procedures, troubleshooting guides | Delegate directly |
+
+### Specialized Domains Agents
+
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **mobile-specialist** | React Native, Flutter apps | Cross-platform mobile development, app store deployment | Delegate directly |
+| **ai-integration-specialist** | LLM/AI features | Integrates LLM APIs, RAG systems, prompt engineering | Delegate directly |
+| **iac-specialist** | Infrastructure as Code | Terraform, CloudFormation, multi-region, DR | Delegate directly |
 
 ---
 
@@ -211,18 +277,79 @@ You: Review findings, prioritize fixes, implement
 
 ## 9. Agent Selection Matrix
 
+### Core Tasks
 | Task | Agent | Reason |
 |------|-------|--------|
-| Security audit | security-reviewer | Specialized security knowledge |
-| Remove complexity | code-simplifier | Focused on simplification |
 | Plan feature | planner | Breaks down requirements |
 | Design system | architect | Evaluates architecture |
-| Write tests | tdd-guide | TDD expertise |
-| Fix build | build-error-resolver | Iterative error fixing |
-| Clean code | refactor-cleaner | Modernization patterns |
-| Update docs | doc-updater | Code-doc sync |
-| E2E tests | e2e-runner | Playwright/Cypress |
+| Security audit | security-reviewer | Specialized security knowledge |
+| Code review | code-reviewer | Quality patterns, best practices |
 | Verify changes | verify-app | End-to-end testing |
+
+### Code Quality Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Remove complexity | code-simplifier | Focused on simplification |
+| Clean code | refactor-cleaner | Modernization patterns |
+| Analyze tech debt | tech-debt-analyzer | Prioritizes technical debt |
+| Fix TypeScript | type-safety-enforcer | Strict type checking |
+
+### Testing Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| TDD workflow | tdd-guide | Red-Green-Refactor expertise |
+| Unit tests | unit-test-writer | AAA pattern, coverage |
+| Integration tests | integration-test-writer | API/database testing |
+| E2E tests | e2e-runner | Playwright/Cypress |
+| Load tests | load-test-specialist | k6/Artillery |
+
+### Implementation Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| General coding | implementer | Follows plans and patterns |
+| Feature implementation | implementer | Standard feature work |
+| Bug fixes | implementer | Non-specialized fixes |
+| Refactoring (with plan) | implementer | Executes refactoring plans |
+
+### Development Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| API design | api-designer | REST/GraphQL patterns + docs |
+| Database design | database-architect | Schema, migrations, ERDs |
+| Authentication | auth-specialist | JWT/OAuth expertise |
+| GraphQL | graphql-specialist | Schema, resolvers |
+| WebSocket | websocket-specialist | Socket.io real-time |
+
+### Operations Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Fix build | build-error-resolver | Iterative error fixing |
+| CI/CD setup | ci-cd-specialist | GitHub Actions pipelines |
+| Containerization | docker-specialist | Dockerfile optimization |
+| DB migrations | migration-specialist | Safe migrations with rollback |
+| Dependency issues | dependency-manager | Audit, update, manage deps |
+
+### Accessibility & i18n Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| A11y audit | accessibility-auditor | WCAG 2.1 AA compliance |
+| Internationalization | i18n-specialist | next-intl patterns |
+
+### Documentation & Observability Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Update docs | doc-updater | Code-doc sync |
+| Optimize performance | performance-optimizer | Profiling, N+1 fixes |
+| Set up monitoring | monitoring-architect | Logging, metrics, alerts, APM |
+| Generate API docs | api-designer | OpenAPI specs, API reference, design + docs |
+| Write runbooks | runbook-writer | Deployment procedures, troubleshooting |
+
+### Specialized Domain Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Mobile app development | mobile-specialist | React Native, Flutter, app stores |
+| LLM/AI integration | ai-integration-specialist | API integration, RAG, prompts |
+| Infrastructure as Code | iac-specialist | Terraform, CloudFormation, DR |
 
 ---
 
@@ -268,33 +395,45 @@ After delegation:
 
 ---
 
-## Common Patterns
+## Common Patterns (Orchestrator-First)
 
 ### Pattern 1: Pre-Commit Workflow
 ```
-1. Implement feature (main context)
-2. Security audit (security-reviewer agent)
-3. Update docs (doc-updater agent)
-4. Run tests (main context)
-5. Commit (main context)
+1. Implement feature (implementer agent)
+2. Security audit (security-reviewer agent) ─┐
+3. Update docs (doc-updater agent) ──────────┤ PARALLEL
+4. Code review (code-reviewer agent) ────────┘
+5. Commit (orchestrator coordinates)
 ```
 
 ### Pattern 2: New Feature Workflow
 ```
 1. Plan (planner agent)
-2. Review plan (main context)
-3. Implement (main context with TDD agent)
-4. Verify (verify-app agent)
-5. Document (doc-updater agent)
+2. Review plan (orchestrator presents to user)
+3. Implement (implementer agent)
+4. Write tests (unit-test-writer agent)
+5. Review (code-reviewer + security-reviewer agents) ─ PARALLEL
+6. Verify (verify-app agent)
+7. Document (doc-updater agent)
+8. Commit & PR (orchestrator coordinates)
 ```
 
 ### Pattern 3: Legacy Code Workflow
 ```
-1. Analyze (main context)
+1. Analyze (tech-debt-analyzer agent)
 2. Modernize (refactor-cleaner agent)
 3. Add tests (tdd-guide agent)
 4. Security audit (security-reviewer agent)
 5. Document changes (doc-updater agent)
+```
+
+### Pattern 4: Bug Fix Workflow
+```
+1. Analyze (code-reviewer agent)
+2. Write regression test (unit-test-writer agent)
+3. Fix (implementer agent)
+4. Review (code-reviewer agent)
+5. Commit (orchestrator coordinates)
 ```
 
 ---

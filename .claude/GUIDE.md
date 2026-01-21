@@ -67,33 +67,57 @@ Don't use agents for:
 - ❌ Reading 1-2 files
 - ❌ Trivial changes
 
-### Agent Categories
+### Agent Categories (34 Total)
 
-#### Code Development
-- **api-designer** - Design REST/GraphQL APIs, OpenAPI specs
-- **code-reviewer** - Comprehensive code review (different from security)
-- **unit-test-writer** - Generate unit tests with AAA pattern
-- **integration-test-writer** - API/database integration tests
-- **auth-specialist** - JWT, OAuth 2.0, session management
-- **database-architect** - Schema design, ERDs, migrations
+#### Core Workflow
+- **planner** - New features, unclear requirements, creates implementation plans
+- **architect** - System design, architectural decisions, evaluates trade-offs
+- **security-reviewer** - Before commits, security-critical changes, OWASP checks
+- **code-reviewer** - Comprehensive code review before PRs
+- **verify-app** - After significant changes, before deployment, E2E testing
+
+#### Code Quality
+- **code-simplifier** - Over-engineered code, unnecessary abstractions
+- **refactor-cleaner** - Legacy code, dead code removal, modernization
+- **tech-debt-analyzer** - Identify and prioritize technical debt
 - **type-safety-enforcer** - Eliminate `any`, strict TypeScript
 
-#### Quality & Performance
-- **performance-optimizer** - Profile and optimize, fix N+1 queries
-- **accessibility-auditor** - WCAG 2.1 AA compliance
-- **i18n-specialist** - Internationalization with next-intl
-- **tech-debt-analyzer** - Identify and prioritize technical debt
-- **dependency-manager** - npm audit, updates, license checks
+#### Testing
+- **tdd-guide** - Implementing new features with tests, Red-Green-Refactor
+- **unit-test-writer** - Generate unit tests with AAA pattern
+- **integration-test-writer** - API/database integration tests
+- **e2e-runner** - Web applications, user workflows, Playwright/Cypress
+- **load-test-specialist** - k6/Artillery load tests
 
-#### DevOps & Infrastructure
+#### Development
+- **implementer** - General coding tasks following plans and patterns
+- **api-designer** - Design REST/GraphQL APIs AND documentation (OpenAPI specs, API reference)
+- **database-architect** - Schema design, ERDs, migrations
+- **auth-specialist** - JWT, OAuth 2.0, session management
+- **graphql-specialist** - GraphQL schemas and resolvers
+- **websocket-specialist** - Socket.io real-time features
+
+#### Operations
+- **build-error-resolver** - Multiple build errors, complex compiler issues
 - **ci-cd-specialist** - GitHub Actions pipelines
 - **docker-specialist** - Dockerfiles, multi-stage builds
 - **migration-specialist** - Zero-downtime database migrations
+- **dependency-manager** - npm audit, updates, license checks
 
-#### Testing Specialists
-- **load-test-specialist** - k6/Artillery load tests
-- **websocket-specialist** - Socket.io real-time features
-- **graphql-specialist** - GraphQL schemas and resolvers
+#### Accessibility & i18n
+- **accessibility-auditor** - WCAG 2.1 AA compliance
+- **i18n-specialist** - Internationalization with next-intl
+
+#### Documentation & Observability
+- **doc-updater** - After implementation, before PR, syncs docs with code
+- **performance-optimizer** - Profile and optimize, fix N+1 queries
+- **monitoring-architect** - Logging, monitoring, alerting, APM setup
+- **runbook-writer** - Deployment procedures, troubleshooting guides
+
+#### Specialized Domains
+- **mobile-specialist** - React Native, Flutter, app store deployment
+- **ai-integration-specialist** - LLM APIs, RAG systems, prompt engineering
+- **iac-specialist** - Terraform, CloudFormation, infrastructure as code
 
 ### How to Use Agents
 
@@ -296,7 +320,7 @@ Default Claude behavior (lowest)
 - **Rules** = Always enforced ("you must")
 - **Skills** = Referenced when needed ("here's how")
 
-### Available Skills
+### Available Skills (14 Total)
 
 #### Framework-Specific
 - **react-patterns** - Hooks, memoization, compound components, error boundaries
@@ -311,11 +335,12 @@ Default Claude behavior (lowest)
 - **websocket-patterns** - Socket.io, rooms, reconnection, scaling
 
 #### Meta Skills
-- **coding-standards** - SOLID, DRY, language-specific patterns
-- **backend-patterns** - Repository pattern, caching, auth
+- **coding-standards** - SOLID, DRY, KISS, language-specific best practices
+- **backend-patterns** - Repository pattern, caching, auth, error handling
 - **frontend-patterns** - React patterns, state management, performance
-- **tdd-workflow** - Red-Green-Refactor cycle, test patterns
+- **tdd-workflow** - Red-Green-Refactor cycle, test patterns, TDD methodology
 - **project-guidelines** - Template for project-specific customization
+- **user-intent-patterns** - Natural language intent detection and routing
 
 ### How Skills Work
 

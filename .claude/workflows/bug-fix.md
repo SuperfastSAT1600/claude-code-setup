@@ -109,6 +109,9 @@ describe('BugFix: [Brief Description]', () => {
 **Agent**: Main context
 **Duration**: 5 minutes
 
+**Auto-Gate**: 🔄 **PR Review Checklist Auto-Triggered**
+> Before creating the PR, automatically run through `.claude/checklists/pr-review.md`
+
 **Commit Format**:
 ```
 fix(scope): brief description of fix
