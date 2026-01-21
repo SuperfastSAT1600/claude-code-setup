@@ -4,9 +4,51 @@ Know when to delegate tasks to specialized agents for better results and context
 
 ---
 
+## 0. Orchestrator-First Principle
+
+**CRITICAL**: The main model is an orchestrator. Delegate ALL implementation work.
+
+### Default Behavior
+
+```
+Parse intent → Select agent(s) → Delegate → Coordinate → Report
+```
+
+**NEVER** implement directly unless truly trivial (1-2 lines).
+
+### Delegation Thresholds (LOWERED)
+
+| Previous | NEW |
+|----------|-----|
+| Delegate if >10 files or complex | Delegate if >2 steps or ANY implementation |
+| Consider delegation for specialized | MUST delegate for ANY implementation |
+| Optional for simple tasks | Only trivial (1-2 line) changes handled directly |
+
+### Orchestrator Does
+
+- Routes tasks to agents
+- Provides context (files, templates, skills)
+- Coordinates parallel execution
+- Aggregates results
+- Reports to user
+- Git operations (commit, push, PR)
+
+### Orchestrator Does NOT
+
+- Write production code
+- Implement features
+- Fix bugs directly
+- Write tests
+- Read >10 files without delegating
+- Perform specialized analysis
+
+**See**: `.claude/rules/orchestrator.md` for complete orchestration rules.
+
+---
+
 ## 1. When to Use Agents
 
-**Rule**: Delegate complex, specialized, or context-heavy tasks to agents.
+**Rule**: Delegate complex, specialized, or context-heavy tasks to agents. With orchestrator-first, delegate MOST tasks.
 
 ### Use Agents For:
 - ✅ Security audits (isolated security context)
@@ -26,7 +68,7 @@ Know when to delegate tasks to specialized agents for better results and context
 
 ---
 
-## 2. Available Agents (28 Total)
+## 2. Available Agents (34 Total)
 
 ### Core Workflow Agents
 
@@ -61,7 +103,8 @@ Know when to delegate tasks to specialized agents for better results and context
 
 | Agent | When to Use | What It Does | Command |
 |-------|-------------|--------------|---------|
-| **api-designer** | REST/GraphQL API design | Designs APIs, creates OpenAPI specs | Delegate directly |
+| **implementer** | General coding tasks | Implements features following plans and patterns | Delegate directly |
+| **api-designer** | REST/GraphQL API design AND documentation | Designs APIs, creates OpenAPI specs, generates API docs | Delegate directly |
 | **database-architect** | Schema design, migrations | Designs schemas, ERDs, migrations | Delegate directly |
 | **auth-specialist** | Authentication features | Implements JWT/OAuth/session auth | Delegate directly |
 | **graphql-specialist** | GraphQL implementation | Designs GraphQL schemas, optimizes resolvers | Delegate directly |
@@ -84,12 +127,22 @@ Know when to delegate tasks to specialized agents for better results and context
 | **accessibility-auditor** | A11y compliance | WCAG 2.1 AA compliance audits | Delegate directly |
 | **i18n-specialist** | Internationalization | Internationalization with next-intl | Delegate directly |
 
-### Documentation Agents
+### Documentation & Observability Agents
 
 | Agent | When to Use | What It Does | Command |
 |-------|-------------|--------------|---------|
 | **doc-updater** | After implementation, before PR | Syncs documentation with code changes | `/update-docs` |
 | **performance-optimizer** | Slow applications | Profile and optimize code, fix N+1 queries | Delegate directly |
+| **monitoring-architect** | Observability setup, alerting | Sets up logging, metrics, dashboards, APM | Delegate directly |
+| **runbook-writer** | Operational documentation | Creates deployment procedures, troubleshooting guides | Delegate directly |
+
+### Specialized Domains Agents
+
+| Agent | When to Use | What It Does | Command |
+|-------|-------------|--------------|---------|
+| **mobile-specialist** | React Native, Flutter apps | Cross-platform mobile development, app store deployment | Delegate directly |
+| **ai-integration-specialist** | LLM/AI features | Integrates LLM APIs, RAG systems, prompt engineering | Delegate directly |
+| **iac-specialist** | Infrastructure as Code | Terraform, CloudFormation, multi-region, DR | Delegate directly |
 
 ---
 
@@ -250,10 +303,18 @@ You: Review findings, prioritize fixes, implement
 | E2E tests | e2e-runner | Playwright/Cypress |
 | Load tests | load-test-specialist | k6/Artillery |
 
+### Implementation Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| General coding | implementer | Follows plans and patterns |
+| Feature implementation | implementer | Standard feature work |
+| Bug fixes | implementer | Non-specialized fixes |
+| Refactoring (with plan) | implementer | Executes refactoring plans |
+
 ### Development Tasks
 | Task | Agent | Reason |
 |------|-------|--------|
-| API design | api-designer | REST/GraphQL patterns |
+| API design | api-designer | REST/GraphQL patterns + docs |
 | Database design | database-architect | Schema, migrations, ERDs |
 | Authentication | auth-specialist | JWT/OAuth expertise |
 | GraphQL | graphql-specialist | Schema, resolvers |
@@ -274,11 +335,21 @@ You: Review findings, prioritize fixes, implement
 | A11y audit | accessibility-auditor | WCAG 2.1 AA compliance |
 | Internationalization | i18n-specialist | next-intl patterns |
 
-### Documentation Tasks
+### Documentation & Observability Tasks
 | Task | Agent | Reason |
 |------|-------|--------|
 | Update docs | doc-updater | Code-doc sync |
 | Optimize performance | performance-optimizer | Profiling, N+1 fixes |
+| Set up monitoring | monitoring-architect | Logging, metrics, alerts, APM |
+| Generate API docs | api-designer | OpenAPI specs, API reference, design + docs |
+| Write runbooks | runbook-writer | Deployment procedures, troubleshooting |
+
+### Specialized Domain Tasks
+| Task | Agent | Reason |
+|------|-------|--------|
+| Mobile app development | mobile-specialist | React Native, Flutter, app stores |
+| LLM/AI integration | ai-integration-specialist | API integration, RAG, prompts |
+| Infrastructure as Code | iac-specialist | Terraform, CloudFormation, DR |
 
 ---
 
@@ -324,33 +395,45 @@ After delegation:
 
 ---
 
-## Common Patterns
+## Common Patterns (Orchestrator-First)
 
 ### Pattern 1: Pre-Commit Workflow
 ```
-1. Implement feature (main context)
-2. Security audit (security-reviewer agent)
-3. Update docs (doc-updater agent)
-4. Run tests (main context)
-5. Commit (main context)
+1. Implement feature (implementer agent)
+2. Security audit (security-reviewer agent) ─┐
+3. Update docs (doc-updater agent) ──────────┤ PARALLEL
+4. Code review (code-reviewer agent) ────────┘
+5. Commit (orchestrator coordinates)
 ```
 
 ### Pattern 2: New Feature Workflow
 ```
 1. Plan (planner agent)
-2. Review plan (main context)
-3. Implement (main context with TDD agent)
-4. Verify (verify-app agent)
-5. Document (doc-updater agent)
+2. Review plan (orchestrator presents to user)
+3. Implement (implementer agent)
+4. Write tests (unit-test-writer agent)
+5. Review (code-reviewer + security-reviewer agents) ─ PARALLEL
+6. Verify (verify-app agent)
+7. Document (doc-updater agent)
+8. Commit & PR (orchestrator coordinates)
 ```
 
 ### Pattern 3: Legacy Code Workflow
 ```
-1. Analyze (main context)
+1. Analyze (tech-debt-analyzer agent)
 2. Modernize (refactor-cleaner agent)
 3. Add tests (tdd-guide agent)
 4. Security audit (security-reviewer agent)
 5. Document changes (doc-updater agent)
+```
+
+### Pattern 4: Bug Fix Workflow
+```
+1. Analyze (code-reviewer agent)
+2. Write regression test (unit-test-writer agent)
+3. Fix (implementer agent)
+4. Review (code-reviewer agent)
+5. Commit (orchestrator coordinates)
 ```
 
 ---

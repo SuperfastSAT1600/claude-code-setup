@@ -45,7 +45,7 @@ When you need specialized help, delegate to an agent:
 "Have the security-reviewer agent audit the authentication system"
 ```
 
-**Available agents (28 total)**: planner, architect, security-reviewer, code-reviewer, verify-app, code-simplifier, refactor-cleaner, tech-debt-analyzer, type-safety-enforcer, tdd-guide, unit-test-writer, integration-test-writer, e2e-runner, load-test-specialist, api-designer, database-architect, auth-specialist, graphql-specialist, websocket-specialist, build-error-resolver, ci-cd-specialist, docker-specialist, migration-specialist, dependency-manager, accessibility-auditor, i18n-specialist, doc-updater, performance-optimizer. See INDEX.md for full list.
+**Available agents (34 total)**: planner, architect, security-reviewer, code-reviewer, verify-app, code-simplifier, refactor-cleaner, tech-debt-analyzer, type-safety-enforcer, tdd-guide, unit-test-writer, integration-test-writer, e2e-runner, load-test-specialist, implementer, api-designer, database-architect, auth-specialist, graphql-specialist, websocket-specialist, build-error-resolver, ci-cd-specialist, docker-specialist, migration-specialist, dependency-manager, accessibility-auditor, i18n-specialist, doc-updater, performance-optimizer, monitoring-architect, runbook-writer, mobile-specialist, ai-integration-specialist, iac-specialist. See INDEX.md for full list.
 
 ### 📚 Knowledge Base
 - **Skills** (`.claude/skills/`) - Reference patterns: react-patterns, nextjs-patterns, rest-api-design, graphql-patterns, websocket-patterns, and more

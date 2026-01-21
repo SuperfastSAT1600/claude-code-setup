@@ -67,7 +67,7 @@ Don't use agents for:
 - ❌ Reading 1-2 files
 - ❌ Trivial changes
 
-### Agent Categories (28 Total)
+### Agent Categories (34 Total)
 
 #### Core Workflow
 - **planner** - New features, unclear requirements, creates implementation plans
@@ -90,7 +90,8 @@ Don't use agents for:
 - **load-test-specialist** - k6/Artillery load tests
 
 #### Development
-- **api-designer** - Design REST/GraphQL APIs, OpenAPI specs
+- **implementer** - General coding tasks following plans and patterns
+- **api-designer** - Design REST/GraphQL APIs AND documentation (OpenAPI specs, API reference)
 - **database-architect** - Schema design, ERDs, migrations
 - **auth-specialist** - JWT, OAuth 2.0, session management
 - **graphql-specialist** - GraphQL schemas and resolvers
@@ -107,9 +108,16 @@ Don't use agents for:
 - **accessibility-auditor** - WCAG 2.1 AA compliance
 - **i18n-specialist** - Internationalization with next-intl
 
-#### Documentation
+#### Documentation & Observability
 - **doc-updater** - After implementation, before PR, syncs docs with code
 - **performance-optimizer** - Profile and optimize, fix N+1 queries
+- **monitoring-architect** - Logging, monitoring, alerting, APM setup
+- **runbook-writer** - Deployment procedures, troubleshooting guides
+
+#### Specialized Domains
+- **mobile-specialist** - React Native, Flutter, app store deployment
+- **ai-integration-specialist** - LLM APIs, RAG systems, prompt engineering
+- **iac-specialist** - Terraform, CloudFormation, infrastructure as code
 
 ### How to Use Agents
 

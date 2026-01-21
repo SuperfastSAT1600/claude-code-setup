@@ -4,7 +4,7 @@
 
 ---
 
-## 🤖 Agents (28)
+## 🤖 Agents (34)
 
 ### Core Workflow
 | Agent | When to Use | Model |
@@ -35,7 +35,8 @@
 ### Development
 | Agent | When to Use | Model |
 |-------|-------------|-------|
-| **api-designer** | Design REST/GraphQL APIs, create OpenAPI specs | opus |
+| **implementer** | General coding tasks following plans and patterns | sonnet |
+| **api-designer** | Design REST/GraphQL APIs AND documentation | opus |
 | **database-architect** | Design schemas, migrations, ERDs | opus |
 | **auth-specialist** | Implement JWT/OAuth/session auth | opus |
 | **graphql-specialist** | Design GraphQL schemas, optimize resolvers | sonnet |
@@ -56,11 +57,20 @@
 | **accessibility-auditor** | WCAG 2.1 AA compliance audits | sonnet |
 | **i18n-specialist** | Internationalization with next-intl | sonnet |
 
-### Documentation
+### Documentation & Observability
 | Agent | When to Use | Model |
 |-------|-------------|-------|
 | **doc-updater** | After implementation, before PR | sonnet |
 | **performance-optimizer** | Profile and optimize code, fix N+1 queries | sonnet |
+| **monitoring-architect** | Set up logging, monitoring, alerting, APM | opus |
+| **runbook-writer** | Deployment procedures, troubleshooting guides | sonnet |
+
+### Specialized Domains
+| Agent | When to Use | Model |
+|-------|-------------|-------|
+| **mobile-specialist** | React Native, Flutter, app store deployment | opus |
+| **ai-integration-specialist** | LLM APIs, RAG systems, prompt engineering | opus |
+| **iac-specialist** | Terraform, CloudFormation, infrastructure | sonnet |
 
 ---
 
@@ -116,7 +126,7 @@
 
 ---
 
-## ✅ Checklists (7)
+## ✅ Checklists (11)
 
 | Checklist | Items | Purpose |
 |-----------|-------|---------|
@@ -127,10 +137,14 @@
 | **pre-release** | 45 items | Release readiness verification |
 | **onboarding** | 50+ items | New developer setup |
 | **ai-code-review** | 30+ items | Detect AI-generated code patterns and inconsistencies |
+| **deployment-checklist** | 50+ items | Pre-deployment verification (env vars, migrations, backups) |
+| **database-migration-review** | 40+ items | Schema change validation (rollback, data integrity) |
+| **dependency-audit** | 35+ items | Package review (security, licenses, bundle size) |
+| **hotfix-checklist** | 30+ items | Urgent production fix process |
 
 ---
 
-## 📝 Templates (5)
+## 📝 Templates (11)
 
 | Template | Purpose | Placeholders |
 |----------|---------|--------------|
@@ -139,6 +153,12 @@
 | **test.spec.ts** | Vitest test file | FILE_PATH, FUNCTION_NAME, DESCRIPTION |
 | **migration.sql** | Database migration + rollback | MIGRATION_NAME, DESCRIPTION, UP_SQL, DOWN_SQL |
 | **pr-description.md** | PR description | SUMMARY, CHANGES, SCREENSHOTS, BREAKING_CHANGES |
+| **form.tsx** | React Hook Form + Zod validation | FORM_NAME, FORM_FIELDS, VALIDATION_RULES |
+| **guard.ts** | Auth guard/middleware | GUARD_NAME, GUARD_CONDITION, ERROR_MESSAGE |
+| **hook.ts** | Custom React hook | HOOK_NAME, RETURN_TYPE, DEPENDENCIES |
+| **service.ts** | Business logic service | SERVICE_NAME, ENTITY_TYPE, REPOSITORY_TYPE |
+| **middleware.ts** | Express/Next.js middleware | MIDDLEWARE_NAME, OPTIONS |
+| **error-handler.ts** | Centralized error handling | APP_NAME, ERROR_CODES |
 
 ---
 
@@ -148,9 +168,9 @@
 |--------|---------|-----------|
 | **pre-commit-checks.sh** | Validate before commits | PreToolUse hook |
 | **require-tests-pass.sh** | Gate PR creation on tests | PreToolUse hook |
-| **log-security-review.sh** | Audit trail for security | SubagentStop hook |
 | **auto-format.sh** | Format on save | PostToolUse hook |
-| **sync-deps.sh** | Sync and verify dependencies | Manual or CI |
+| **sync-deps.sh** | Sync and verify dependencies | PostToolUse hook (on npm install) |
+| **log-security-review.sh** | Audit trail for security | Manual invocation |
 
 ---
 
@@ -290,13 +310,13 @@ Creates GitHub Actions with:
 .claude/
 ├── INDEX.md (this file) ← START HERE
 ├── GUIDE.md ← Consolidated README
-├── agents/ (28 agents)
+├── agents/ (34 agents)
 ├── commands/ (20 commands)
 ├── rules/ (14 rules - always enforced)
 ├── skills/ (14 skills - reference knowledge)
 ├── workflows/ (5 workflows)
-├── checklists/ (7 checklists)
-├── templates/ (5 templates)
+├── checklists/ (11 checklists)
+├── templates/ (11 templates)
 └── scripts/ (5 scripts)
 ```
 

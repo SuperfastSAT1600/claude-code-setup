@@ -61,24 +61,34 @@ Complete feature development from planning through deployment-ready PR.
 ---
 
 ### Step 3: Implementation
-**Agent**: Main context (you)
+**Agent**: `implementer`
 **Duration**: Variable
+**Parallel with**: Can run parallel with `api-designer` (docs) if API feature
 
 **Actions**:
 1. Implement code to pass tests (TDD green phase)
 2. Follow existing patterns and conventions
-3. Handle error cases
-4. Add logging where appropriate
+3. Use templates from `.claude/templates/` for new files
+4. Handle error cases
+5. Add logging where appropriate
+
+**Context to Provide**:
+- Implementation plan from Step 1
+- Test specs from Step 2
+- Relevant templates (component.tsx, api-route.ts, etc.)
+- Relevant skills (react-patterns, backend-patterns, etc.)
 
 **Output**:
 - Source code changes
 - Passing tests
+- Implementation report
 
 **Quality Check**:
 - [ ] All tests passing
 - [ ] Code follows project patterns
 - [ ] No console.log or debug code
 - [ ] Error handling implemented
+- [ ] Templates used for new files
 
 ---
 
@@ -137,7 +147,7 @@ Complete feature development from planning through deployment-ready PR.
 ---
 
 ### Step 7: Final Checks
-**Agent**: Main context
+**Agent**: `verify-app` (or orchestrator for simple verification)
 **Duration**: 5-10 minutes
 
 **Actions**:
@@ -145,18 +155,21 @@ Complete feature development from planning through deployment-ready PR.
 2. Run linting
 3. Verify build succeeds
 4. Review all changes
+5. Run PR review checklist
 
-**Checklist**:
+**Checklist** (auto-trigger `.claude/checklists/pr-review.md`):
 - [ ] All tests passing
 - [ ] No lint errors
 - [ ] Build successful
 - [ ] Documentation updated
 - [ ] Changelog entry added
+- [ ] Security review findings addressed
+- [ ] Code review findings addressed
 
 ---
 
 ### Step 8: Commit & PR
-**Agent**: Main context
+**Agent**: Orchestrator (coordinates git operations)
 **Duration**: 5-10 minutes
 
 **Auto-Gate**: 🔄 **PR Review Checklist Auto-Triggered**
@@ -166,7 +179,7 @@ Complete feature development from planning through deployment-ready PR.
 1. Stage all changes
 2. Create conventional commit
 3. Push to remote
-4. Create pull request
+4. Create pull request using `.claude/templates/pr-description.md.template`
 
 **Commit Format**:
 ```
@@ -195,6 +208,34 @@ Closes #123
 
 ## Screenshots
 [If UI changes]
+```
+
+---
+
+## Parallel Execution Opportunities
+
+```
+Phase 1: Planning (Sequential)
+  planner → creates plan
+  ↓ USER APPROVAL GATE
+
+Phase 2: Test + Implementation (Sequential, but can parallel with API docs)
+  tdd-guide → test specs
+  implementer → implementation
+  ┌─ api-designer (docs) ─┐ (if API feature)
+  └────────────────────────┘
+
+Phase 3: Review (Parallel)
+  ┌─ code-reviewer ────────┐
+  ├─ security-reviewer ────┤ All run in parallel
+  └─ doc-updater ──────────┘
+
+Phase 4: Verification (Sequential)
+  verify-app → final checks
+  ↓ AUTO GATE (checklist)
+
+Phase 5: Commit (Orchestrator)
+  orchestrator → git operations, PR creation
 ```
 
 ---
