@@ -136,6 +136,68 @@
       "args": ["-y", "@magic-mcp/server"],
       "env": {},
       "disabled": true
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-playwright"],
+      "env": {},
+      "disabled": true
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-puppeteer"],
+      "env": {},
+      "disabled": true
+    },
+    "docker": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-docker"],
+      "env": {
+        "DOCKER_HOST": "unix:///var/run/docker.sock"
+      },
+      "disabled": true
+    },
+    "sentry": {
+      "command": "npx",
+      "args": ["-y", "@sentry/mcp-server"],
+      "env": {
+        "SENTRY_AUTH_TOKEN": "YOUR_SENTRY_AUTH_TOKEN_HERE",
+        "SENTRY_ORG": "YOUR_SENTRY_ORG_HERE"
+      },
+      "disabled": true
+    },
+    "linear": {
+      "command": "npx",
+      "args": ["-y", "@linear/mcp-server"],
+      "env": {
+        "LINEAR_API_KEY": "YOUR_LINEAR_API_KEY_HERE"
+      },
+      "disabled": true
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@notionhq/mcp-server"],
+      "env": {
+        "NOTION_API_KEY": "YOUR_NOTION_API_KEY_HERE"
+      },
+      "disabled": true
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server"],
+      "env": {
+        "SUPABASE_URL": "YOUR_SUPABASE_URL_HERE",
+        "SUPABASE_SERVICE_KEY": "YOUR_SUPABASE_SERVICE_KEY_HERE"
+      },
+      "disabled": true
+    },
+    "prisma": {
+      "command": "npx",
+      "args": ["-y", "@prisma/mcp-server"],
+      "env": {
+        "DATABASE_URL": "YOUR_DATABASE_URL_HERE"
+      },
+      "disabled": true
     }
   }
 }

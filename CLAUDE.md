@@ -13,6 +13,68 @@ This is our team's shared knowledge base for Claude Code. When Claude makes a mi
 3. **Weekly Updates**: Team members should review and update this file regularly
 4. **Keep it Current**: Remove outdated rules as the project evolves
 
+---
+
+## Quick Reference: Claude Code Features
+
+**New to Claude Code?** Check out these powerful features available in this project:
+
+### 🚀 Start Here
+- **INDEX.md** - Quick lookup of all agents, commands, workflows (start here!)
+- **GUIDE.md** - Comprehensive how-to for all features
+- **This file (CLAUDE.md)** - Project-specific guidelines
+
+### ⚡ Quick Commands
+```bash
+/full-feature    # Complete feature: plan → implement → test → PR
+/quick-fix       # Fast bug fix workflow
+/lint-fix        # ESLint + Prettier + TypeScript
+/type-check      # Eliminate `any` types, strict mode
+/dead-code       # Remove unused code/exports
+/security-review # Security audit (OWASP Top 10)
+/audit-deps      # Security + outdated + licenses
+/new-component   # Scaffold React component with tests
+```
+
+### 🤖 Specialized Agents (Delegate Complex Work)
+When you need specialized help, delegate to an agent:
+
+```
+"Delegate to the api-designer agent to design a REST API for user management"
+"Use the performance-optimizer agent to identify bottlenecks"
+"Have the security-reviewer agent audit the authentication system"
+```
+
+**Available agents**: api-designer, code-reviewer, unit-test-writer, integration-test-writer, auth-specialist, database-architect, performance-optimizer, accessibility-auditor, ci-cd-specialist, docker-specialist, and more. See INDEX.md for full list.
+
+### 📚 Knowledge Base
+- **Skills** (`.claude/skills/`) - Reference patterns: react-patterns, nextjs-patterns, rest-api-design, graphql-patterns, websocket-patterns, and more
+- **Rules** (`.claude/rules/`) - Auto-enforced: security, coding-style, testing, git-workflow, performance
+- **Workflows** (`.claude/workflows/`) - Step-by-step guides: full-feature, bug-fix, refactor, release, security-audit
+- **Checklists** (`.claude/checklists/`) - Quality verification: pr-review, security-audit, performance-audit, accessibility-audit, pre-release
+- **Templates** (`.claude/templates/`) - Code scaffolding: component.tsx, api-route.ts, test.spec.ts, migration.sql, pr-description.md
+
+### 🎯 Decision Tree: "What should I use?"
+
+| I need to... | Use this |
+|--------------|----------|
+| Implement a new feature | `/full-feature` command |
+| Fix a bug quickly | `/quick-fix` command |
+| Improve code quality | `/lint-fix`, `/type-check`, `/dead-code` |
+| Optimize performance | `performance-optimizer` agent |
+| Design an API | `api-designer` agent + `rest-api-design` skill |
+| Create a component | `/new-component ComponentName` |
+| Database migration | `/create-migration "description"` |
+| Security audit | `/security-review` command |
+| Set up CI/CD | `ci-cd-specialist` agent |
+| Make it accessible | `accessibility-auditor` agent |
+| Add internationalization | `i18n-specialist` agent |
+| Load testing | `load-test-specialist` agent |
+
+**Can't find what you need?** Check INDEX.md or ask: "How do I [task] with Claude Code?"
+
+---
+
 ## Project-Specific Rules
 
 ### Code Style & Formatting

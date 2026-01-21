@@ -6,6 +6,11 @@ Your complete guide to maximizing productivity with Claude Code.
 
 **Who is this for?** Developers adopting Claude Code, whether solo or in teams, from quickstart to power user.
 
+**Quick Navigation:**
+- 📋 **[.claude/INDEX.md](.claude/INDEX.md)** - Quick reference for all features (2-minute scan)
+- 📚 **[.claude/GUIDE.md](.claude/GUIDE.md)** - Comprehensive how-to guide (consolidated all READMEs)
+- ⚡ **[QUICKSTART.md](QUICKSTART.md)** - 5-minute getting started
+
 ---
 
 ## Table of Contents
@@ -70,28 +75,44 @@ Keep context under 80k tokens. Disable unused MCPs, delegate heavy tasks to agen
 ### 1.3 System Overview
 
 **Commands** - User-triggered workflows
-- Slash commands like `/commit-push-pr`, `/test-and-build`
+- Slash commands like `/full-feature`, `/commit-push-pr`, `/lint-fix`, `/type-check`
 - Execute complete workflows in one command
-- 10 commands available covering workflow, development, and quality
+- **15 commands available** covering workflow orchestration, development, quality, and maintenance
 
 **Agents** - Specialized autonomous workers
 - Delegate complex tasks to focused experts
 - Agents have isolated context and specific tools
-- 10 agents available: planner, architect, tdd-guide, security-reviewer, etc.
+- **18 agents available**: api-designer, code-reviewer, graphql-specialist, websocket-specialist, unit-test-writer, performance-optimizer, etc.
 
 **Rules** - Always-active guardrails
 - Automatically enforced on every interaction
 - Prevent security vulnerabilities, enforce code style, ensure test coverage
-- 10 rules covering security, style, testing, git, performance, agents, hooks, patterns, context
+- **9 rules** covering security, style, testing, git, performance, agents, hooks, patterns, context-management
 
 **Skills** - Reusable knowledge patterns
 - Referenced by commands and agents
 - Reduce repetition, ensure consistency
-- 6 skills: coding-standards, backend-patterns, frontend-patterns, tdd-workflow, project-guidelines
+- **8 skills**: react-patterns, nextjs-patterns, nodejs-patterns, rest-api-design, graphql-patterns, websocket-patterns, plus core skills
+
+**Workflows** - Orchestrated agent sequences
+- Multi-step automated workflows combining multiple agents
+- **5 workflows**: full-feature, bug-fix, refactor, release, security-audit
+
+**Checklists** - Review standards
+- Comprehensive checklists for quality gates
+- **6 checklists**: PR review, security audit, performance audit, accessibility audit, pre-release, onboarding
+
+**Templates** - Code scaffolding
+- Reusable code templates for common patterns
+- **5 templates**: component, API route, test, migration, PR description
+
+**Scripts** - Automation helpers
+- Shell scripts for common automation tasks
+- **5 scripts**: pre-commit checks, test gating, security logging, auto-format, sync-deps
 
 **MCP Servers** - External tool integrations
-- 18 pre-configured servers (most disabled by default)
-- Enable only what you need (filesystem, github, database, deployment, etc.)
+- **27 pre-configured servers** (most disabled by default)
+- Enable only what you need (filesystem, github, database, deployment, docker, playwright, etc.)
 - Keep enabled count <10 for optimal performance
 
 ---

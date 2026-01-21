@@ -196,6 +196,26 @@
     {
       "tool": "Bash",
       "prompt": "run unit tests"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run playwright tests"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run prisma commands"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "generate prisma client"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "run pre-commit checks"
+    },
+    {
+      "tool": "Bash",
+      "prompt": "sync dependencies"
     }
   ],
   "hooks": {
@@ -219,22 +239,87 @@
         ]
       },
       {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(env|credentials|secret)\"",
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(env|credentials|secret|pem|key)$\"",
         "hooks": [
           {
             "type": "command",
-            "command": "echo '[Hook] Warning: Modifying sensitive file - ensure it is in .gitignore!' >&2"
+            "command": "echo '[Hook] BLOCKED: Cannot write to sensitive files (.env, .pem, .key, credentials)' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf /\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] BLOCKED: Dangerous rm -rf / command detected!' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git commit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/pre-commit-checks.sh\" ]; then\n  ./.claude/scripts/pre-commit-checks.sh 2>&1 | head -50\nfi || true"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__github__create_pull_request",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/require-tests-pass.sh\" ]; then\n  ./.claude/scripts/require-tests-pass.sh\nfi || true"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"npm publish|yarn publish|pnpm publish\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Publishing package - ensure version is bumped and tests pass!' >&2"
           }
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|json|css|scss|md)$\"",
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path' | { read file_path; prettier --write \"$file_path\" 2>/dev/null || eslint --fix \"$file_path\" 2>/dev/null || exit 0; }"
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/auto-format.sh\" ]; then\n  ./.claude/scripts/auto-format.sh \"$file_path\" 2>/dev/null\nelse\n  npx prettier --write \"$file_path\" 2>/dev/null || true\nfi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git commit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Commit created. Consider running tests before pushing.' >&2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nnpx eslint --fix \"$file_path\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "agent == \"security-reviewer\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/log-security-review.sh\" ]; then\n  ./.claude/scripts/log-security-review.sh\nfi"
           }
         ]
       }

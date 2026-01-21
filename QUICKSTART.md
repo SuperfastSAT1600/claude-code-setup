@@ -7,15 +7,21 @@ You've successfully set up the comprehensive Boris Cherny workflow for Claude Co
 Your workspace now includes:
 
 1. **`.claude/settings.json`** - Permissions, hooks, and model configuration (49 pre-approved operations)
-2. **`CLAUDE.md`** - Team knowledge base with concrete examples
-3. **`.claude/commands/`** - 10 powerful slash commands
-4. **`.claude/agents/`** - 10 specialized workflow automation agents
-5. **`.claude/rules/`** - 10 always-active quality guardrails
-6. **`.claude/skills/`** - 6 reusable knowledge files
-7. **`.mcp.json`** - MCP server configuration (18 servers, 17 disabled by default)
-8. **`WORKFLOW.md`** - Comprehensive workflow guide (1500+ lines) - **[Read this for complete guidance](WORKFLOW.md)**
-9. **Environment Configs** - Dev, prod, and default configurations
-10. **Advanced Hooks** - PreToolUse warnings + PostToolUse auto-formatting
+2. **`CLAUDE.md`** - Team knowledge base with Quick Reference section
+3. **`.claude/INDEX.md`** - Quick reference for all features (300 lines) - **[Start here for feature discovery](.claude/INDEX.md)**
+4. **`.claude/GUIDE.md`** - Comprehensive how-to guide (950 lines) - **[Deep dive into all features](.claude/GUIDE.md)**
+5. **`.claude/commands/`** - 15 powerful slash commands
+6. **`.claude/agents/`** - 18 specialized workflow automation agents
+7. **`.claude/rules/`** - 9 always-active quality guardrails
+8. **`.claude/skills/`** - 8 reusable knowledge files (React, Next.js, Node.js, API design, GraphQL, WebSocket patterns)
+9. **`.claude/workflows/`** - 5 orchestrated agent sequences (full-feature, bug-fix, refactor, release, security-audit)
+10. **`.claude/checklists/`** - 6 review checklists (PR review, security, performance, accessibility, pre-release, onboarding)
+11. **`.claude/templates/`** - 5 code templates (component, API route, test, migration, PR description)
+12. **`.claude/scripts/`** - 5 automation scripts (pre-commit checks, test gating, security logging, auto-format, sync-deps)
+13. **`.mcp.json`** - MCP server configuration (27 servers, most disabled by default)
+14. **`WORKFLOW.md`** - Comprehensive workflow guide (1500+ lines) - **[Complete guidance](WORKFLOW.md)**
+15. **Environment Configs** - Dev, prod, and default configurations
+16. **Advanced Hooks** - PreToolUse blocking + PostToolUse auto-formatting
 
 ## 🚀 Getting Started in 5 Minutes
 
@@ -165,11 +171,12 @@ gh auth login
 6. /commit-push-pr             # Create release PR
 ```
 
-## 🔧 Available Slash Commands
+## 🔧 Available Slash Commands (15)
 
-### Workflow Commands
+### Full Workflow Commands
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
+| `/full-feature` | Complete feature cycle (plan → test → PR) | New feature development end-to-end |
 | `/commit-push-pr` | Commit, push, create PR | After completing a feature |
 | `/test-and-build` | Run tests and build | Before creating a PR |
 | `/review-changes` | Comprehensive code review | Before creating a PR |
@@ -180,6 +187,8 @@ gh auth login
 | `/tdd [feature]` | Test-Driven Development | Writing new features test-first |
 | `/plan [feature]` | Implementation planning | Before implementing complex features |
 | `/e2e [workflow]` | E2E test generation | Testing critical user workflows |
+| `/spike [question]` | Time-boxed technical research | Exploring technologies/approaches |
+| `/new-component [name]` | Scaffold component + tests + stories | Creating new React components |
 
 ### Code Quality Commands
 | Command | Purpose | When to Use |
@@ -188,34 +197,66 @@ gh auth login
 | `/refactor-clean [path]` | Remove dead code | Modernizing legacy code |
 | `/test-coverage [path]` | Analyze coverage | Ensuring adequate tests |
 | `/security-review [path]` | Security audit | Before commits/releases |
+| `/lint-fix` | Run ESLint + Prettier + TypeScript | Fixing all linting/formatting issues |
+| `/type-check` | Strict TypeScript checking | Eliminating `any` types |
+| `/dead-code` | Find unused code/exports/deps | Code cleanup |
+| `/audit-deps` | Dependency security audit | Before releases |
+| `/update-docs` | Sync documentation with code | After implementation |
+| `/create-migration [description]` | Generate database migration | Schema changes |
 
-## 🤖 Available Agents
+## 🤖 Available Agents (18)
 
-### Code Quality Agents
-| Agent | Purpose | Usage |
-|-------|---------|-------|
-| `code-simplifier` | Remove over-engineering | "Run code-simplifier agent" |
-| `refactor-cleaner` | Modernize legacy code | "Refactor with refactor-cleaner agent" |
+### Code Development Agents
+| Agent | Purpose | Model | When to Use |
+|-------|---------|-------|-------------|
+| `api-designer` | Design REST/GraphQL APIs | opus | Creating new APIs, OpenAPI specs |
+| `code-reviewer` | Comprehensive code review | opus | Before PRs, learning best practices |
+| `database-architect` | Schema design & optimization | opus | Database design, migrations |
+| `auth-specialist` | Authentication flows | opus | OAuth, JWT, MFA implementation |
 
-### Testing & Verification Agents
-| Agent | Purpose | Usage |
-|-------|---------|-------|
-| `verify-app` | End-to-end testing | "Run verify-app agent" |
-| `e2e-runner` | E2E test generation | "Generate E2E tests with e2e-runner" |
-| `tdd-guide` | TDD coaching | "Guide me through TDD workflow" |
+### Testing & Quality Agents
+| Agent | Purpose | Model | When to Use |
+|-------|---------|-------|-------------|
+| `unit-test-writer` | Generate unit tests (AAA pattern) | sonnet | Creating test coverage |
+| `integration-test-writer` | API/service integration tests | sonnet | Testing component interactions |
+| `e2e-runner` | E2E test generation | sonnet | Testing user workflows |
+| `tdd-guide` | TDD coaching (Red-Green-Refactor) | sonnet | Test-first development |
+| `verify-app` | End-to-end verification | sonnet | Smoke testing after changes |
 
-### Planning & Architecture Agents
-| Agent | Purpose | Usage |
-|-------|---------|-------|
-| `planner` | Implementation planning | "Create plan with planner agent" |
-| `architect` | Technical decisions | "Evaluate options with architect agent" |
+### Code Quality & Refactoring Agents
+| Agent | Purpose | Model | When to Use |
+|-------|---------|-------|-------------|
+| `code-simplifier` | Remove over-engineering | sonnet | Simplifying complex code |
+| `refactor-cleaner` | Modernize legacy code | sonnet | Dead code removal |
+| `type-safety-enforcer` | Eliminate `any` types | haiku | Strict TypeScript enforcement |
+| `performance-optimizer` | Profile and optimize | sonnet | Bottleneck identification |
 
-### Error Resolution & Documentation Agents
-| Agent | Purpose | Usage |
-|-------|---------|-------|
-| `build-error-resolver` | Fix build errors | "Fix build with build-error-resolver" |
-| `doc-updater` | Sync documentation | "Update docs with doc-updater agent" |
-| `security-reviewer` | Security audit | "Security audit with security-reviewer" |
+### Specialized Domain Agents
+| Agent | Purpose | Model | When to Use |
+|-------|---------|-------|-------------|
+| `graphql-specialist` | GraphQL development | sonnet | Schema design, DataLoader, N+1 |
+| `websocket-specialist` | Real-time communication | sonnet | Chat, collaborative editing |
+| `i18n-specialist` | Internationalization | sonnet | next-intl setup, RTL support |
+| `accessibility-auditor` | WCAG 2.1 AA compliance | sonnet | Accessibility audits |
+| `load-test-specialist` | Performance testing | sonnet | k6/Artillery load tests |
+
+### Infrastructure & DevOps Agents
+| Agent | Purpose | Model | When to Use |
+|-------|---------|-------|-------------|
+| `ci-cd-specialist` | GitHub Actions pipelines | sonnet | CI/CD configuration |
+| `docker-specialist` | Containerization | sonnet | Dockerfile optimization |
+| `dependency-manager` | Package management | haiku | npm audit, updates |
+| `migration-specialist` | Database migrations | sonnet | Zero-downtime migrations |
+
+### Planning & Support Agents
+| Agent | Purpose | Model | When to Use |
+|-------|---------|-------|-------------|
+| `planner` | Implementation planning | opus | Feature planning |
+| `architect` | Technical decisions | opus | Architectural choices |
+| `build-error-resolver` | Fix build errors | sonnet | Systematic error fixing |
+| `doc-updater` | Sync documentation | sonnet | Code-doc synchronization |
+| `security-reviewer` | Security audit | opus | OWASP Top 10 checks |
+| `tech-debt-analyzer` | Technical debt analysis | sonnet | Debt prioritization |
 
 ## 📋 Rules (Always Active)
 
@@ -234,7 +275,7 @@ These are automatically enforced on every interaction:
 | `context-management.md` | Context limits | <10 MCPs enabled, <80k tokens |
 | `project-guidelines.md` | Template for projects | Customize for your tech stack |
 
-## 📚 Skills (Referenced as Needed)
+## 📚 Skills (Referenced as Needed) - 8 Files
 
 These provide best practices when relevant:
 
@@ -245,6 +286,14 @@ These provide best practices when relevant:
 | `frontend-patterns.md` | React/UI patterns | planner, refactoring |
 | `tdd-workflow.md` | TDD methodology | tdd-guide agent, /tdd command |
 | `project-guidelines.md` | Project-specific template | Onboarding, documentation |
+| `react-patterns.md` | React hooks, state, performance | Frontend development |
+| `nextjs-patterns.md` | App Router, Server Components | Next.js projects |
+| `nodejs-patterns.md` | Event loop, streams, clustering | Backend development |
+| `prisma-patterns.md` | Prisma ORM best practices | Database access |
+| `github-actions.md` | CI/CD workflows | ci-cd-specialist agent |
+| `rest-api-design.md` | REST API standards | api-designer agent |
+| `graphql-patterns.md` | GraphQL schema, resolvers | graphql-specialist agent |
+| `websocket-patterns.md` | Socket.io real-time patterns | websocket-specialist agent |
 
 ## 🎯 Best Practices
 
@@ -316,7 +365,21 @@ After implementing:
 
 ## 📚 Next Steps
 
-1. **Read [WORKFLOW.md](WORKFLOW.md)** - **Complete comprehensive workflow guide (1500+ lines)** with:
+### Essential Reading (Start Here!)
+
+1. **[.claude/INDEX.md](.claude/INDEX.md)** - **Quick reference (300 lines)** - Start here for feature discovery:
+   - All 18 agents, 15 commands, 5 workflows, 6 checklists at a glance
+   - Decision trees: "I need to..." → appropriate feature
+   - Quick lookup by use case
+   - 2-minute scan to find what you need
+
+2. **[.claude/GUIDE.md](.claude/GUIDE.md)** - **Comprehensive how-to guide (950 lines)**:
+   - Consolidated all README files into one place
+   - What each feature is, when to use it, how it works
+   - Examples and best practices for all feature types
+   - Reduces 11 documentation files to 1 comprehensive guide
+
+3. **[WORKFLOW.md](WORKFLOW.md)** - **Complete comprehensive workflow guide (1500+ lines)** with:
    - Decision trees for "I need to..." scenarios
    - Command/agent selection matrices
    - Real-world authentication implementation walkthrough
@@ -325,10 +388,15 @@ After implementing:
    - Performance optimization strategies
    - Progressive adoption roadmap (Week 1 → Month 1 → Ongoing)
    - Team collaboration workflows
-2. **Customize [CLAUDE.md](CLAUDE.md)** - Add your project specifics
-3. **Create custom slash commands** - Add to `.claude/commands/`
-4. **Create custom agents** - Add to `.claude/agents/`
-5. **Set up MCP servers** - Configure in `.mcp.json` (see WORKFLOW.md Section 5)
+
+### Customization
+
+4. **Customize [CLAUDE.md](CLAUDE.md)** - Add your project specifics (tech stack, conventions)
+5. **Create custom slash commands** - Add to `.claude/commands/`
+6. **Create custom agents** - Add to `.claude/agents/`
+7. **Set up MCP servers** - Configure in `.mcp.json` (see WORKFLOW.md Section 5)
+8. **Add project checklists** - Customize `.claude/checklists/` for your workflow
+9. **Add code templates** - Create reusable templates in `.claude/templates/`
 
 ## 🆘 Troubleshooting
 

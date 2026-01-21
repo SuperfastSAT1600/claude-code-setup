@@ -33,10 +33,84 @@ const CONFIG = {
     { from: '.env.example', to: '.env' },
   ],
   directoriesToCreate: [
-    // Add directories that should exist
-    // 'logs',
-    // 'tmp',
+    'src',  // Required for TypeScript config
   ],
+};
+
+// Package.json template with all dependencies needed for Claude Code hooks and workflows
+const PACKAGE_JSON_TEMPLATE = {
+  name: 'claude-code-project',
+  version: '1.0.0',
+  description: 'Project configured with Claude Code development tools',
+  type: 'module',
+  scripts: {
+    // Development
+    'dev': 'echo "Add your dev server command here"',
+    'build': 'tsc --build',
+    'start': 'node dist/index.js',
+
+    // Code Quality (used by hooks)
+    'format': 'prettier --write "**/*.{ts,tsx,js,jsx,json,css,scss,md}"',
+    'format:check': 'prettier --check "**/*.{ts,tsx,js,jsx,json,css,scss,md}"',
+    'lint': 'eslint . --ext .ts,.tsx,.js,.jsx',
+    'lint:fix': 'eslint . --ext .ts,.tsx,.js,.jsx --fix',
+    'typecheck': 'tsc --noEmit',
+
+    // Testing
+    'test': 'vitest run',
+    'test:watch': 'vitest',
+    'test:coverage': 'vitest run --coverage',
+    'test:e2e': 'playwright test',
+
+    // Combined commands
+    'check': 'npm run format:check && npm run lint && npm run typecheck',
+    'fix': 'npm run format && npm run lint:fix',
+
+    // Database (if using Prisma)
+    'db:generate': 'prisma generate',
+    'db:migrate': 'prisma migrate dev',
+    'db:push': 'prisma db push',
+    'db:studio': 'prisma studio',
+
+    // Security & Analysis
+    'audit': 'npm audit',
+    'deps:check': 'depcheck',
+    'deps:unused': 'ts-prune',
+    'analyze': 'echo "Add bundle analyzer command here"',
+  },
+  devDependencies: {
+    // TypeScript
+    'typescript': '^5.3.0',
+    '@types/node': '^20.10.0',
+
+    // Code Formatting (required for hooks)
+    'prettier': '^3.2.0',
+
+    // Linting (required for hooks)
+    'eslint': '^8.56.0',
+    '@typescript-eslint/parser': '^6.21.0',
+    '@typescript-eslint/eslint-plugin': '^6.21.0',
+    'eslint-config-prettier': '^9.1.0',
+    'eslint-plugin-prettier': '^5.1.0',
+
+    // Testing
+    'vitest': '^1.2.0',
+    '@vitest/coverage-v8': '^1.2.0',
+    '@playwright/test': '^1.41.0',
+
+    // Code Analysis
+    'depcheck': '^1.4.7',
+    'ts-prune': '^0.10.3',
+
+    // Security
+    'license-checker': '^25.0.1',
+  },
+  dependencies: {
+    // Add your runtime dependencies here
+  },
+  engines: {
+    node: '>=18.0.0',
+  },
 };
 
 // =============================================================================
@@ -515,9 +589,126 @@ function createDirectories() {
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
       log(`Created ${color(dir, 'cyan')} directory`, 'success');
+
+      // Create a placeholder index.ts for src directory
+      if (dir === 'src') {
+        const indexPath = path.join(dirPath, 'index.ts');
+        if (!fs.existsSync(indexPath)) {
+          fs.writeFileSync(indexPath, `// Entry point for your application
+export {};
+`);
+          log(`Created ${color('src/index.ts', 'cyan')} placeholder`, 'success');
+        }
+      }
     } else {
       log(`${color(dir, 'cyan')} already exists`, 'info');
     }
+  }
+}
+
+// =============================================================================
+// ESLINT & PRETTIER CONFIG SETUP
+// =============================================================================
+
+function createConfigFiles() {
+  // ESLint config
+  const eslintConfigPath = path.join(process.cwd(), '.eslintrc.json');
+  if (!fs.existsSync(eslintConfigPath)) {
+    const eslintConfig = {
+      root: true,
+      env: {
+        browser: true,
+        es2022: true,
+        node: true,
+      },
+      extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:prettier/recommended',
+      ],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      plugins: ['@typescript-eslint'],
+      rules: {
+        // Customize rules as needed
+        '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+        '@typescript-eslint/no-explicit-any': 'warn',
+        'no-console': 'warn',
+      },
+      ignorePatterns: ['dist/', 'node_modules/', 'coverage/', '*.config.js'],
+    };
+    fs.writeFileSync(eslintConfigPath, JSON.stringify(eslintConfig, null, 2) + '\n');
+    log(`Created ${color('.eslintrc.json', 'cyan')}`, 'success');
+  }
+
+  // Prettier config
+  const prettierConfigPath = path.join(process.cwd(), '.prettierrc');
+  if (!fs.existsSync(prettierConfigPath)) {
+    const prettierConfig = {
+      semi: true,
+      singleQuote: true,
+      tabWidth: 2,
+      trailingComma: 'es5',
+      printWidth: 100,
+      bracketSpacing: true,
+      arrowParens: 'avoid',
+    };
+    fs.writeFileSync(prettierConfigPath, JSON.stringify(prettierConfig, null, 2) + '\n');
+    log(`Created ${color('.prettierrc', 'cyan')}`, 'success');
+  }
+
+  // Prettier ignore
+  const prettierIgnorePath = path.join(process.cwd(), '.prettierignore');
+  if (!fs.existsSync(prettierIgnorePath)) {
+    const prettierIgnore = `# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+*.min.js
+*.min.css
+`;
+    fs.writeFileSync(prettierIgnorePath, prettierIgnore);
+    log(`Created ${color('.prettierignore', 'cyan')}`, 'success');
+  }
+
+  // TypeScript config (basic)
+  const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
+  if (!fs.existsSync(tsConfigPath)) {
+    const tsConfig = {
+      compilerOptions: {
+        target: 'ES2022',
+        module: 'NodeNext',
+        moduleResolution: 'NodeNext',
+        lib: ['ES2022'],
+        outDir: './dist',
+        rootDir: './src',
+        strict: true,
+        esModuleInterop: true,
+        skipLibCheck: true,
+        forceConsistentCasingInFileNames: true,
+        resolveJsonModule: true,
+        declaration: true,
+        declarationMap: true,
+        sourceMap: true,
+      },
+      include: ['src/**/*'],
+      exclude: ['node_modules', 'dist', 'coverage'],
+    };
+    fs.writeFileSync(tsConfigPath, JSON.stringify(tsConfig, null, 2) + '\n');
+    log(`Created ${color('tsconfig.json', 'cyan')}`, 'success');
   }
 }
 
@@ -533,10 +724,19 @@ function updateGitignore() {
     '',
     '# Generated by setup script - contains secrets',
     '.env',
+    '.env.local',
     '.mcp.json',
     '',
     '# Local settings',
     '.claude/settings.local.json',
+    '',
+    '# Build outputs',
+    'dist/',
+    'build/',
+    'coverage/',
+    '',
+    '# Dependencies',
+    'node_modules/',
   ];
 
   let content = '';
@@ -573,6 +773,127 @@ function updateGitignore() {
 }
 
 // =============================================================================
+// PACKAGE.JSON SETUP
+// =============================================================================
+
+async function setupPackageJson(rl) {
+  header('Package.json Setup');
+
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+  const existingPackageJson = fs.existsSync(packageJsonPath);
+
+  if (existingPackageJson) {
+    log('Existing package.json found', 'info');
+
+    const choice = await askChoice(rl, 'How would you like to handle dependencies?', [
+      { value: 'merge', label: 'Merge', description: 'Add missing Claude Code dependencies to existing package.json' },
+      { value: 'skip', label: 'Skip', description: 'Keep existing package.json unchanged' },
+      { value: 'replace', label: 'Replace', description: 'Replace with Claude Code template (backup created)' },
+    ]);
+
+    if (choice === 'skip') {
+      log('Keeping existing package.json unchanged', 'info');
+      return { created: false, merged: false };
+    }
+
+    if (choice === 'replace') {
+      // Backup existing
+      const backupPath = path.join(process.cwd(), 'package.json.backup');
+      fs.copyFileSync(packageJsonPath, backupPath);
+      log(`Backed up existing package.json to ${color('package.json.backup', 'cyan')}`, 'info');
+
+      // Get project name from existing or use directory name
+      const existing = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      const newPackageJson = {
+        ...PACKAGE_JSON_TEMPLATE,
+        name: existing.name || path.basename(process.cwd()),
+        description: existing.description || PACKAGE_JSON_TEMPLATE.description,
+      };
+
+      fs.writeFileSync(packageJsonPath, JSON.stringify(newPackageJson, null, 2) + '\n');
+      log(`Created new ${color('package.json', 'cyan')} with Claude Code dependencies`, 'success');
+      return { created: true, merged: false };
+    }
+
+    if (choice === 'merge') {
+      const existing = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+      // Merge devDependencies
+      existing.devDependencies = {
+        ...PACKAGE_JSON_TEMPLATE.devDependencies,
+        ...existing.devDependencies, // Existing versions take precedence
+      };
+
+      // Merge scripts (only add missing ones)
+      existing.scripts = existing.scripts || {};
+      for (const [name, cmd] of Object.entries(PACKAGE_JSON_TEMPLATE.scripts)) {
+        if (!existing.scripts[name]) {
+          existing.scripts[name] = cmd;
+        }
+      }
+
+      // Add engines if not present
+      if (!existing.engines) {
+        existing.engines = PACKAGE_JSON_TEMPLATE.engines;
+      }
+
+      fs.writeFileSync(packageJsonPath, JSON.stringify(existing, null, 2) + '\n');
+      log(`Merged Claude Code dependencies into ${color('package.json', 'cyan')}`, 'success');
+
+      // Show what was added
+      const addedDeps = Object.keys(PACKAGE_JSON_TEMPLATE.devDependencies).filter(
+        dep => !existing.devDependencies?.[dep]
+      );
+      if (addedDeps.length > 0) {
+        console.log(color('\n  Added devDependencies:', 'dim'));
+        addedDeps.slice(0, 5).forEach(dep => console.log(`    ${ICONS.bullet} ${dep}`));
+        if (addedDeps.length > 5) {
+          console.log(`    ${color(`... and ${addedDeps.length - 5} more`, 'dim')}`);
+        }
+      }
+
+      return { created: false, merged: true };
+    }
+  } else {
+    // No existing package.json - create new one
+    const createNew = await askYesNo(
+      rl,
+      'No package.json found. Create one with Claude Code dependencies?',
+      true
+    );
+
+    if (!createNew) {
+      log('Skipping package.json creation', 'info');
+      log(color('Warning: Hooks requiring npm packages will not work!', 'yellow'), 'warning');
+      return { created: false, merged: false };
+    }
+
+    // Get project name
+    const defaultName = path.basename(process.cwd()).toLowerCase().replace(/\s+/g, '-');
+    const projectName = await ask(rl, `Project name`, defaultName);
+
+    const newPackageJson = {
+      ...PACKAGE_JSON_TEMPLATE,
+      name: projectName,
+    };
+
+    fs.writeFileSync(packageJsonPath, JSON.stringify(newPackageJson, null, 2) + '\n');
+    log(`Created ${color('package.json', 'cyan')} with Claude Code dependencies`, 'success');
+
+    // Show included tools
+    console.log(color('\n  Included tools:', 'dim'));
+    console.log(`    ${ICONS.bullet} prettier - Code formatting (for hooks)`);
+    console.log(`    ${ICONS.bullet} eslint - Linting (for hooks)`);
+    console.log(`    ${ICONS.bullet} typescript - Type checking`);
+    console.log(`    ${ICONS.bullet} vitest - Unit testing`);
+    console.log(`    ${ICONS.bullet} playwright - E2E testing`);
+    console.log(`    ${ICONS.bullet} depcheck, ts-prune - Code analysis`);
+
+    return { created: true, merged: false };
+  }
+}
+
+// =============================================================================
 // DEPENDENCY INSTALLATION
 // =============================================================================
 
@@ -583,11 +904,12 @@ async function installDependencies(rl, packageManagers) {
     return;
   }
 
-  header('Dependencies');
+  header('Installing Dependencies');
 
-  const install = await askYesNo(rl, 'Install npm dependencies?', true);
+  const install = await askYesNo(rl, 'Install npm dependencies now?', true);
   if (!install) {
     log('Skipping dependency installation', 'info');
+    log(color('Run "npm install" later to enable hooks', 'yellow'), 'warning');
     return;
   }
 
@@ -600,6 +922,7 @@ async function installDependencies(rl, packageManagers) {
   }
 
   log(`Installing dependencies with ${pm}...`, 'info');
+  console.log(color('  (This may take a minute)', 'dim'));
 
   try {
     const installCmd = pm === 'npm' ? 'npm install' : `${pm} install`;
@@ -609,8 +932,10 @@ async function installDependencies(rl, packageManagers) {
       shell: true,
     });
     log('Dependencies installed successfully', 'success');
+    log(color('Hooks are now fully functional!', 'green'), 'success');
   } catch (error) {
     log(`Failed to install dependencies: ${error.message}`, 'error');
+    log('Run "npm install" manually to complete setup', 'warning');
   }
 }
 
@@ -633,16 +958,38 @@ function showSummary(results) {
     console.log(`  ${ICONS.bullet} Environment: ${color('.env file created', 'green')}`);
   }
 
+  if (results.packageJson?.created) {
+    console.log(`  ${ICONS.bullet} Package.json: ${color('created with all dependencies', 'green')}`);
+  } else if (results.packageJson?.merged) {
+    console.log(`  ${ICONS.bullet} Package.json: ${color('merged Claude Code dependencies', 'green')}`);
+  }
+
   console.log(`  ${ICONS.bullet} Gitignore: ${color('secrets excluded', 'green')}`);
+
+  // Check if hooks will work
+  const nodeModulesExist = fs.existsSync(path.join(process.cwd(), 'node_modules'));
+  if (nodeModulesExist) {
+    console.log(`  ${ICONS.bullet} Hooks: ${color('ready (prettier, eslint installed)', 'green')}`);
+  } else {
+    console.log(`  ${ICONS.bullet} Hooks: ${color('run "npm install" to enable', 'yellow')}`);
+  }
 
   console.log('\n' + color('Next steps:', 'bright'));
   console.log(`  1. Review ${color('.mcp.json', 'cyan')} and ${color('.env', 'cyan')} files`);
   console.log(`  2. Add any missing API keys`);
-  console.log(`  3. Start Claude Code: ${color('claude', 'cyan')}`);
+  if (!nodeModulesExist) {
+    console.log(`  3. Run ${color('npm install', 'cyan')} to enable auto-formatting hooks`);
+    console.log(`  4. Start Claude Code: ${color('claude', 'cyan')}`);
+  } else {
+    console.log(`  3. Start Claude Code: ${color('claude', 'cyan')}`);
+  }
 
   console.log('\n' + color('Useful commands:', 'bright'));
-  console.log(`  ${color('claude', 'cyan')}           ${ICONS.arrow} Start Claude Code`);
-  console.log(`  ${color('node setup.js', 'cyan')}    ${ICONS.arrow} Run this setup again`);
+  console.log(`  ${color('claude', 'cyan')}              ${ICONS.arrow} Start Claude Code`);
+  console.log(`  ${color('npm run fix', 'cyan')}         ${ICONS.arrow} Format + lint all files`);
+  console.log(`  ${color('npm run check', 'cyan')}       ${ICONS.arrow} Verify code quality`);
+  console.log(`  ${color('npm test', 'cyan')}            ${ICONS.arrow} Run tests`);
+  console.log(`  ${color('node setup.js', 'cyan')}       ${ICONS.arrow} Run this setup again`);
 
   console.log('');
 }
@@ -686,6 +1033,15 @@ async function main() {
 
     // Create directories
     createDirectories();
+
+    // Setup package.json (required for hooks to work)
+    results.packageJson = await setupPackageJson(rl);
+
+    // Create config files for ESLint, Prettier, TypeScript
+    if (results.packageJson?.created || results.packageJson?.merged) {
+      subheader('Creating Config Files');
+      createConfigFiles();
+    }
 
     // Install dependencies
     await installDependencies(rl, prereqs.packageManagers);
