@@ -159,6 +159,9 @@ Complete feature development from planning through deployment-ready PR.
 **Agent**: Main context
 **Duration**: 5-10 minutes
 
+**Auto-Gate**: 🔄 **PR Review Checklist Auto-Triggered**
+> Before creating the PR, automatically run through `.claude/checklists/pr-review.md`
+
 **Actions**:
 1. Stage all changes
 2. Create conventional commit

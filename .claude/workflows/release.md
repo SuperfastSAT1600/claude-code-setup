@@ -171,6 +171,9 @@ npm version [major|minor|patch]
 **Agent**: Main context
 **Duration**: 15-30 minutes
 
+**Auto-Gate**: 🔄 **Pre-Release Checklist Auto-Triggered**
+> Before deploying to production, automatically run through `.claude/checklists/pre-release.md`
+
 **Actions**:
 1. Deploy to production
 2. Monitor deployment

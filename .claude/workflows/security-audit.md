@@ -219,6 +219,9 @@ Brief overview of findings and overall security posture.
 **Agent**: Main context + `security-reviewer`
 **Duration**: Variable
 
+**Auto-Gate**: 🔄 **Security Audit Checklist Auto-Triggered**
+> After fixes are implemented, automatically run through `.claude/checklists/security-audit.md` for verification
+
 **For each finding**:
 1. Implement fix
 2. Write regression test
