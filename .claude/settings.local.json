@@ -41,7 +41,9 @@
       "Bash( ls -1 templates/*.*)",
       "Bash( ls -1 workflows/*.md)",
       "Bash( ls -1 agents/*.md)",
-      "Bash( ls -1 rules/*.md)"
+      "Bash( ls -1 rules/*.md)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr edit:*)"
     ]
   },
   "model": "opus",

@@ -602,3 +602,11 @@ When implementing AI features, provide:
 6. **Structured Output**: Validate LLM outputs with schemas
 7. **Prompt Testing**: Version and test prompts systematically
 8. **Security**: Never expose API keys, sanitize user input
+
+---
+
+## Resources
+
+- **Backend Patterns**: `.claude/skills/backend-patterns.md`
+- **Security Rules**: `.claude/rules/security.md`
+- **Error Handling**: `.claude/rules/error-handling.md`

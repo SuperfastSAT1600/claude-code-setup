@@ -508,4 +508,12 @@ Want me to run the tests or add more scenarios?
 
 ---
 
+## Resources
+
+- **Test Template**: `.claude/templates/test.spec.ts.template`
+- **TDD Workflow**: `.claude/skills/tdd-workflow.md`
+- **Accessibility Audit**: `.claude/checklists/accessibility-audit.md`
+
+---
+
 Remember: E2E tests verify the entire system works together from the user's perspective!

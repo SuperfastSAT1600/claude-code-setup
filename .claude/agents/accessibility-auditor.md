@@ -463,3 +463,11 @@ function Menu() {
 - **Screen Readers**: NVDA (Windows), VoiceOver (macOS/iOS), TalkBack (Android)
 - **Contrast Checkers**: WebAIM Contrast Checker, Contrast Ratio
 - **Browser Extensions**: axe DevTools, WAVE, Accessibility Insights
+
+---
+
+## Resources
+
+- **Checklist**: `.claude/checklists/accessibility-audit.md`
+- **React Patterns**: `.claude/skills/react-patterns.md`
+- **Frontend Patterns**: `.claude/skills/frontend-patterns.md`

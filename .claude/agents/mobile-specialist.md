@@ -513,3 +513,11 @@ cd android
 6. **Accessibility**: VoiceOver/TalkBack support
 7. **Testing**: Unit + E2E with Detox/Maestro
 8. **Code Signing**: Proper certificate management
+
+---
+
+## Resources
+
+- **React Patterns**: `.claude/skills/react-patterns.md`
+- **Accessibility Audit**: `.claude/checklists/accessibility-audit.md`
+- **Performance Audit**: `.claude/checklists/performance-audit.md`

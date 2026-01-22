@@ -618,3 +618,10 @@ localStorage.debug = 'socket.io-client:*';
 - **Pusher**: Managed WebSocket service
 - **Ably**: Real-time messaging platform
 - **Redis**: Message broker for scaling
+
+---
+
+## Resources
+
+- **Skill Reference**: `.claude/skills/websocket-patterns.md`
+- **Backend Patterns**: `.claude/skills/backend-patterns.md`

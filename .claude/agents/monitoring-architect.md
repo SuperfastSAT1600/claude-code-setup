@@ -356,3 +356,11 @@ When setting up monitoring, provide:
 6. **Sensitive Data Redaction**: Never log passwords, tokens, PII
 7. **Cardinality Control**: Limit label values to prevent metric explosion
 8. **Health Check Depth**: Check all dependencies, not just "is process running"
+
+---
+
+## Resources
+
+- **Backend Patterns**: `.claude/skills/backend-patterns.md`
+- **Deployment Checklist**: `.claude/checklists/deployment-checklist.md`
+- **Performance Rules**: `.claude/rules/performance.md`

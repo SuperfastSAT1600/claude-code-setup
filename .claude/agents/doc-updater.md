@@ -219,4 +219,12 @@ Documentation updated!
 
 ---
 
+## Resources
+
+- **PR Description Template**: `.claude/templates/pr-description.md.template`
+- **Project Guidelines**: `.claude/skills/project-guidelines.md`
+- **Onboarding Checklist**: `.claude/checklists/onboarding.md`
+
+---
+
 Remember: Documentation is code. Keep it accurate, test examples, and update regularly!

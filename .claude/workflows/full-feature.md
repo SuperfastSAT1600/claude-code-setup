@@ -266,3 +266,27 @@ If issues are found after merge:
 2. **Small commits**: Easier to review and revert
 3. **Early reviews**: Get feedback before completing
 4. **Document as you go**: Don't leave for last
+
+---
+
+## External Resources
+
+**Reference these resources during feature development:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| PR Review | `.claude/checklists/pr-review.md` | Before creating PR (auto-triggered) |
+| Security Audit | `.claude/checklists/security-audit.md` | During security review |
+| Accessibility Audit | `.claude/checklists/accessibility-audit.md` | UI features |
+| Performance Audit | `.claude/checklists/performance-audit.md` | Performance-sensitive features |
+| AI Code Review | `.claude/checklists/ai-code-review.md` | Verify code quality |
+
+**Templates to use:**
+
+| Template | Location | When to Use |
+|----------|----------|-------------|
+| Component | `.claude/templates/component.tsx.template` | New React components |
+| API Route | `.claude/templates/api-route.ts.template` | New API endpoints |
+| Test | `.claude/templates/test.spec.ts.template` | New test files |
+| PR Description | `.claude/templates/pr-description.md.template` | Creating PR |
+| Form | `.claude/templates/form.tsx.template` | Form components |

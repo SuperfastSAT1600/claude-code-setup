@@ -283,3 +283,21 @@ You will:
 2. Report completion or blockers
 3. Escalate specialist needs
 4. Provide clean, working code
+
+---
+
+## Resources
+
+### Templates
+- **Component**: `.claude/templates/component.tsx.template`
+- **API Route**: `.claude/templates/api-route.ts.template`
+- **Service**: `.claude/templates/service.ts.template`
+- **Hook**: `.claude/templates/hook.ts.template`
+- **Form**: `.claude/templates/form.tsx.template`
+- **Test**: `.claude/templates/test.spec.ts.template`
+
+### Skills
+- **React Patterns**: `.claude/skills/react-patterns.md`
+- **Backend Patterns**: `.claude/skills/backend-patterns.md`
+- **Coding Standards**: `.claude/skills/coding-standards.md`
+- **Next.js Patterns**: `.claude/skills/nextjs-patterns.md`

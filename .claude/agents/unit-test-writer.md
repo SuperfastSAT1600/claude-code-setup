@@ -367,3 +367,11 @@ describe('calculateTotal', () => {
 3. **Determinism**: Same result every run
 4. **Readability**: Tests serve as documentation
 5. **Maintainability**: Easy to update when code changes
+
+---
+
+## Resources
+
+- **Test Template**: `.claude/templates/test.spec.ts.template`
+- **TDD Workflow**: `.claude/skills/tdd-workflow.md`
+- **Testing Rules**: `.claude/rules/testing.md`

@@ -496,6 +496,7 @@ User (1:N) Comments
 |----------|----------|-------------|
 | REST API Design | `.claude/skills/rest-api-design.md` | Comprehensive REST patterns |
 | GraphQL Patterns | `.claude/skills/graphql-patterns.md` | GraphQL schema design |
+| Node.js Patterns | `.claude/skills/nodejs-patterns.md` | Node.js backend patterns |
 | API Design Rules | `.claude/rules/api-design.md` | Standards and conventions |
 | API Route Template | `.claude/templates/api-route.ts.template` | Creating new endpoints |
 | Backend Patterns | `.claude/skills/backend-patterns.md` | Service layer patterns |

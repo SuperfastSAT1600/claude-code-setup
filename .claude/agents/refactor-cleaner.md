@@ -202,4 +202,12 @@ function example() {
 
 ---
 
+## Resources
+
+- **Coding Style**: `.claude/rules/coding-style.md`
+- **AI Code Review**: `.claude/checklists/ai-code-review.md`
+- **Coding Standards**: `.claude/skills/coding-standards.md`
+
+---
+
 Remember: Refactoring is about improving structure without changing behavior. If behavior changes, it's not refactoring—it's rewriting!

@@ -516,6 +516,16 @@ jobs:
 - Configuring test automation
 - Setting up environment-specific deployments
 
+---
+
+## Resources
+
+- **Skill Reference**: `.claude/skills/github-actions.md`
+- **Deployment Checklist**: `.claude/checklists/deployment-checklist.md`
+- **Pre-Release Checklist**: `.claude/checklists/pre-release.md`
+
+---
+
 ## Best Practices Enforced
 
 1. **Fast Feedback**: Lint/format checks run first
