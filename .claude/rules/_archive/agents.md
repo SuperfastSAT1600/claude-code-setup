@@ -360,37 +360,13 @@ After delegation:
 
 ---
 
-## Template Provision During Delegation
-
-**When delegating, provide relevant templates to agents:**
-
-| Agent | Provide Templates |
-|-------|------------------|
-| implementer | component.tsx, api-route.ts, service.ts, hook.ts |
-| auth-specialist | guard.ts, middleware.ts, service.ts, error-handler.ts |
-| api-designer | api-route.ts |
-| database-architect | migration.sql |
-| migration-specialist | migration.sql |
-| unit-test-writer | test.spec.ts |
-| integration-test-writer | test.spec.ts |
-
-**Provide relevant skills based on task:**
-
-| Task Type | Provide Skills |
-|-----------|---------------|
-| React/Frontend | react-patterns.md, nextjs-patterns.md |
-| API/Backend | rest-api-design.md, backend-patterns.md |
-| Database | prisma-patterns.md |
-| Testing | tdd-workflow.md |
-| Auth | security rules + backend-patterns.md |
-
----
-
 ## Resources
 
-- Agent Architecture: See .claude/agents/ directory
-- Commands: See .claude/commands/ directory
-- Skills: See .claude/skills/ directory
-- Templates: See .claude/templates/ directory
-- Checklists: See .claude/checklists/ directory
-- Workflows: See .claude/workflows/ directory
+> **Note**: Each agent's `.claude/agents/[agent-name].md` file contains its own Resources section with relevant templates, skills, and checklists. This decentralized approach ensures agents are self-contained and don't depend on orchestrator context passing.
+
+- **Agent Definitions**: `.claude/agents/` - Each agent has its own resources
+- **Commands**: `.claude/commands/` - User-invocable workflows
+- **Skills**: `.claude/skills/` - Pattern references for agents
+- **Templates**: `.claude/templates/` - Code scaffolding
+- **Checklists**: `.claude/checklists/` - Quality gates
+- **Workflows**: `.claude/workflows/` - Multi-step processes

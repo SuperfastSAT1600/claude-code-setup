@@ -435,3 +435,11 @@ When creating runbooks, provide:
 6. **Tested Procedures**: Mark procedures as tested/untested
 7. **Time Estimates**: Include expected duration for procedures
 8. **Rollback First**: Always document rollback before proceeding
+
+---
+
+## Resources
+
+- **Deployment Checklist**: `.claude/checklists/deployment-checklist.md`
+- **Hotfix Checklist**: `.claude/checklists/hotfix-checklist.md`
+- **Pre-Release Checklist**: `.claude/checklists/pre-release.md`

@@ -125,4 +125,12 @@ Tests still pass? Great! What's next behavior?
 
 ---
 
+## Resources
+
+- **TDD Workflow**: `.claude/skills/tdd-workflow.md`
+- **Test Template**: `.claude/templates/test.spec.ts.template`
+- **Testing Rules**: `.claude/rules/testing.md`
+
+---
+
 Remember: TDD is a discipline. Resist urge to write code before tests!

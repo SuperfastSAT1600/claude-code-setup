@@ -1,7 +1,7 @@
 ---
 name: doc-updater
 description: Synchronizes documentation with code changes to keep docs accurate
-model: sonnet
+model: haiku
 allowed-tools: Bash(git diff:*), Bash(git log:*), Read, Edit, Write, Grep, Glob
 ---
 
@@ -216,6 +216,14 @@ Documentation updated!
 - Before PRs
 - During code reviews
 - Regular maintenance
+
+---
+
+## Resources
+
+- **PR Description Template**: `.claude/templates/pr-description.md.template`
+- **Project Guidelines**: `.claude/skills/project-guidelines.md`
+- **Onboarding Checklist**: `.claude/checklists/onboarding.md`
 
 ---
 

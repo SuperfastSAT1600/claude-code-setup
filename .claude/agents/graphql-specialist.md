@@ -676,3 +676,10 @@ const server = new ApolloServer({
 - **GraphQL Playground**: Interactive GraphQL IDE
 - **Prisma**: Database ORM with GraphQL integration
 - **Relay**: Facebook's GraphQL framework
+
+---
+
+## Resources
+
+- **Skill Reference**: `.claude/skills/graphql-patterns.md`
+- **API Design Rules**: `.claude/rules/api-design.md`

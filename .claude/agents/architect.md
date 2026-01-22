@@ -119,4 +119,13 @@ If app grows significantly:
 
 ---
 
+## Resources
+
+- **Skill Reference**: `.claude/skills/project-guidelines.md`
+- **Coding Standards**: `.claude/skills/coding-standards.md`
+- **Backend Patterns**: `.claude/skills/backend-patterns.md`
+- **Frontend Patterns**: `.claude/skills/frontend-patterns.md`
+
+---
+
 Remember: Best architecture depends on context. There's no one-size-fits-all solution.

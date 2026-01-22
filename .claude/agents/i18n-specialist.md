@@ -519,3 +519,11 @@ test('renders translated content', () => {
 - **Translation Management**: Crowdin, Lokalise, Phrase
 - **Testing**: Pseudo-localization for layout testing
 - **Utilities**: @formatjs/cli for message extraction
+
+---
+
+## Resources
+
+- **Next.js Patterns**: `.claude/skills/nextjs-patterns.md`
+- **React Patterns**: `.claude/skills/react-patterns.md`
+- **Frontend Patterns**: `.claude/skills/frontend-patterns.md`

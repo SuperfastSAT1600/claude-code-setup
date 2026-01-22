@@ -418,3 +418,10 @@ RUN apt-get install -y package2
 5. **Layer caching**: Optimize for build cache
 6. **Security scanning**: Regular vulnerability scans
 7. **.dockerignore**: Exclude unnecessary files
+
+---
+
+## Resources
+
+- **Deployment Checklist**: `.claude/checklists/deployment-checklist.md`
+- **Security Rules**: `.claude/rules/security.md`

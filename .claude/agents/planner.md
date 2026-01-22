@@ -212,4 +212,12 @@ Users can request password reset via email link. Link expires after 1 hour.
 
 ---
 
+## Resources
+
+- **Project Guidelines**: `.claude/skills/project-guidelines.md`
+- **Coding Standards**: `.claude/skills/coding-standards.md`
+- **Testing Rules**: `.claude/rules/testing.md`
+
+---
+
 Remember: Your plan is a roadmap, not a rigid script. Implementation may reveal better approaches. The goal is to provide clarity and direction while remaining flexible.

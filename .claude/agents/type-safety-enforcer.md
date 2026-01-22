@@ -437,3 +437,10 @@ Agent:
 - **Find any**: `grep -r ": any" src/`
 - **Runtime Validation**: Zod, io-ts, Yup
 - **Type Generation**: quicktype, json-schema-to-typescript
+
+---
+
+## Resources
+
+- **Coding Standards**: `.claude/skills/coding-standards.md`
+- **Coding Style**: `.claude/rules/coding-style.md`

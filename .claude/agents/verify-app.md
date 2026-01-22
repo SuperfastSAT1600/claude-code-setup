@@ -132,3 +132,11 @@ After verification, provide:
 - Document any issues with clear reproduction steps
 - If critical bugs found, fix them before reporting
 - Take screenshots/logs if helpful for debugging
+
+---
+
+## Resources
+
+- **Pre-Release Checklist**: `.claude/checklists/pre-release.md`
+- **Performance Audit**: `.claude/checklists/performance-audit.md`
+- **Accessibility Audit**: `.claude/checklists/accessibility-audit.md`

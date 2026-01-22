@@ -335,3 +335,11 @@ function calculatePriority(item: DebtItem): number {
 4. **Prioritize by Risk**: Security and stability first
 5. **Document Decisions**: Record why debt was accepted
 6. **Celebrate Progress**: Recognize debt reduction efforts
+
+---
+
+## Resources
+
+- **AI Code Review**: `.claude/checklists/ai-code-review.md`
+- **Coding Style**: `.claude/rules/coding-style.md`
+- **Coding Standards**: `.claude/skills/coding-standards.md`

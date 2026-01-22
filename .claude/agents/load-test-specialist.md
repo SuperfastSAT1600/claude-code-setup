@@ -493,6 +493,17 @@ Agent:
 
 ## Resources
 
+### Internal References
+- **Skills**: `.claude/skills/backend-patterns.md` - API and database patterns
+- **Checklists**: `.claude/checklists/performance-audit.md` - Performance review checklist
+- **Rules**: `.claude/rules/performance.md` - Performance optimization rules
+
+### Related Agents
+- **performance-optimizer**: For fixing identified bottlenecks
+- **database-architect**: For database-related performance issues
+- **monitoring-architect**: For setting up observability
+
+### External Documentation
 - k6 Documentation: https://k6.io/docs/
 - Artillery Documentation: https://www.artillery.io/docs
 - Performance Testing Best Practices: https://k6.io/docs/testing-guides/

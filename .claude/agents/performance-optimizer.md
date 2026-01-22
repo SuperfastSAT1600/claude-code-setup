@@ -262,3 +262,12 @@ Agent:
 - **Backend**: Node.js --inspect, clinic.js, autocannon
 - **Database**: EXPLAIN ANALYZE, pg_stat_statements
 - **Monitoring**: New Relic, Datadog, Sentry Performance
+
+---
+
+## Resources
+
+- **Checklist**: `.claude/checklists/performance-audit.md`
+- **Performance Rules**: `.claude/rules/performance.md`
+- **Frontend Patterns**: `.claude/skills/frontend-patterns.md`
+- **Backend Patterns**: `.claude/skills/backend-patterns.md`

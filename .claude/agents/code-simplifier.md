@@ -94,3 +94,11 @@ After simplification, report:
 - Make simplifications directly (don't just suggest)
 - Run tests after changes to ensure nothing broke
 - Commit with message: "Simplify code - remove unnecessary complexity"
+
+---
+
+## Resources
+
+- **AI Code Review**: `.claude/checklists/ai-code-review.md`
+- **Coding Style**: `.claude/rules/coding-style.md`
+- **Coding Standards**: `.claude/skills/coding-standards.md`

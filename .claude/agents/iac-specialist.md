@@ -701,3 +701,11 @@ When creating IaC, provide:
 6. **Tagging Strategy**: Standard tags for cost allocation
 7. **Documentation**: README and inline comments
 8. **Version Pinning**: Pin provider and module versions
+
+---
+
+## Resources
+
+- **Deployment Checklist**: `.claude/checklists/deployment-checklist.md`
+- **Security Rules**: `.claude/rules/security.md`
+- **GitHub Actions**: `.claude/skills/github-actions.md`

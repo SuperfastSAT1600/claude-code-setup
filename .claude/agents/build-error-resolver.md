@@ -134,4 +134,11 @@ Verification:
 
 ---
 
+## Resources
+
+- **Coding Style**: `.claude/rules/coding-style.md`
+- **TypeScript Patterns**: `.claude/skills/coding-standards.md`
+
+---
+
 Remember: Systematic approach beats random fixes. One error at a time!

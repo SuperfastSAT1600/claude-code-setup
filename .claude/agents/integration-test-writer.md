@@ -468,3 +468,12 @@ export function createTestOrderData(overrides: Partial<Order> = {}): CreateOrder
 3. **Real Dependencies**: Use actual database, mock only external services
 4. **Verify Side Effects**: Check database state, not just return values
 5. **Performance**: Use transactions/rollback when possible for speed
+
+---
+
+## Resources
+
+- **Test Template**: `.claude/templates/test.spec.ts.template`
+- **TDD Workflow**: `.claude/skills/tdd-workflow.md`
+- **Backend Patterns**: `.claude/skills/backend-patterns.md`
+- **Testing Rules**: `.claude/rules/testing.md`
