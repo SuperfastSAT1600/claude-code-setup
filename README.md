@@ -1,6 +1,6 @@
 # Claude Code Workflow Template
 
-A ready-to-use template implementing the Boris Cherny workflow for Claude Code, featuring **18 specialized agents**, **15 powerful commands**, **5 orchestrated workflows**, **6 review checklists**, **5 code templates**, and comprehensive documentation with easy feature discovery.
+A ready-to-use template implementing the Boris Cherny workflow for Claude Code, featuring **34 specialized agents**, **20 powerful commands**, **5 orchestrated workflows**, **13 review checklists**, **16 code templates**, **20 skill references**, and **17 auto-enforced rules**.
 
 ---
 
@@ -57,56 +57,89 @@ cp .env.example .env
 
 ## What's Included
 
-### 📋 Feature Discovery
-- **[.claude/INDEX.md](.claude/INDEX.md)** - Quick reference for all features (300 lines) - **Start here!**
-- **[.claude/GUIDE.md](.claude/GUIDE.md)** - Comprehensive how-to guide (950 lines) - Consolidated all README files
-
-### ⚡ Custom Commands (15)
+### ⚡ Custom Commands (20)
 - `/full-feature` - Complete feature cycle (plan → test → PR)
+- `/quick-fix` - Fast bug fix workflow
 - `/commit-push-pr` - Commit, push, and create PR workflow
 - `/review-changes` - Comprehensive code review
 - `/test-and-build` - Run tests and build with auto-fix
+- `/test-coverage` - Analyze and improve test coverage
 - `/lint-fix` - ESLint + Prettier + TypeScript
 - `/type-check` - Strict TypeScript checking
+- `/build-fix` - Automatically fix build errors
+- `/refactor-clean` - Remove dead code, modernize patterns
 - `/spike` - Time-boxed technical research
+- `/plan` - Create detailed implementation plans
+- `/tdd` - Test-Driven Development workflow
 - `/new-component` - Scaffold React component + tests + stories
 - `/dead-code` - Find unused code/exports/dependencies
 - `/audit-deps` - Dependency security audit
 - `/create-migration` - Generate database migration with rollback
-- Plus: `/tdd`, `/plan`, `/e2e`, `/security-review`, `/update-docs`
+- `/e2e` - Generate and run end-to-end tests
+- `/security-review` - Comprehensive security audit
+- `/update-docs` - Sync documentation with code changes
 
-### 🤖 Custom Agents (18)
-- **api-designer** - REST/GraphQL API design (opus)
-- **code-reviewer** - Comprehensive code review (opus)
-- **unit-test-writer** - Generate unit tests with AAA pattern (sonnet)
-- **integration-test-writer** - API/service integration tests (sonnet)
-- **graphql-specialist** - GraphQL schema, resolvers, DataLoader (sonnet)
-- **websocket-specialist** - Real-time Socket.io patterns (sonnet)
-- **i18n-specialist** - Internationalization with next-intl (sonnet)
-- **accessibility-auditor** - WCAG 2.1 AA compliance (sonnet)
-- **load-test-specialist** - k6/Artillery performance testing (sonnet)
-- **ci-cd-specialist** - GitHub Actions pipelines (sonnet)
-- **docker-specialist** - Containerization & optimization (sonnet)
-- **auth-specialist** - OAuth, JWT, MFA implementation (opus)
-- **database-architect** - Schema design & optimization (opus)
-- **performance-optimizer** - Profile and optimize bottlenecks (sonnet)
-- **migration-specialist** - Zero-downtime database migrations (sonnet)
-- **type-safety-enforcer** - Eliminate `any` types (haiku)
-- **dependency-manager** - Package management & audits (haiku)
-- **tech-debt-analyzer** - Technical debt prioritization (sonnet)
+### 🤖 Custom Agents (34)
+
+**Core Workflow:**
+- **planner** - Implementation planning and task breakdown
+- **architect** - System design and architectural decisions
+- **implementer** - Feature implementation following plans
+- **code-reviewer** - Comprehensive code quality review
+- **security-reviewer** - OWASP security audits
+- **verify-app** - End-to-end application verification
+
+**Code Quality:**
+- **code-simplifier** - Remove unnecessary complexity
+- **refactor-cleaner** - Modernize legacy code, remove dead code
+- **tech-debt-analyzer** - Technical debt prioritization
+- **type-safety-enforcer** - Eliminate `any` types
+
+**Testing:**
+- **tdd-guide** - Test-Driven Development workflow
+- **unit-test-writer** - Unit tests with AAA pattern
+- **integration-test-writer** - API/service integration tests
+- **e2e-runner** - Playwright/Cypress E2E tests
+- **load-test-specialist** - k6/Artillery performance testing
+
+**Development:**
+- **api-designer** - REST/GraphQL API design and documentation
+- **database-architect** - Schema design & optimization
+- **auth-specialist** - OAuth, JWT, MFA implementation
+- **graphql-specialist** - GraphQL schema and resolvers
+- **websocket-specialist** - Real-time Socket.io patterns
+
+**Operations:**
+- **build-error-resolver** - Fix build errors iteratively
+- **ci-cd-specialist** - GitHub Actions pipelines
+- **docker-specialist** - Containerization & optimization
+- **migration-specialist** - Zero-downtime database migrations
+- **dependency-manager** - Package management & audits
+
+**Specialized:**
+- **accessibility-auditor** - WCAG 2.1 AA compliance
+- **i18n-specialist** - Internationalization support
+- **doc-updater** - Sync documentation with code
+- **performance-optimizer** - Profile and optimize bottlenecks
+- **monitoring-architect** - Logging, metrics, and alerting
+- **runbook-writer** - Deployment and troubleshooting guides
+- **mobile-specialist** - React Native/Flutter development
+- **ai-integration-specialist** - LLM APIs, RAG, prompt engineering
+- **iac-specialist** - Terraform, CloudFormation infrastructure
 
 ### 📂 Organization
 - **5 Orchestrated Workflows** - full-feature, bug-fix, refactor, release, security-audit
-- **6 Review Checklists** - PR review, security, performance, accessibility, pre-release, onboarding
-- **5 Code Templates** - component, API route, test, migration, PR description
-- **5 Automation Scripts** - pre-commit, test gating, security logging, auto-format, sync-deps
+- **13 Review Checklists** - PR review, security, performance, accessibility, pre-release, onboarding, ai-code-review, database-migration, dependency-audit, deployment, hotfix, build-errors, e2e-testing
+- **16 Code Templates** - component, API route, test, migration, PR description, error-handler, form, guard, hook, middleware, service, API documentation, GitHub workflow, Dockerfile, Playwright config, README
+- **20 Skill References** - React, Next.js, REST API, GraphQL, WebSocket, TDD, backend patterns, frontend patterns, coding standards, Node.js, Prisma, GitHub Actions, project guidelines, user intent, prompt engineering, RAG patterns, auth patterns, database patterns, Docker patterns, documentation patterns
+- **17 Auto-Enforced Rules** - security, coding style, testing, git workflow, performance, API design, code review, error handling, documentation, hooks, patterns, context management, orchestrator, agents, AI code detection, intent routing, non-technical mode
 
 ### 📚 Documentation
-- [.claude/INDEX.md](.claude/INDEX.md) - Quick reference (start here for feature discovery!)
-- [.claude/GUIDE.md](.claude/GUIDE.md) - Comprehensive consolidated guide
 - [QUICKSTART.md](QUICKSTART.md) - Daily workflow quick reference (5-minute setup)
 - [WORKFLOW.md](WORKFLOW.md) - **Complete workflow guide (1500+ lines)** with decision trees and real-world examples
 - [CLAUDE.md](CLAUDE.md) - Team guidelines (customize for your project)
+- `.claude/rules/` - Auto-enforced guidelines (17 rule files)
+- `.claude/skills/` - Pattern references (20 skill files)
 
 ### ⚙️ Configuration
 - `.claude/settings.json` - Shared team settings (49 pre-approved operations, hooks)
@@ -119,17 +152,16 @@ cp .env.example .env
 
 ## Getting Started
 
-1. **Discover Features**: [.claude/INDEX.md](.claude/INDEX.md) - Quick reference to all 18 agents, 15 commands (2-minute scan)
-2. **Learn How-To**: [.claude/GUIDE.md](.claude/GUIDE.md) - Comprehensive consolidated guide (950 lines)
-3. **Quick Start**: [QUICKSTART.md](QUICKSTART.md) - Get started in 5 minutes
-4. **Master the Workflow**: [WORKFLOW.md](WORKFLOW.md) - **Complete 1500+ line guide** with:
+1. **Quick Start**: [QUICKSTART.md](QUICKSTART.md) - Get started in 5 minutes
+2. **Master the Workflow**: [WORKFLOW.md](WORKFLOW.md) - **Complete 1500+ line guide** with:
    - Decision trees for "I need to..." scenarios
    - Command and agent selection matrices
    - Real-world authentication implementation example
    - MCP server integration guide
    - Progressive adoption roadmap
-5. **Customize Guidelines**: Edit [CLAUDE.md](CLAUDE.md) for your project specifics
-6. **Try a Command**: Run `/full-feature` or `/commit-push-pr` in Claude Code
+3. **Customize Guidelines**: Edit [CLAUDE.md](CLAUDE.md) for your project specifics
+4. **Explore Resources**: Check `.claude/rules/` and `.claude/skills/` for patterns
+5. **Try a Command**: Run `/full-feature` or `/commit-push-pr` in Claude Code
 
 ---
 
@@ -173,45 +205,41 @@ See [WORKFLOW.md](WORKFLOW.md) Section 7 for the complete customization roadmap.
 ```
 .
 ├── .claude/
-│   ├── INDEX.md              # ⭐ Quick reference for all features (START HERE!)
-│   ├── GUIDE.md              # Comprehensive consolidated how-to guide
-│   ├── agents/               # 18 specialized agents
-│   │   ├── api-designer.md
+│   ├── agents/               # 34 specialized agents
+│   │   ├── planner.md
+│   │   ├── architect.md
+│   │   ├── implementer.md
 │   │   ├── code-reviewer.md
-│   │   ├── graphql-specialist.md
-│   │   ├── websocket-specialist.md
-│   │   └── ... (14 more)
-│   ├── commands/             # 15 slash commands
+│   │   └── ... (30 more)
+│   ├── commands/             # 20 slash commands
 │   │   ├── full-feature.md
+│   │   ├── quick-fix.md
 │   │   ├── commit-push-pr.md
-│   │   ├── lint-fix.md
-│   │   ├── type-check.md
-│   │   └── ... (11 more)
+│   │   └── ... (17 more)
 │   ├── workflows/            # 5 orchestrated agent sequences
 │   │   ├── full-feature.md
 │   │   ├── bug-fix.md
 │   │   └── ... (3 more)
-│   ├── checklists/           # 6 review checklists
+│   ├── checklists/           # 13 review checklists
 │   │   ├── pr-review.md
 │   │   ├── security-audit.md
-│   │   └── ... (4 more)
-│   ├── templates/            # 5 code templates
+│   │   ├── build-errors-checklist.md
+│   │   └── ... (10 more)
+│   ├── templates/            # 16 code templates
 │   │   ├── component.tsx.template
 │   │   ├── api-route.ts.template
-│   │   └── ... (3 more)
-│   ├── scripts/              # 5 automation scripts
-│   │   ├── pre-commit-checks.sh
-│   │   ├── require-tests-pass.sh
-│   │   └── ... (3 more)
-│   ├── rules/                # 9 auto-enforced guidelines
+│   │   ├── Dockerfile.template
+│   │   └── ... (13 more)
+│   ├── rules/                # 17 auto-enforced guidelines
 │   │   ├── security.md
 │   │   ├── coding-style.md
-│   │   └── ... (7 more)
-│   ├── skills/               # 8 reference knowledge files
+│   │   ├── orchestrator.md
+│   │   └── ... (14 more)
+│   ├── skills/               # 20 reference knowledge files
 │   │   ├── react-patterns.md
-│   │   ├── nextjs-patterns.md
-│   │   ├── rest-api-design.md
-│   │   └── ... (5 more)
+│   │   ├── auth-patterns.md
+│   │   ├── database-patterns.md
+│   │   └── ... (17 more)
 │   ├── settings.json         # Shared settings (hooks, pre-approved ops)
 │   └── settings.local.json   # Local overrides (gitignored)
 ├── .mcp.template.json        # MCP template (27 servers, committed)
@@ -283,6 +311,6 @@ claude
 
 ---
 
-**Template Version**: 1.0
+**Template Version**: 2.0
 **Based On**: Boris Cherny Workflow
-**Last Updated**: 2026-01-19
+**Last Updated**: 2026-01-22

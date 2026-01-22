@@ -1,7 +1,7 @@
 ---
 name: doc-updater
 description: Synchronizes documentation with code changes to keep docs accurate
-model: sonnet
+model: haiku
 allowed-tools: Bash(git diff:*), Bash(git log:*), Read, Edit, Write, Grep, Glob
 ---
 

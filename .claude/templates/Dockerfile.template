@@ -1,0 +1,126 @@
+# {{APP_NAME}} Dockerfile
+#
+# Template Placeholders:
+# - {{APP_NAME}}: Application name
+# - {{NODE_VERSION}}: Node.js version (e.g., 20)
+# - {{PORT}}: Application port (e.g., 3000)
+# - {{PACKAGE_MANAGER}}: npm, yarn, or pnpm
+#
+# Best Practices:
+# - Multi-stage builds for smaller images
+# - Non-root user for security
+# - Minimal base images
+# - Proper layer caching
+
+# =============================================================================
+# Stage 1: Dependencies
+# =============================================================================
+FROM node:{{NODE_VERSION}}-alpine AS deps
+
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json {{PACKAGE_MANAGER}}-lock.* ./
+
+# Install dependencies
+RUN \
+  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  else echo "No lockfile found" && exit 1; \
+  fi
+
+# =============================================================================
+# Stage 2: Builder
+# =============================================================================
+FROM node:{{NODE_VERSION}}-alpine AS builder
+
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Set environment for build
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build application
+RUN \
+  if [ -f yarn.lock ]; then yarn build; \
+  elif [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+  else npm run build; \
+  fi
+
+# =============================================================================
+# Stage 3: Runner (Production)
+# =============================================================================
+FROM node:{{NODE_VERSION}}-alpine AS runner
+
+WORKDIR /app
+
+# Set environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT={{PORT}}
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 appuser
+
+# Copy necessary files from builder
+# For Next.js standalone output:
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=appuser:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=appuser:nodejs /app/.next/static ./.next/static
+
+# For standard Node.js app:
+# COPY --from=builder --chown=appuser:nodejs /app/dist ./dist
+# COPY --from=builder --chown=appuser:nodejs /app/node_modules ./node_modules
+# COPY --from=builder --chown=appuser:nodejs /app/package.json ./package.json
+
+# Switch to non-root user
+USER appuser
+
+# Expose port
+EXPOSE {{PORT}}
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:{{PORT}}/api/health || exit 1
+
+# Start application
+# For Next.js standalone:
+CMD ["node", "server.js"]
+
+# For standard Node.js:
+# CMD ["node", "dist/index.js"]
+
+# =============================================================================
+# Development Stage (Optional)
+# =============================================================================
+FROM node:{{NODE_VERSION}}-alpine AS development
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json {{PACKAGE_MANAGER}}-lock.* ./
+RUN \
+  if [ -f yarn.lock ]; then yarn; \
+  elif [ -f package-lock.json ]; then npm install; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
+  else npm install; \
+  fi
+
+# Copy source
+COPY . .
+
+# Expose port
+EXPOSE {{PORT}}
+
+# Development command
+CMD ["npm", "run", "dev"]

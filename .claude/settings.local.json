@@ -43,10 +43,15 @@
       "Bash( ls -1 agents/*.md)",
       "Bash( ls -1 rules/*.md)",
       "Bash(gh pr view:*)",
-      "Bash(gh pr edit:*)"
+      "Bash(gh pr edit:*)",
+      "Bash(ls:*)",
+      "Bash(for f in ai-code-detection.md code-review.md documentation.md non-technical-mode.md intent-routing.md context-management.md api-design.md patterns.md performance.md error-handling.md security.md testing.md coding-style.md git-workflow.md agents.md orchestrator.md hooks.md)",
+      "Bash(do if [ -f \"$f\" ])",
+      "Bash(then mv \"$f\" _archive/)",
+      "Bash(xargs -I{} sh -c 'echo \"\"=== {} ===\"\"; head -6 {}')"
     ]
   },
-  "model": "opus",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -80,7 +85,7 @@
       }
     ]
   },
-  "thinkingEnabled": true,
+  "thinkingEnabled": false,
   "autoAcceptEdits": false,
   "allowedPrompts": [
     {
