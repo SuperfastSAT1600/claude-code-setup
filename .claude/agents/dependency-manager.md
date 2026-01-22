@@ -1,18 +1,8 @@
 ---
+name: dependency-manager
 description: Expert in managing project dependencies, updates, audits, and conflict resolution
 model: haiku
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-when_to_use:
-  - Running security audits on dependencies (npm audit, pip audit)
-  - Updating outdated packages safely
-  - Resolving dependency conflicts
-  - Checking license compliance
-  - Setting up Renovate or Dependabot
-  - Investigating dependency vulnerabilities
+allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Dependency Manager Agent
@@ -382,6 +372,23 @@ npm why package-name
 - Bundle size optimization
 - License compliance checks
 - Dependency conflict resolution
+
+## External Resources
+
+**REQUIRED: Read these checklists for dependency work:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| Dependency Audit | `.claude/checklists/dependency-audit.md` | Package security review |
+| Pre-Release | `.claude/checklists/pre-release.md` | Before deployments |
+| Security Audit | `.claude/checklists/security-audit.md` | Vulnerability assessment |
+
+**Workflow Integration:**
+1. At audit start: Read `dependency-audit.md` checklist
+2. Work through each checklist section
+3. Report findings with checklist item references
+
+---
 
 ## Best Practices Enforced
 

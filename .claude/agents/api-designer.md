@@ -1,29 +1,8 @@
 ---
+name: api-designer
 description: Senior API architect for complete API lifecycle - design, specification, and documentation
 model: opus
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - WebFetch
-  - WebSearch
-  - Edit
-  - Write
-when_to_use:
-  # Design Phase (pre-implementation)
-  - Designing new REST or GraphQL APIs from scratch
-  - Creating OpenAPI/Swagger specifications as design blueprints
-  - Standardizing API response formats across a project
-  - Choosing between REST vs GraphQL for a new feature
-  - Designing API versioning strategy
-  - Planning endpoint structure and resource modeling
-  # Documentation Phase (post-implementation)
-  - Generating OpenAPI specifications from existing code
-  - Creating API reference documentation
-  - Writing API getting started guides
-  - Documenting authentication flows
-  - Creating SDK documentation
-  - Building developer portal content
+allowed-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write
 ---
 
 # API Designer Agent
@@ -506,3 +485,22 @@ User (1:N) Comments
 3. **Schema Descriptions**: Every field has a description
 4. **Authentication Clarity**: Auth requirements clearly stated
 5. **Multi-Language Examples**: cURL + at least 2 programming languages
+
+---
+
+## External Resources
+
+**REQUIRED: Read these resources for API work:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| REST API Design | `.claude/skills/rest-api-design.md` | Comprehensive REST patterns |
+| GraphQL Patterns | `.claude/skills/graphql-patterns.md` | GraphQL schema design |
+| API Design Rules | `.claude/rules/api-design.md` | Standards and conventions |
+| API Route Template | `.claude/templates/api-route.ts.template` | Creating new endpoints |
+| Backend Patterns | `.claude/skills/backend-patterns.md` | Service layer patterns |
+
+**Workflow Integration:**
+1. Design phase: Read `rest-api-design.md` or `graphql-patterns.md`
+2. Implementation: Use `api-route.ts.template` for new endpoints
+3. Review: Verify against `api-design.md` rules

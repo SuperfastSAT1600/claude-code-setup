@@ -1,12 +1,8 @@
 ---
-model: sonnet
-allowed-tools:
-  - Read
-  - Write
-  - Grep
-  - Glob
-  - Bash
+name: migration-specialist
 description: Design and execute safe database migrations and data transformations
+model: sonnet
+allowed-tools: Read, Write, Grep, Glob, Bash
 when_to_use:
   - Planning database schema changes
   - Implementing zero-downtime migrations
@@ -370,6 +366,24 @@ Agent:
    - Week 2: Deploy dual-write
    - Week 3: Verify, drop old columns
 ```
+
+---
+
+## External Resources
+
+**REQUIRED: Read these resources before any migration:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| Migration Review | `.claude/checklists/database-migration-review.md` | Pre-migration validation |
+| Hotfix Checklist | `.claude/checklists/hotfix-checklist.md` | Urgent P0/P1 database fixes |
+| Migration Template | `.claude/templates/migration.sql.template` | Creating migration scripts |
+
+**Workflow Integration:**
+1. Before writing migration: Read `migration.sql.template`
+2. Before executing: Read `database-migration-review.md` checklist
+3. GATE: All checklist items must pass before applying migration
+4. For P0/P1: Follow `hotfix-checklist.md` process
 
 ---
 

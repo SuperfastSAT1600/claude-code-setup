@@ -1,20 +1,8 @@
 ---
+name: database-architect
 description: Expert in database schema design, optimization, and migration strategies
 model: opus
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - Edit
-  - Write
-when_to_use:
-  - Designing database schemas for new features
-  - Creating Entity-Relationship Diagrams (ERDs)
-  - Optimizing database queries and indexes
-  - Planning database migrations
-  - Normalizing or denormalizing data structures
-  - Choosing between SQL vs NoSQL for use cases
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
 # Database Architect Agent
@@ -428,6 +416,23 @@ export async function up(db: Kysely<any>): Promise<void> {
 - Reviewing schema changes
 - Designing indexes
 - Choosing database technologies
+
+## External Resources
+
+**REQUIRED: Read these resources for database work:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| Migration Review | `.claude/checklists/database-migration-review.md` | Before applying migrations |
+| Migration Template | `.claude/templates/migration.sql.template` | Creating new migrations |
+| Prisma Patterns | `.claude/skills/prisma-patterns.md` | ORM best practices |
+
+**Workflow Integration:**
+1. Schema design: Reference Prisma patterns
+2. Migration creation: Use migration template
+3. Pre-deployment: Run through migration review checklist
+
+---
 
 ## Best Practices Enforced
 

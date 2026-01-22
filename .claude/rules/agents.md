@@ -275,85 +275,7 @@ You: Review findings, prioritize fixes, implement
 
 ---
 
-## 9. Agent Selection Matrix
-
-### Core Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| Plan feature | planner | Breaks down requirements |
-| Design system | architect | Evaluates architecture |
-| Security audit | security-reviewer | Specialized security knowledge |
-| Code review | code-reviewer | Quality patterns, best practices |
-| Verify changes | verify-app | End-to-end testing |
-
-### Code Quality Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| Remove complexity | code-simplifier | Focused on simplification |
-| Clean code | refactor-cleaner | Modernization patterns |
-| Analyze tech debt | tech-debt-analyzer | Prioritizes technical debt |
-| Fix TypeScript | type-safety-enforcer | Strict type checking |
-
-### Testing Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| TDD workflow | tdd-guide | Red-Green-Refactor expertise |
-| Unit tests | unit-test-writer | AAA pattern, coverage |
-| Integration tests | integration-test-writer | API/database testing |
-| E2E tests | e2e-runner | Playwright/Cypress |
-| Load tests | load-test-specialist | k6/Artillery |
-
-### Implementation Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| General coding | implementer | Follows plans and patterns |
-| Feature implementation | implementer | Standard feature work |
-| Bug fixes | implementer | Non-specialized fixes |
-| Refactoring (with plan) | implementer | Executes refactoring plans |
-
-### Development Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| API design | api-designer | REST/GraphQL patterns + docs |
-| Database design | database-architect | Schema, migrations, ERDs |
-| Authentication | auth-specialist | JWT/OAuth expertise |
-| GraphQL | graphql-specialist | Schema, resolvers |
-| WebSocket | websocket-specialist | Socket.io real-time |
-
-### Operations Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| Fix build | build-error-resolver | Iterative error fixing |
-| CI/CD setup | ci-cd-specialist | GitHub Actions pipelines |
-| Containerization | docker-specialist | Dockerfile optimization |
-| DB migrations | migration-specialist | Safe migrations with rollback |
-| Dependency issues | dependency-manager | Audit, update, manage deps |
-
-### Accessibility & i18n Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| A11y audit | accessibility-auditor | WCAG 2.1 AA compliance |
-| Internationalization | i18n-specialist | next-intl patterns |
-
-### Documentation & Observability Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| Update docs | doc-updater | Code-doc sync |
-| Optimize performance | performance-optimizer | Profiling, N+1 fixes |
-| Set up monitoring | monitoring-architect | Logging, metrics, alerts, APM |
-| Generate API docs | api-designer | OpenAPI specs, API reference, design + docs |
-| Write runbooks | runbook-writer | Deployment procedures, troubleshooting |
-
-### Specialized Domain Tasks
-| Task | Agent | Reason |
-|------|-------|--------|
-| Mobile app development | mobile-specialist | React Native, Flutter, app stores |
-| LLM/AI integration | ai-integration-specialist | API integration, RAG, prompts |
-| Infrastructure as Code | iac-specialist | Terraform, CloudFormation, DR |
-
----
-
-## 10. Agent Performance
+## 9. Agent Performance
 
 **Rule**: Use agents to reduce main context bloat.
 
@@ -438,8 +360,37 @@ After delegation:
 
 ---
 
+## Template Provision During Delegation
+
+**When delegating, provide relevant templates to agents:**
+
+| Agent | Provide Templates |
+|-------|------------------|
+| implementer | component.tsx, api-route.ts, service.ts, hook.ts |
+| auth-specialist | guard.ts, middleware.ts, service.ts, error-handler.ts |
+| api-designer | api-route.ts |
+| database-architect | migration.sql |
+| migration-specialist | migration.sql |
+| unit-test-writer | test.spec.ts |
+| integration-test-writer | test.spec.ts |
+
+**Provide relevant skills based on task:**
+
+| Task Type | Provide Skills |
+|-----------|---------------|
+| React/Frontend | react-patterns.md, nextjs-patterns.md |
+| API/Backend | rest-api-design.md, backend-patterns.md |
+| Database | prisma-patterns.md |
+| Testing | tdd-workflow.md |
+| Auth | security rules + backend-patterns.md |
+
+---
+
 ## Resources
 
 - Agent Architecture: See .claude/agents/ directory
 - Commands: See .claude/commands/ directory
 - Skills: See .claude/skills/ directory
+- Templates: See .claude/templates/ directory
+- Checklists: See .claude/checklists/ directory
+- Workflows: See .claude/workflows/ directory

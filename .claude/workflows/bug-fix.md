@@ -181,3 +181,16 @@ Fixes #123
 3. **Root cause**: Understand why, not just what
 4. **Verify thoroughly**: Check for side effects
 5. **Document**: Future reference for similar bugs
+
+---
+
+## External Resources
+
+**Reference these resources during bug fix workflow:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| Hotfix Checklist | `.claude/checklists/hotfix-checklist.md` | P0/P1 urgent production issues |
+| PR Review | `.claude/checklists/pr-review.md` | Before creating fix PR |
+| Security Audit | `.claude/checklists/security-audit.md` | Security-related bugs |
+| Testing Rules | `.claude/rules/testing.md` | Regression test patterns |
