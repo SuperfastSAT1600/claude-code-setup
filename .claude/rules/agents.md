@@ -366,13 +366,13 @@ After delegation:
 
 | Agent | Provide Templates |
 |-------|------------------|
-| implementer | component.tsx, api-route.ts, service.ts, hook.ts |
-| auth-specialist | guard.ts, middleware.ts, service.ts, error-handler.ts |
-| api-designer | api-route.ts |
-| database-architect | migration.sql |
-| migration-specialist | migration.sql |
-| unit-test-writer | test.spec.ts |
-| integration-test-writer | test.spec.ts |
+| implementer | component.tsx.template, api-route.ts.template, service.ts.template, hook.ts.template |
+| auth-specialist | guard.ts.template, middleware.ts.template, service.ts.template, error-handler.ts.template |
+| api-designer | api-route.ts.template |
+| database-architect | migration.sql.template |
+| migration-specialist | migration.sql.template |
+| unit-test-writer | test.spec.ts.template |
+| integration-test-writer | test.spec.ts.template |
 
 **Provide relevant skills based on task:**
 
