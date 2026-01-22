@@ -1,13 +1,8 @@
 ---
+name: unit-test-writer
 description: Specialist for writing comprehensive unit tests with proper isolation and coverage
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - Edit
-  - Write
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 when_to_use:
   - Writing tests for new functions or modules
   - Increasing test coverage for existing code

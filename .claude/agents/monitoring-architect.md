@@ -1,15 +1,8 @@
 ---
+name: monitoring-architect
 description: Senior observability engineer for logging, monitoring, alerting, and APM setup
 model: opus
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - WebFetch
-  - WebSearch
-  - Edit
-  - Write
-  - Bash
+allowed-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash
 when_to_use:
   - Setting up application logging infrastructure
   - Configuring monitoring dashboards (Grafana, Datadog, CloudWatch)

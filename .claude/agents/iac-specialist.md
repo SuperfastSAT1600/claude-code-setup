@@ -1,15 +1,8 @@
 ---
+name: iac-specialist
 description: Infrastructure as Code specialist for Terraform, CloudFormation, and cloud architecture
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - WebFetch
-  - WebSearch
-  - Edit
-  - Write
-  - Bash
+allowed-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash
 when_to_use:
   - Writing Terraform configurations
   - Creating CloudFormation templates

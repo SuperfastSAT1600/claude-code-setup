@@ -1,13 +1,8 @@
 ---
-model: sonnet
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Grep
-  - Glob
-  - Bash
+name: i18n-specialist
 description: Implement internationalization (i18n) and localization (l10n) for multilingual support
+model: sonnet
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 when_to_use:
   - Setting up i18n infrastructure with next-intl or react-i18next
   - Implementing language switching functionality

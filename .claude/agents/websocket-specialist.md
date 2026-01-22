@@ -1,13 +1,8 @@
 ---
-model: sonnet
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Grep
-  - Glob
-  - Bash
+name: websocket-specialist
 description: Implement real-time communication with WebSockets for bidirectional data flow
+model: sonnet
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 when_to_use:
   - Implementing real-time chat or messaging
   - Building collaborative editing features

@@ -1,15 +1,8 @@
 ---
+name: mobile-specialist
 description: Mobile development expert for React Native, Flutter, and cross-platform mobile applications
 model: opus
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - WebFetch
-  - WebSearch
-  - Edit
-  - Write
-  - Bash
+allowed-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash
 when_to_use:
   - Building React Native or Flutter applications
   - Implementing mobile-specific features (push notifications, deep links)

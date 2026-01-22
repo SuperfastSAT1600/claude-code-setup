@@ -1,12 +1,8 @@
 ---
-model: sonnet
-allowed-tools:
-  - Read
-  - Write
-  - Bash
-  - Grep
-  - Glob
+name: load-test-specialist
 description: Design and execute load tests to validate system performance under stress
+model: sonnet
+allowed-tools: Read, Write, Bash, Grep, Glob
 when_to_use:
   - Creating k6 or Artillery load test scenarios
   - Testing system capacity before major releases

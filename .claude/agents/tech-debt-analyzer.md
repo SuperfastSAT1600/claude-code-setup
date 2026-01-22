@@ -1,11 +1,8 @@
 ---
+name: tech-debt-analyzer
 description: Expert in identifying, categorizing, and prioritizing technical debt for remediation
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
+allowed-tools: Read, Grep, Glob, Bash
 when_to_use:
   - Conducting codebase health assessments
   - Prioritizing refactoring efforts

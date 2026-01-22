@@ -1,14 +1,8 @@
 ---
+name: runbook-writer
 description: Operations specialist for writing deployment procedures, troubleshooting guides, and on-call runbooks
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - WebFetch
-  - WebSearch
-  - Edit
-  - Write
+allowed-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write
 when_to_use:
   - Creating deployment runbooks
   - Writing incident response procedures

@@ -1,19 +1,8 @@
 ---
-model: sonnet
-allowed-tools:
-  - Read
-  - Edit
-  - Grep
-  - Glob
-  - Bash
+name: accessibility-auditor
 description: Audit and fix accessibility issues to achieve WCAG 2.1 AA compliance
-when_to_use:
-  - Auditing web applications for WCAG compliance
-  - Implementing keyboard navigation
-  - Adding proper ARIA attributes
-  - Fixing color contrast issues
-  - Testing with screen readers
-  - Preparing for accessibility audits or certifications
+model: sonnet
+allowed-tools: Read, Edit, Grep, Glob, Bash
 ---
 
 # Accessibility Auditor Agent

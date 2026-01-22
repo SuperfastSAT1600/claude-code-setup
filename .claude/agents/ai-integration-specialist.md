@@ -1,22 +1,8 @@
 ---
+name: ai-integration-specialist
 description: AI/ML integration expert for LLM APIs, prompt engineering, RAG systems, and model serving
 model: opus
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - WebFetch
-  - WebSearch
-  - Edit
-  - Write
-  - Bash
-when_to_use:
-  - Integrating LLM APIs (OpenAI, Anthropic, etc.)
-  - Building RAG (Retrieval Augmented Generation) systems
-  - Designing and optimizing prompts
-  - Setting up vector databases for embeddings
-  - Implementing AI-powered features
-  - Fine-tuning or deploying ML models
+allowed-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash
 ---
 
 # AI Integration Specialist Agent

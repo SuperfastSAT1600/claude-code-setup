@@ -1,20 +1,8 @@
 ---
+name: ci-cd-specialist
 description: Expert in CI/CD pipeline configuration and optimization for modern development workflows
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - Edit
-  - Write
-when_to_use:
-  - Setting up GitHub Actions or GitLab CI pipelines
-  - Optimizing build times with caching strategies
-  - Configuring matrix builds for multiple environments
-  - Setting up automated testing in CI
-  - Implementing deployment workflows
-  - Troubleshooting CI/CD failures
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
 # CI/CD Specialist Agent
