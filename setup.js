@@ -8,6 +8,10 @@
  *
  * Features:
  * - Platform detection (Windows/macOS/Linux)
+ * - GitHub setup (REQUIRED): git identity, GitHub CLI, authentication, PAT
+ * - Supabase setup (REQUIRED): CLI, authentication, project linking, API credentials
+ * - Vercel setup (OPTIONAL): CLI, authentication, project linking, API token
+ * - Claude Code CLI installation
  * - MCP server configuration with correct commands
  * - API key collection (securely stored in gitignored files)
  * - Prerequisites checking
@@ -705,6 +709,1251 @@ function checkPrerequisites(platformInfo) {
 }
 
 // =============================================================================
+// GITHUB SETUP (REQUIRED)
+// =============================================================================
+
+/**
+ * Check if GitHub CLI is installed
+ */
+function checkGitHubCLIInstalled() {
+  try {
+    const result = execSync('gh --version', { stdio: 'pipe', encoding: 'utf8' });
+    const match = result.match(/gh version ([\d.]+)/);
+    return { installed: true, version: match ? match[1] : 'unknown' };
+  } catch {
+    return { installed: false, version: null };
+  }
+}
+
+/**
+ * Check if user is authenticated with GitHub CLI
+ */
+function checkGitHubAuthenticated() {
+  try {
+    const result = execSync('gh auth status', { stdio: 'pipe', encoding: 'utf8' });
+    // Parse out the username if possible
+    const userMatch = result.match(/Logged in to github\.com account (\S+)/i) ||
+                      result.match(/Logged in to github\.com as (\S+)/i);
+    return { authenticated: true, username: userMatch ? userMatch[1] : 'unknown' };
+  } catch {
+    return { authenticated: false, username: null };
+  }
+}
+
+/**
+ * Check if git is configured with user name and email
+ */
+function checkGitConfig() {
+  try {
+    const name = execSync('git config --global user.name', { stdio: 'pipe', encoding: 'utf8' }).trim();
+    const email = execSync('git config --global user.email', { stdio: 'pipe', encoding: 'utf8' }).trim();
+    return { configured: !!(name && email), name, email };
+  } catch {
+    return { configured: false, name: null, email: null };
+  }
+}
+
+/**
+ * Get GitHub CLI installation instructions
+ */
+function getGitHubCLIInstallInstructions(platformInfo) {
+  if (platformInfo.isWindows) {
+    return `Install GitHub CLI:
+    Option 1: winget install GitHub.cli
+    Option 2: Download from https://cli.github.com/`;
+  } else if (platformInfo.isMac) {
+    return `Install GitHub CLI:
+    brew install gh
+    Or download from https://cli.github.com/`;
+  } else {
+    return `Install GitHub CLI:
+    ${platformInfo.isDebian ? 'sudo apt install gh' : 'See https://cli.github.com/ for installation instructions'}`;
+  }
+}
+
+/**
+ * Install GitHub CLI
+ */
+async function installGitHubCLI(platformInfo) {
+  const commands = {
+    darwin: 'brew install gh',
+    linux: platformInfo.isDebian
+      ? '(type -p wget >/dev/null || sudo apt install wget -y) && sudo mkdir -p -m 755 /etc/apt/keyrings && wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null && sudo apt update && sudo apt install gh -y'
+      : null,
+    win32: 'winget install GitHub.cli',
+  };
+
+  const command = commands[platformInfo.platform];
+  if (!command) {
+    return { success: false, message: 'Auto-install not available for your platform' };
+  }
+
+  log('Installing GitHub CLI...', 'info');
+  console.log(color(`  Running: ${command.substring(0, 60)}${command.length > 60 ? '...' : ''}`, 'dim'));
+
+  try {
+    execSync(command, { stdio: 'inherit', shell: true });
+    // Verify installation
+    if (checkGitHubCLIInstalled().installed) {
+      return { success: true };
+    }
+    return { success: false, message: 'Installation completed but gh not found in PATH' };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Authenticate with GitHub CLI
+ */
+async function authenticateGitHub(rl) {
+  log('Starting GitHub authentication...', 'info');
+  console.log('');
+  console.log(color('This will open a browser to authenticate with GitHub.', 'dim'));
+  console.log(color('Follow the prompts to complete authentication.', 'dim'));
+  console.log('');
+
+  try {
+    // Use spawn to allow interactive authentication
+    return new Promise((resolve) => {
+      const child = spawn('gh', ['auth', 'login', '--web'], {
+        stdio: 'inherit',
+        shell: true,
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, message: `Authentication exited with code ${code}` });
+        }
+      });
+
+      child.on('error', (error) => {
+        resolve({ success: false, message: error.message });
+      });
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Configure git user name and email
+ */
+async function configureGitIdentity(rl) {
+  subheader('Git Identity Configuration');
+
+  console.log('Git needs your name and email for commits.');
+  console.log(color('This is required for all git operations.', 'dim'));
+  console.log('');
+
+  const name = await ask(rl, 'Your name (for git commits)');
+  const email = await ask(rl, 'Your email (for git commits)');
+
+  if (!name || !email) {
+    return { success: false, message: 'Name and email are required' };
+  }
+
+  try {
+    execSync(`git config --global user.name "${name}"`, { stdio: 'pipe' });
+    execSync(`git config --global user.email "${email}"`, { stdio: 'pipe' });
+    log(`Git configured as: ${name} <${email}>`, 'success');
+    return { success: true, name, email };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Validate GitHub Personal Access Token
+ */
+async function validateGitHubToken(token) {
+  try {
+    // Test the token by making a simple API call
+    const result = execSync(`curl -s -H "Authorization: token ${token}" https://api.github.com/user`, {
+      stdio: 'pipe',
+      encoding: 'utf8',
+    });
+    const data = JSON.parse(result);
+    if (data.login) {
+      return { valid: true, username: data.login };
+    }
+    return { valid: false, message: 'Token is invalid or expired' };
+  } catch (error) {
+    return { valid: false, message: error.message };
+  }
+}
+
+/**
+ * Setup GitHub Personal Access Token for MCP
+ */
+async function setupGitHubToken(rl) {
+  subheader('GitHub Personal Access Token');
+
+  console.log('A Personal Access Token (PAT) is needed for the GitHub MCP server.');
+  console.log('');
+  console.log(color('To create a token:', 'bright'));
+  console.log(`  1. Go to: ${color('https://github.com/settings/tokens?type=beta', 'cyan')}`);
+  console.log('  2. Click "Generate new token"');
+  console.log('  3. Give it a name (e.g., "Claude Code MCP")');
+  console.log('  4. Select repository access (recommend: All repositories)');
+  console.log('  5. Select permissions: Contents (read/write), Pull requests (read/write)');
+  console.log('  6. Click "Generate token" and copy it');
+  console.log('');
+
+  const token = await askSecret(rl, 'Paste your GitHub Personal Access Token (or press Enter to skip)');
+
+  if (!token) {
+    return { success: false, skipped: true };
+  }
+
+  // Validate the token
+  log('Validating token...', 'info');
+  const validation = await validateGitHubToken(token);
+
+  if (validation.valid) {
+    log(`Token valid! Authenticated as: ${validation.username}`, 'success');
+    return { success: true, token, username: validation.username };
+  } else {
+    log(`Token validation failed: ${validation.message}`, 'error');
+    const retry = await askYesNo(rl, 'Would you like to try a different token?', true);
+    if (retry) {
+      return setupGitHubToken(rl);
+    }
+    return { success: false, message: validation.message };
+  }
+}
+
+/**
+ * Main GitHub setup function (REQUIRED STEP)
+ */
+async function setupGitHub(rl, platformInfo) {
+  header('GitHub Setup (Required)');
+
+  console.log('GitHub integration is required for this project.');
+  console.log('This step will configure:');
+  console.log(`  ${ICONS.bullet} Git identity (name & email)`);
+  console.log(`  ${ICONS.bullet} GitHub CLI authentication`);
+  console.log(`  ${ICONS.bullet} Personal Access Token for MCP`);
+  console.log('');
+
+  const results = {
+    gitConfigured: false,
+    ghInstalled: false,
+    ghAuthenticated: false,
+    tokenConfigured: false,
+    token: null,
+  };
+
+  // Step 1: Check and configure git identity
+  subheader('Step 1: Git Identity');
+  const gitConfig = checkGitConfig();
+
+  if (gitConfig.configured) {
+    log(`Git already configured as: ${gitConfig.name} <${gitConfig.email}>`, 'success');
+    results.gitConfigured = true;
+
+    const changeIdentity = await askYesNo(rl, 'Would you like to change this?', false);
+    if (changeIdentity) {
+      const identityResult = await configureGitIdentity(rl);
+      results.gitConfigured = identityResult.success;
+    }
+  } else {
+    log('Git identity not configured', 'warning');
+    const identityResult = await configureGitIdentity(rl);
+    if (!identityResult.success) {
+      log('Git identity is required. Please configure it to continue.', 'error');
+      // Retry
+      const retry = await askYesNo(rl, 'Would you like to try again?', true);
+      if (retry) {
+        const retryResult = await configureGitIdentity(rl);
+        results.gitConfigured = retryResult.success;
+      }
+      if (!results.gitConfigured) {
+        throw new Error('Git identity configuration is required to continue setup.');
+      }
+    } else {
+      results.gitConfigured = true;
+    }
+  }
+
+  // Step 2: Check and install GitHub CLI
+  subheader('Step 2: GitHub CLI');
+  let ghStatus = checkGitHubCLIInstalled();
+
+  if (ghStatus.installed) {
+    log(`GitHub CLI installed (v${ghStatus.version})`, 'success');
+    results.ghInstalled = true;
+  } else {
+    log('GitHub CLI (gh) is not installed', 'warning');
+    console.log('');
+    console.log(color('GitHub CLI provides the best experience for:', 'dim'));
+    console.log(color('  - Creating pull requests', 'dim'));
+    console.log(color('  - Managing issues', 'dim'));
+    console.log(color('  - Repository operations', 'dim'));
+    console.log('');
+
+    const installGh = await askYesNo(rl, 'Would you like to install GitHub CLI now?', true);
+
+    if (installGh) {
+      const installResult = await installGitHubCLI(platformInfo);
+      if (installResult.success) {
+        results.ghInstalled = true;
+        ghStatus = checkGitHubCLIInstalled();
+        log(`GitHub CLI installed successfully (v${ghStatus.version})`, 'success');
+      } else {
+        log(`Failed to install: ${installResult.message}`, 'error');
+        console.log('');
+        console.log(color('Manual installation instructions:', 'yellow'));
+        console.log(getGitHubCLIInstallInstructions(platformInfo));
+        console.log('');
+        log('You can continue without GitHub CLI, but some features will be limited.', 'warning');
+      }
+    } else {
+      log('Skipping GitHub CLI installation', 'info');
+      console.log(color('You can install it later from https://cli.github.com/', 'dim'));
+    }
+  }
+
+  // Step 3: Authenticate with GitHub CLI (if installed)
+  if (results.ghInstalled) {
+    subheader('Step 3: GitHub Authentication');
+    const authStatus = checkGitHubAuthenticated();
+
+    if (authStatus.authenticated) {
+      log(`Already authenticated as: ${authStatus.username}`, 'success');
+      results.ghAuthenticated = true;
+    } else {
+      log('Not authenticated with GitHub', 'warning');
+
+      const authenticate = await askYesNo(rl, 'Would you like to authenticate now?', true);
+
+      if (authenticate) {
+        const authResult = await authenticateGitHub(rl);
+        if (authResult.success) {
+          const newAuthStatus = checkGitHubAuthenticated();
+          if (newAuthStatus.authenticated) {
+            log(`Authenticated as: ${newAuthStatus.username}`, 'success');
+            results.ghAuthenticated = true;
+          }
+        } else {
+          log(`Authentication failed: ${authResult.message}`, 'error');
+        }
+      }
+    }
+  }
+
+  // Step 4: Setup Personal Access Token for MCP
+  subheader('Step 4: Personal Access Token (for MCP)');
+
+  console.log('The GitHub MCP server requires a Personal Access Token.');
+  console.log(color('This is separate from GitHub CLI authentication.', 'dim'));
+  console.log('');
+
+  const tokenResult = await setupGitHubToken(rl);
+
+  if (tokenResult.success) {
+    results.tokenConfigured = true;
+    results.token = tokenResult.token;
+    results.tokenUsername = tokenResult.username;
+  } else if (tokenResult.skipped) {
+    log('Token setup skipped - GitHub MCP server will not work without it', 'warning');
+  } else {
+    log('Token setup failed - GitHub MCP server will not work without it', 'warning');
+  }
+
+  // Summary
+  console.log('');
+  console.log(color('─── GitHub Setup Summary ───', 'cyan'));
+  console.log(`  Git identity: ${results.gitConfigured ? color('configured', 'green') : color('not configured', 'red')}`);
+  console.log(`  GitHub CLI: ${results.ghInstalled ? color('installed', 'green') : color('not installed', 'yellow')}`);
+  console.log(`  CLI authenticated: ${results.ghAuthenticated ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  MCP token: ${results.tokenConfigured ? color('configured', 'green') : color('not configured', 'yellow')}`);
+  console.log('');
+
+  // Git identity is required, but we already enforced that above
+  // Return results for use in MCP configuration
+  return results;
+}
+
+// =============================================================================
+// SUPABASE SETUP (REQUIRED)
+// =============================================================================
+
+/**
+ * Check if Supabase CLI is installed
+ */
+function checkSupabaseCLIInstalled() {
+  try {
+    const result = execSync('supabase --version', { stdio: 'pipe', encoding: 'utf8' });
+    const match = result.match(/([\d.]+)/);
+    return { installed: true, version: match ? match[1] : 'unknown' };
+  } catch {
+    return { installed: false, version: null };
+  }
+}
+
+/**
+ * Check if user is logged in to Supabase CLI
+ */
+function checkSupabaseLoggedIn() {
+  try {
+    // Try to list projects - will fail if not logged in
+    execSync('supabase projects list', { stdio: 'pipe', encoding: 'utf8', timeout: 10000 });
+    return { loggedIn: true };
+  } catch {
+    return { loggedIn: false };
+  }
+}
+
+/**
+ * Check if Supabase is initialized in current directory
+ */
+function checkSupabaseInitialized() {
+  const configPath = path.join(process.cwd(), 'supabase', 'config.toml');
+  return fs.existsSync(configPath);
+}
+
+/**
+ * Check if project is linked to a Supabase project
+ */
+function checkSupabaseLinked() {
+  try {
+    const result = execSync('supabase status', { stdio: 'pipe', encoding: 'utf8', timeout: 10000 });
+    // If we get status without error and it mentions a project, we're linked
+    return { linked: !result.includes('not linked'), status: result };
+  } catch {
+    return { linked: false, status: null };
+  }
+}
+
+/**
+ * Get Supabase CLI installation instructions
+ */
+function getSupabaseCLIInstallInstructions(platformInfo) {
+  if (platformInfo.isWindows) {
+    return `Install Supabase CLI:
+    Option 1: scoop bucket add supabase https://github.com/supabase/scoop-bucket.git && scoop install supabase
+    Option 2: Download from https://github.com/supabase/cli/releases`;
+  } else if (platformInfo.isMac) {
+    return `Install Supabase CLI:
+    brew install supabase/tap/supabase`;
+  } else {
+    return `Install Supabase CLI:
+    brew install supabase/tap/supabase
+    Or download from https://github.com/supabase/cli/releases`;
+  }
+}
+
+/**
+ * Install Supabase CLI
+ */
+async function installSupabaseCLI(platformInfo) {
+  const commands = {
+    darwin: 'brew install supabase/tap/supabase',
+    linux: 'brew install supabase/tap/supabase',
+    win32: null, // Windows requires manual installation or scoop
+  };
+
+  const command = commands[platformInfo.platform];
+  if (!command) {
+    // For Windows, try npm as fallback
+    if (platformInfo.isWindows) {
+      log('Attempting npm installation...', 'info');
+      try {
+        execSync('npm install -g supabase', { stdio: 'inherit', shell: true });
+        if (checkSupabaseCLIInstalled().installed) {
+          return { success: true };
+        }
+      } catch {
+        // Fall through to manual instructions
+      }
+    }
+    return { success: false, message: 'Auto-install not available. Please install manually.' };
+  }
+
+  log('Installing Supabase CLI...', 'info');
+  console.log(color(`  Running: ${command}`, 'dim'));
+
+  try {
+    execSync(command, { stdio: 'inherit', shell: true });
+    if (checkSupabaseCLIInstalled().installed) {
+      return { success: true };
+    }
+    return { success: false, message: 'Installation completed but supabase not found in PATH' };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Login to Supabase CLI
+ */
+async function loginSupabase(rl) {
+  log('Starting Supabase login...', 'info');
+  console.log('');
+  console.log(color('This will open a browser to authenticate with Supabase.', 'dim'));
+  console.log(color('Follow the prompts to complete authentication.', 'dim'));
+  console.log('');
+
+  try {
+    return new Promise((resolve) => {
+      const child = spawn('supabase', ['login'], {
+        stdio: 'inherit',
+        shell: true,
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, message: `Login exited with code ${code}` });
+        }
+      });
+
+      child.on('error', (error) => {
+        resolve({ success: false, message: error.message });
+      });
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Initialize Supabase in current directory
+ */
+async function initSupabase() {
+  log('Initializing Supabase in current directory...', 'info');
+
+  try {
+    execSync('supabase init', { stdio: 'inherit', shell: true });
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * List Supabase projects
+ */
+function listSupabaseProjects() {
+  try {
+    const result = execSync('supabase projects list', { stdio: 'pipe', encoding: 'utf8', timeout: 30000 });
+    // Parse the table output
+    const lines = result.trim().split('\n').filter(line => line.trim());
+    // Skip header lines
+    const projects = [];
+    let headerFound = false;
+
+    for (const line of lines) {
+      if (line.includes('──') || line.includes('LINKED')) {
+        headerFound = true;
+        continue;
+      }
+      if (headerFound && line.trim()) {
+        // Parse project line: typically "│ name │ id │ org │ region │ linked │"
+        const parts = line.split('│').map(p => p.trim()).filter(p => p);
+        if (parts.length >= 2) {
+          projects.push({
+            name: parts[0],
+            id: parts[1],
+            org: parts[2] || '',
+            region: parts[3] || '',
+          });
+        }
+      }
+    }
+
+    return { success: true, projects };
+  } catch (error) {
+    return { success: false, projects: [], message: error.message };
+  }
+}
+
+/**
+ * Link to a Supabase project
+ */
+async function linkSupabaseProject(projectRef) {
+  log(`Linking to project: ${projectRef}...`, 'info');
+
+  try {
+    return new Promise((resolve) => {
+      const child = spawn('supabase', ['link', '--project-ref', projectRef], {
+        stdio: 'inherit',
+        shell: true,
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, message: `Link exited with code ${code}` });
+        }
+      });
+
+      child.on('error', (error) => {
+        resolve({ success: false, message: error.message });
+      });
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Get Supabase project credentials from dashboard or CLI
+ */
+async function getSupabaseCredentials(rl, projectRef) {
+  subheader('Supabase Project Credentials');
+
+  console.log('Your Supabase project needs the following credentials:');
+  console.log('');
+  console.log(color('To find these values:', 'bright'));
+  console.log(`  1. Go to: ${color('https://supabase.com/dashboard/project/' + (projectRef || '[your-project]') + '/settings/api', 'cyan')}`);
+  console.log('  2. Copy the values from the API Settings page');
+  console.log('');
+
+  const credentials = {};
+
+  // Supabase URL
+  console.log(color('Project URL:', 'bright'));
+  console.log(color('  Found under "Project URL" in API Settings', 'dim'));
+  const url = await ask(rl, `  ${color('SUPABASE_URL', 'cyan')} (e.g., https://xxxxx.supabase.co)`);
+  if (url) {
+    credentials.SUPABASE_URL = url;
+    credentials.NEXT_PUBLIC_SUPABASE_URL = url;
+  }
+
+  // Anon Key (public)
+  console.log('');
+  console.log(color('Anon/Public Key:', 'bright'));
+  console.log(color('  Found under "Project API keys" → "anon public"', 'dim'));
+  const anonKey = await askSecret(rl, `  ${color('SUPABASE_ANON_KEY', 'cyan')}`);
+  if (anonKey) {
+    credentials.SUPABASE_ANON_KEY = anonKey;
+    credentials.NEXT_PUBLIC_SUPABASE_ANON_KEY = anonKey;
+  }
+
+  // Service Role Key (secret)
+  console.log('');
+  console.log(color('Service Role Key (SECRET - server-side only):', 'bright'));
+  console.log(color('  Found under "Project API keys" → "service_role secret"', 'dim'));
+  console.log(color('  ⚠️  This key bypasses RLS - never expose to client!', 'yellow'));
+  const serviceKey = await askSecret(rl, `  ${color('SUPABASE_SERVICE_ROLE_KEY', 'cyan')} (or Enter to skip)`);
+  if (serviceKey) {
+    credentials.SUPABASE_SERVICE_ROLE_KEY = serviceKey;
+  }
+
+  // Database URL (optional)
+  console.log('');
+  console.log(color('Database Connection String (optional):', 'bright'));
+  console.log(color('  Found under "Database Settings" → "Connection string"', 'dim'));
+  const dbUrl = await askSecret(rl, `  ${color('DATABASE_URL', 'cyan')} (or Enter to skip)`);
+  if (dbUrl) {
+    credentials.DATABASE_URL = dbUrl;
+  }
+
+  return credentials;
+}
+
+/**
+ * Validate Supabase credentials
+ */
+async function validateSupabaseCredentials(credentials) {
+  if (!credentials.SUPABASE_URL || !credentials.SUPABASE_ANON_KEY) {
+    return { valid: false, message: 'URL and Anon Key are required' };
+  }
+
+  // Basic URL validation
+  if (!credentials.SUPABASE_URL.includes('supabase.co') && !credentials.SUPABASE_URL.includes('supabase.in')) {
+    return { valid: false, message: 'URL does not appear to be a valid Supabase URL' };
+  }
+
+  // Try to make a simple request to validate
+  try {
+    const url = `${credentials.SUPABASE_URL}/rest/v1/`;
+    const result = execSync(`curl -s -o /dev/null -w "%{http_code}" -H "apikey: ${credentials.SUPABASE_ANON_KEY}" "${url}"`, {
+      stdio: 'pipe',
+      encoding: 'utf8',
+      timeout: 10000,
+    });
+    const statusCode = parseInt(result.trim(), 10);
+
+    if (statusCode === 200 || statusCode === 404) {
+      // 200 = success, 404 = no tables yet but auth worked
+      return { valid: true };
+    } else if (statusCode === 401) {
+      return { valid: false, message: 'Invalid API key' };
+    } else {
+      return { valid: false, message: `Unexpected status code: ${statusCode}` };
+    }
+  } catch (error) {
+    // If curl fails, just assume credentials are okay (user responsibility)
+    log('Could not validate credentials (network issue) - assuming valid', 'warning');
+    return { valid: true };
+  }
+}
+
+/**
+ * Main Supabase setup function (REQUIRED STEP)
+ */
+async function setupSupabase(rl, platformInfo) {
+  header('Supabase Setup (Required)');
+
+  console.log('Supabase is required for this project\'s database and authentication.');
+  console.log('This step will configure:');
+  console.log(`  ${ICONS.bullet} Supabase CLI installation`);
+  console.log(`  ${ICONS.bullet} Supabase authentication`);
+  console.log(`  ${ICONS.bullet} Project linking`);
+  console.log(`  ${ICONS.bullet} API credentials`);
+  console.log('');
+
+  const results = {
+    cliInstalled: false,
+    loggedIn: false,
+    initialized: false,
+    linked: false,
+    credentials: {},
+    projectRef: null,
+  };
+
+  // Step 1: Check and install Supabase CLI
+  subheader('Step 1: Supabase CLI');
+  let cliStatus = checkSupabaseCLIInstalled();
+
+  if (cliStatus.installed) {
+    log(`Supabase CLI installed (v${cliStatus.version})`, 'success');
+    results.cliInstalled = true;
+  } else {
+    log('Supabase CLI is not installed', 'warning');
+    console.log('');
+    console.log(color('Supabase CLI is required for:', 'dim'));
+    console.log(color('  - Local development', 'dim'));
+    console.log(color('  - Database migrations', 'dim'));
+    console.log(color('  - Type generation', 'dim'));
+    console.log('');
+
+    const installCli = await askYesNo(rl, 'Would you like to install Supabase CLI now?', true);
+
+    if (installCli) {
+      const installResult = await installSupabaseCLI(platformInfo);
+      if (installResult.success) {
+        results.cliInstalled = true;
+        cliStatus = checkSupabaseCLIInstalled();
+        log(`Supabase CLI installed successfully (v${cliStatus.version})`, 'success');
+      } else {
+        log(`Failed to install: ${installResult.message}`, 'error');
+        console.log('');
+        console.log(color('Manual installation instructions:', 'yellow'));
+        console.log(getSupabaseCLIInstallInstructions(platformInfo));
+        console.log('');
+
+        const continueWithoutCli = await askYesNo(rl, 'Continue without Supabase CLI? (you can install it later)', true);
+        if (!continueWithoutCli) {
+          throw new Error('Supabase CLI is required. Please install it and run setup again.');
+        }
+      }
+    } else {
+      log('Skipping Supabase CLI installation', 'info');
+      console.log(color('You can install it later from https://supabase.com/docs/guides/cli', 'dim'));
+    }
+  }
+
+  // Step 2: Login to Supabase (if CLI installed)
+  if (results.cliInstalled) {
+    subheader('Step 2: Supabase Authentication');
+    const loginStatus = checkSupabaseLoggedIn();
+
+    if (loginStatus.loggedIn) {
+      log('Already logged in to Supabase', 'success');
+      results.loggedIn = true;
+    } else {
+      log('Not logged in to Supabase', 'warning');
+
+      const login = await askYesNo(rl, 'Would you like to login now?', true);
+
+      if (login) {
+        const loginResult = await loginSupabase(rl);
+        if (loginResult.success) {
+          log('Successfully logged in to Supabase', 'success');
+          results.loggedIn = true;
+        } else {
+          log(`Login failed: ${loginResult.message}`, 'error');
+        }
+      }
+    }
+  }
+
+  // Step 3: Initialize Supabase (if CLI installed and logged in)
+  if (results.cliInstalled) {
+    subheader('Step 3: Project Initialization');
+    const isInitialized = checkSupabaseInitialized();
+
+    if (isInitialized) {
+      log('Supabase already initialized in this directory', 'success');
+      results.initialized = true;
+    } else {
+      log('Supabase not initialized in this directory', 'warning');
+
+      const initialize = await askYesNo(rl, 'Would you like to initialize Supabase here?', true);
+
+      if (initialize) {
+        const initResult = await initSupabase();
+        if (initResult.success) {
+          log('Supabase initialized successfully', 'success');
+          results.initialized = true;
+        } else {
+          log(`Initialization failed: ${initResult.message}`, 'error');
+        }
+      }
+    }
+  }
+
+  // Step 4: Link to a project (if CLI installed and logged in)
+  if (results.cliInstalled && results.loggedIn) {
+    subheader('Step 4: Project Linking');
+    const linkStatus = checkSupabaseLinked();
+
+    if (linkStatus.linked) {
+      log('Project is already linked', 'success');
+      results.linked = true;
+    } else {
+      log('Project is not linked to a Supabase project', 'warning');
+
+      const link = await askYesNo(rl, 'Would you like to link to a Supabase project?', true);
+
+      if (link) {
+        console.log('');
+        log('Fetching your Supabase projects...', 'info');
+        const projectsResult = listSupabaseProjects();
+
+        if (projectsResult.success && projectsResult.projects.length > 0) {
+          console.log('');
+          const projectChoices = projectsResult.projects.map(p => ({
+            value: p.id,
+            label: p.name,
+            description: `${p.region} (${p.id})`,
+          }));
+          projectChoices.push({
+            value: 'manual',
+            label: 'Enter project ref manually',
+            description: '',
+          });
+
+          const selectedProject = await askChoice(rl, 'Select a project to link:', projectChoices);
+
+          let projectRef = selectedProject;
+          if (selectedProject === 'manual') {
+            projectRef = await ask(rl, '  Enter project reference ID');
+          }
+
+          if (projectRef && projectRef !== 'manual') {
+            results.projectRef = projectRef;
+            const linkResult = await linkSupabaseProject(projectRef);
+            if (linkResult.success) {
+              log('Project linked successfully', 'success');
+              results.linked = true;
+            } else {
+              log(`Link failed: ${linkResult.message}`, 'error');
+            }
+          }
+        } else {
+          console.log('');
+          console.log(color('No projects found or could not fetch projects.', 'yellow'));
+          console.log('');
+          const manualRef = await ask(rl, '  Enter project reference ID (or press Enter to skip)');
+          if (manualRef) {
+            results.projectRef = manualRef;
+            const linkResult = await linkSupabaseProject(manualRef);
+            if (linkResult.success) {
+              log('Project linked successfully', 'success');
+              results.linked = true;
+            } else {
+              log(`Link failed: ${linkResult.message}`, 'error');
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Step 5: Get project credentials (REQUIRED)
+  subheader('Step 5: Project Credentials (Required)');
+
+  console.log(color('API credentials are required for the application to connect to Supabase.', 'bright'));
+  console.log('');
+
+  const credentials = await getSupabaseCredentials(rl, results.projectRef);
+
+  if (credentials.SUPABASE_URL && credentials.SUPABASE_ANON_KEY) {
+    log('Validating credentials...', 'info');
+    const validation = await validateSupabaseCredentials(credentials);
+
+    if (validation.valid) {
+      log('Credentials validated successfully', 'success');
+      results.credentials = credentials;
+    } else {
+      log(`Validation failed: ${validation.message}`, 'error');
+
+      const retry = await askYesNo(rl, 'Would you like to re-enter credentials?', true);
+      if (retry) {
+        const retryCredentials = await getSupabaseCredentials(rl, results.projectRef);
+        results.credentials = retryCredentials;
+      } else {
+        results.credentials = credentials; // Use anyway
+        log('Using credentials without validation', 'warning');
+      }
+    }
+  } else {
+    log('Supabase credentials are required to continue', 'error');
+
+    const retry = await askYesNo(rl, 'Would you like to enter credentials now?', true);
+    if (retry) {
+      const retryCredentials = await getSupabaseCredentials(rl, results.projectRef);
+      if (!retryCredentials.SUPABASE_URL || !retryCredentials.SUPABASE_ANON_KEY) {
+        throw new Error('Supabase URL and Anon Key are required to continue setup.');
+      }
+      results.credentials = retryCredentials;
+    } else {
+      throw new Error('Supabase credentials are required to continue setup.');
+    }
+  }
+
+  // Summary
+  console.log('');
+  console.log(color('─── Supabase Setup Summary ───', 'cyan'));
+  console.log(`  CLI installed: ${results.cliInstalled ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  Logged in: ${results.loggedIn ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  Initialized: ${results.initialized ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  Project linked: ${results.linked ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  Credentials: ${Object.keys(results.credentials).length > 0 ? color('configured', 'green') : color('not configured', 'red')}`);
+  console.log('');
+
+  return results;
+}
+
+// =============================================================================
+// VERCEL SETUP (OPTIONAL)
+// =============================================================================
+
+/**
+ * Check if Vercel CLI is installed
+ */
+function checkVercelCLIInstalled() {
+  try {
+    const result = execSync('vercel --version', { stdio: 'pipe', encoding: 'utf8' });
+    const match = result.match(/([\d.]+)/);
+    return { installed: true, version: match ? match[1] : 'unknown' };
+  } catch {
+    return { installed: false, version: null };
+  }
+}
+
+/**
+ * Check if user is logged in to Vercel CLI
+ */
+function checkVercelLoggedIn() {
+  try {
+    const result = execSync('vercel whoami', { stdio: 'pipe', encoding: 'utf8', timeout: 10000 });
+    return { loggedIn: true, username: result.trim() };
+  } catch {
+    return { loggedIn: false, username: null };
+  }
+}
+
+/**
+ * Check if project is linked to Vercel
+ */
+function checkVercelLinked() {
+  const vercelDir = path.join(process.cwd(), '.vercel');
+  const projectJson = path.join(vercelDir, 'project.json');
+  if (fs.existsSync(projectJson)) {
+    try {
+      const config = JSON.parse(fs.readFileSync(projectJson, 'utf8'));
+      return { linked: true, projectId: config.projectId, orgId: config.orgId };
+    } catch {
+      return { linked: false };
+    }
+  }
+  return { linked: false };
+}
+
+/**
+ * Get Vercel CLI installation instructions
+ */
+function getVercelCLIInstallInstructions() {
+  return `Install Vercel CLI:
+    npm install -g vercel
+    Or: pnpm add -g vercel`;
+}
+
+/**
+ * Install Vercel CLI
+ */
+async function installVercelCLI() {
+  log('Installing Vercel CLI...', 'info');
+  console.log(color('  Running: npm install -g vercel', 'dim'));
+
+  try {
+    execSync('npm install -g vercel', { stdio: 'inherit', shell: true });
+    if (checkVercelCLIInstalled().installed) {
+      return { success: true };
+    }
+    return { success: false, message: 'Installation completed but vercel not found in PATH' };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Login to Vercel CLI
+ */
+async function loginVercel() {
+  log('Starting Vercel login...', 'info');
+  console.log('');
+  console.log(color('This will open a browser to authenticate with Vercel.', 'dim'));
+  console.log('');
+
+  try {
+    return new Promise((resolve) => {
+      const child = spawn('vercel', ['login'], {
+        stdio: 'inherit',
+        shell: true,
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, message: `Login exited with code ${code}` });
+        }
+      });
+
+      child.on('error', (error) => {
+        resolve({ success: false, message: error.message });
+      });
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Link project to Vercel
+ */
+async function linkVercelProject() {
+  log('Linking project to Vercel...', 'info');
+  console.log('');
+  console.log(color('Follow the prompts to link this project.', 'dim'));
+  console.log('');
+
+  try {
+    return new Promise((resolve) => {
+      const child = spawn('vercel', ['link'], {
+        stdio: 'inherit',
+        shell: true,
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, message: `Link exited with code ${code}` });
+        }
+      });
+
+      child.on('error', (error) => {
+        resolve({ success: false, message: error.message });
+      });
+    });
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Setup Vercel API token for MCP
+ */
+async function setupVercelToken(rl) {
+  subheader('Vercel API Token (for MCP)');
+
+  console.log('An API token is needed for the Vercel MCP server.');
+  console.log('');
+  console.log(color('To create a token:', 'bright'));
+  console.log(`  1. Go to: ${color('https://vercel.com/account/tokens', 'cyan')}`);
+  console.log('  2. Click "Create Token"');
+  console.log('  3. Give it a name (e.g., "Claude Code MCP")');
+  console.log('  4. Select scope (Full Account or specific projects)');
+  console.log('  5. Click "Create Token" and copy it');
+  console.log('');
+
+  const token = await askSecret(rl, 'Paste your Vercel API Token (or press Enter to skip)');
+
+  if (!token) {
+    return { success: false, skipped: true };
+  }
+
+  // Basic validation - try to use the token
+  log('Validating token...', 'info');
+  try {
+    const result = execSync(`curl -s -H "Authorization: Bearer ${token}" https://api.vercel.com/v2/user`, {
+      stdio: 'pipe',
+      encoding: 'utf8',
+      timeout: 10000,
+    });
+    const data = JSON.parse(result);
+    if (data.user && data.user.username) {
+      log(`Token valid! Authenticated as: ${data.user.username}`, 'success');
+      return { success: true, token, username: data.user.username };
+    } else if (data.error) {
+      log(`Token validation failed: ${data.error.message}`, 'error');
+      return { success: false, message: data.error.message };
+    }
+  } catch {
+    log('Could not validate token (network issue) - assuming valid', 'warning');
+    return { success: true, token };
+  }
+
+  return { success: true, token };
+}
+
+/**
+ * Main Vercel setup function (OPTIONAL)
+ */
+async function setupVercel(rl, platformInfo) {
+  header('Vercel Setup (Optional)');
+
+  console.log('Vercel provides deployment and hosting for your application.');
+  console.log('This step is optional but recommended for deployment workflows.');
+  console.log('');
+
+  const setupVercelNow = await askYesNo(rl, 'Would you like to configure Vercel?', true);
+
+  if (!setupVercelNow) {
+    log('Skipping Vercel setup', 'info');
+    console.log(color('You can set up Vercel later by running: npx vercel', 'dim'));
+    return { skipped: true };
+  }
+
+  const results = {
+    cliInstalled: false,
+    loggedIn: false,
+    linked: false,
+    token: null,
+    tokenConfigured: false,
+  };
+
+  // Step 1: Check and install Vercel CLI
+  subheader('Step 1: Vercel CLI');
+  let cliStatus = checkVercelCLIInstalled();
+
+  if (cliStatus.installed) {
+    log(`Vercel CLI installed (v${cliStatus.version})`, 'success');
+    results.cliInstalled = true;
+  } else {
+    log('Vercel CLI is not installed', 'warning');
+
+    const installCli = await askYesNo(rl, 'Would you like to install Vercel CLI now?', true);
+
+    if (installCli) {
+      const installResult = await installVercelCLI();
+      if (installResult.success) {
+        results.cliInstalled = true;
+        cliStatus = checkVercelCLIInstalled();
+        log(`Vercel CLI installed successfully (v${cliStatus.version})`, 'success');
+      } else {
+        log(`Failed to install: ${installResult.message}`, 'error');
+        console.log('');
+        console.log(color('Manual installation:', 'yellow'));
+        console.log(getVercelCLIInstallInstructions());
+      }
+    }
+  }
+
+  // Step 2: Login to Vercel (if CLI installed)
+  if (results.cliInstalled) {
+    subheader('Step 2: Vercel Authentication');
+    const loginStatus = checkVercelLoggedIn();
+
+    if (loginStatus.loggedIn) {
+      log(`Already logged in as: ${loginStatus.username}`, 'success');
+      results.loggedIn = true;
+    } else {
+      log('Not logged in to Vercel', 'warning');
+
+      const login = await askYesNo(rl, 'Would you like to login now?', true);
+
+      if (login) {
+        const loginResult = await loginVercel();
+        if (loginResult.success) {
+          const newStatus = checkVercelLoggedIn();
+          if (newStatus.loggedIn) {
+            log(`Successfully logged in as: ${newStatus.username}`, 'success');
+            results.loggedIn = true;
+          }
+        } else {
+          log(`Login failed: ${loginResult.message}`, 'error');
+        }
+      }
+    }
+  }
+
+  // Step 3: Link project (if CLI installed and logged in)
+  if (results.cliInstalled && results.loggedIn) {
+    subheader('Step 3: Project Linking');
+    const linkStatus = checkVercelLinked();
+
+    if (linkStatus.linked) {
+      log('Project is already linked to Vercel', 'success');
+      results.linked = true;
+    } else {
+      log('Project is not linked to Vercel', 'warning');
+
+      const link = await askYesNo(rl, 'Would you like to link this project to Vercel?', true);
+
+      if (link) {
+        const linkResult = await linkVercelProject();
+        if (linkResult.success) {
+          log('Project linked successfully', 'success');
+          results.linked = true;
+        } else {
+          log(`Link failed: ${linkResult.message}`, 'error');
+        }
+      }
+    }
+  }
+
+  // Step 4: Setup API token for MCP
+  subheader('Step 4: API Token (for MCP)');
+
+  console.log('The Vercel MCP server requires an API token for deployment management.');
+  console.log(color('This is separate from CLI authentication.', 'dim'));
+  console.log('');
+
+  const tokenResult = await setupVercelToken(rl);
+
+  if (tokenResult.success) {
+    results.tokenConfigured = true;
+    results.token = tokenResult.token;
+  } else if (tokenResult.skipped) {
+    log('Token setup skipped - Vercel MCP server will not work without it', 'info');
+  }
+
+  // Summary
+  console.log('');
+  console.log(color('─── Vercel Setup Summary ───', 'cyan'));
+  console.log(`  CLI installed: ${results.cliInstalled ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  Logged in: ${results.loggedIn ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  Project linked: ${results.linked ? color('yes', 'green') : color('no', 'yellow')}`);
+  console.log(`  MCP token: ${results.tokenConfigured ? color('configured', 'green') : color('not configured', 'yellow')}`);
+  console.log('');
+
+  return results;
+}
+
+// =============================================================================
 // CLAUDE CODE INSTALLATION
 // =============================================================================
 
@@ -1109,6 +2358,7 @@ function getMcpServerInfo(name, config) {
     'github': 'GitHub repository operations',
     'postgres': 'PostgreSQL database queries',
     'sqlite': 'SQLite database operations',
+    'supabase': 'Supabase database and auth',
     'brave-search': 'Web search via Brave',
     'google-maps': 'Google Maps integration',
     'slack': 'Slack workspace integration',
@@ -1129,6 +2379,7 @@ function getMcpServerInfo(name, config) {
   const requiredEnvVars = {
     'github': ['GITHUB_PERSONAL_ACCESS_TOKEN'],
     'postgres': [],
+    'supabase': ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'],
     'brave-search': ['BRAVE_API_KEY'],
     'google-maps': ['GOOGLE_MAPS_API_KEY'],
     'slack': ['SLACK_BOT_TOKEN', 'SLACK_TEAM_ID'],
@@ -1173,7 +2424,7 @@ function transformMcpConfigForPlatform(config, platformInfo) {
   return transformed;
 }
 
-async function configureMcpServers(rl, platformInfo) {
+async function configureMcpServers(rl, platformInfo, githubToken = null, supabaseCredentials = null, vercelToken = null) {
   header('MCP Server Configuration');
 
   const template = loadMcpTemplate();
@@ -1185,6 +2436,21 @@ async function configureMcpServers(rl, platformInfo) {
   log(`Detected platform: ${color(platformInfo.displayName, 'cyan')}`);
   if (platformInfo.isWindows) {
     log('Will configure commands with Windows-compatible syntax (cmd /c npx)', 'info');
+  }
+
+  // If GitHub token was provided, show that it will be auto-configured
+  if (githubToken) {
+    log('GitHub token from earlier step will be used for GitHub MCP server', 'info');
+  }
+
+  // If Supabase credentials were provided, show that they will be auto-configured
+  if (supabaseCredentials && Object.keys(supabaseCredentials).length > 0) {
+    log('Supabase credentials from earlier step will be used for Supabase MCP server', 'info');
+  }
+
+  // If Vercel token was provided, show that it will be auto-configured
+  if (vercelToken) {
+    log('Vercel token from earlier step will be used for Vercel MCP server', 'info');
   }
 
   // Ask which servers to enable
@@ -1214,6 +2480,52 @@ async function configureMcpServers(rl, platformInfo) {
   // Collect API keys for enabled servers
   const collectedEnvVars = {};
 
+  // Auto-configure GitHub token if provided
+  if (githubToken && enabledServers.includes('github')) {
+    collectedEnvVars.GITHUB_PERSONAL_ACCESS_TOKEN = githubToken;
+    if (!finalConfig.mcpServers.github.env) {
+      finalConfig.mcpServers.github.env = {};
+    }
+    finalConfig.mcpServers.github.env.GITHUB_PERSONAL_ACCESS_TOKEN = githubToken;
+    log('GitHub token auto-configured from earlier step', 'success');
+  }
+
+  // Auto-configure Supabase credentials if provided
+  if (supabaseCredentials && enabledServers.includes('supabase')) {
+    if (supabaseCredentials.SUPABASE_URL) {
+      collectedEnvVars.SUPABASE_URL = supabaseCredentials.SUPABASE_URL;
+    }
+    if (supabaseCredentials.SUPABASE_SERVICE_ROLE_KEY) {
+      collectedEnvVars.SUPABASE_SERVICE_ROLE_KEY = supabaseCredentials.SUPABASE_SERVICE_ROLE_KEY;
+    }
+    if (!finalConfig.mcpServers.supabase) {
+      finalConfig.mcpServers.supabase = { env: {} };
+    }
+    if (!finalConfig.mcpServers.supabase.env) {
+      finalConfig.mcpServers.supabase.env = {};
+    }
+    if (supabaseCredentials.SUPABASE_URL) {
+      finalConfig.mcpServers.supabase.env.SUPABASE_URL = supabaseCredentials.SUPABASE_URL;
+    }
+    if (supabaseCredentials.SUPABASE_SERVICE_ROLE_KEY) {
+      finalConfig.mcpServers.supabase.env.SUPABASE_SERVICE_ROLE_KEY = supabaseCredentials.SUPABASE_SERVICE_ROLE_KEY;
+    }
+    log('Supabase credentials auto-configured from earlier step', 'success');
+  }
+
+  // Auto-configure Vercel token if provided
+  if (vercelToken && enabledServers.includes('vercel')) {
+    collectedEnvVars.VERCEL_API_TOKEN = vercelToken;
+    if (!finalConfig.mcpServers.vercel) {
+      finalConfig.mcpServers.vercel = { env: {} };
+    }
+    if (!finalConfig.mcpServers.vercel.env) {
+      finalConfig.mcpServers.vercel.env = {};
+    }
+    finalConfig.mcpServers.vercel.env.VERCEL_API_TOKEN = vercelToken;
+    log('Vercel token auto-configured from earlier step', 'success');
+  }
+
   for (const serverName of enabledServers) {
     const choice = serverChoices.find(c => c.value === serverName);
     if (!choice) continue;
@@ -1224,6 +2536,12 @@ async function configureMcpServers(rl, platformInfo) {
       subheader(`Configure ${serverName}`);
 
       for (const envVar of info.requiredEnvVars) {
+        // Skip if already configured (e.g., GitHub token)
+        if (collectedEnvVars[envVar]) {
+          log(`${envVar} already configured`, 'success');
+          continue;
+        }
+
         const currentValue = config.env?.[envVar] || '';
         const isPlaceholder = currentValue.includes('YOUR_') || currentValue === '';
 
@@ -1494,6 +2812,14 @@ function updateGitignore() {
     '',
     '# Dependencies',
     'node_modules/',
+    '',
+    '# Supabase',
+    'supabase/.branches/',
+    'supabase/.temp/',
+    '.supabase/',
+    '',
+    '# Vercel',
+    '.vercel/',
   ];
 
   let content = '';
@@ -1705,6 +3031,53 @@ function showSummary(results) {
 
   console.log('What was configured:\n');
 
+  // GitHub status (required)
+  if (results.github) {
+    const ghParts = [];
+    if (results.github.gitConfigured) ghParts.push('git identity');
+    if (results.github.ghInstalled) ghParts.push('CLI installed');
+    if (results.github.ghAuthenticated) ghParts.push('authenticated');
+    if (results.github.tokenConfigured) ghParts.push('MCP token');
+
+    if (ghParts.length > 0) {
+      console.log(`  ${ICONS.bullet} GitHub: ${color(ghParts.join(', '), 'green')}`);
+    } else {
+      console.log(`  ${ICONS.bullet} GitHub: ${color('partially configured', 'yellow')}`);
+    }
+  }
+
+  // Supabase status (required)
+  if (results.supabase) {
+    const sbParts = [];
+    if (results.supabase.cliInstalled) sbParts.push('CLI installed');
+    if (results.supabase.loggedIn) sbParts.push('logged in');
+    if (results.supabase.linked) sbParts.push('project linked');
+    if (Object.keys(results.supabase.credentials || {}).length > 0) sbParts.push('credentials set');
+
+    if (sbParts.length > 0) {
+      console.log(`  ${ICONS.bullet} Supabase: ${color(sbParts.join(', '), 'green')}`);
+    } else {
+      console.log(`  ${ICONS.bullet} Supabase: ${color('partially configured', 'yellow')}`);
+    }
+  }
+
+  // Vercel status (optional)
+  if (results.vercel && !results.vercel.skipped) {
+    const vParts = [];
+    if (results.vercel.cliInstalled) vParts.push('CLI installed');
+    if (results.vercel.loggedIn) vParts.push('logged in');
+    if (results.vercel.linked) vParts.push('project linked');
+    if (results.vercel.tokenConfigured) vParts.push('MCP token');
+
+    if (vParts.length > 0) {
+      console.log(`  ${ICONS.bullet} Vercel: ${color(vParts.join(', '), 'green')}`);
+    } else {
+      console.log(`  ${ICONS.bullet} Vercel: ${color('partially configured', 'yellow')}`);
+    }
+  } else if (results.vercel?.skipped) {
+    console.log(`  ${ICONS.bullet} Vercel: ${color('skipped (optional)', 'dim')}`);
+  }
+
   // Claude Code status
   if (results.claudeCode?.installed) {
     if (results.claudeCode.wasInstalled) {
@@ -1746,6 +3119,44 @@ function showSummary(results) {
 
   let stepNum = 1;
 
+  // GitHub-related next steps
+  if (results.github && !results.github.ghInstalled) {
+    console.log(`  ${stepNum++}. Install GitHub CLI from ${color('https://cli.github.com/', 'cyan')}`);
+  }
+  if (results.github && results.github.ghInstalled && !results.github.ghAuthenticated) {
+    console.log(`  ${stepNum++}. Authenticate with GitHub: ${color('gh auth login', 'cyan')}`);
+  }
+  if (results.github && !results.github.tokenConfigured) {
+    console.log(`  ${stepNum++}. Create GitHub token at ${color('https://github.com/settings/tokens', 'cyan')}`);
+  }
+
+  // Supabase-related next steps
+  if (results.supabase && !results.supabase.cliInstalled) {
+    console.log(`  ${stepNum++}. Install Supabase CLI from ${color('https://supabase.com/docs/guides/cli', 'cyan')}`);
+  }
+  if (results.supabase && results.supabase.cliInstalled && !results.supabase.loggedIn) {
+    console.log(`  ${stepNum++}. Login to Supabase: ${color('supabase login', 'cyan')}`);
+  }
+  if (results.supabase && !results.supabase.linked) {
+    console.log(`  ${stepNum++}. Link to project: ${color('supabase link --project-ref <ref>', 'cyan')}`);
+  }
+
+  // Vercel-related next steps (if configured but incomplete)
+  if (results.vercel && !results.vercel.skipped) {
+    if (!results.vercel.cliInstalled) {
+      console.log(`  ${stepNum++}. Install Vercel CLI: ${color('npm i -g vercel', 'cyan')}`);
+    }
+    if (results.vercel.cliInstalled && !results.vercel.loggedIn) {
+      console.log(`  ${stepNum++}. Login to Vercel: ${color('vercel login', 'cyan')}`);
+    }
+    if (results.vercel.cliInstalled && !results.vercel.linked) {
+      console.log(`  ${stepNum++}. Link project: ${color('vercel link', 'cyan')}`);
+    }
+    if (!results.vercel.tokenConfigured) {
+      console.log(`  ${stepNum++}. Create Vercel token at ${color('https://vercel.com/account/tokens', 'cyan')}`);
+    }
+  }
+
   // If Claude Code not installed, that's the first step
   if (!results.claudeCode?.installed) {
     console.log(`  ${stepNum++}. Install Claude Code from ${color('https://claude.ai/code', 'cyan')}`);
@@ -1764,6 +3175,13 @@ function showSummary(results) {
 
   console.log('\n' + color('Useful commands:', 'bright'));
   console.log(`  ${color('claude', 'cyan')}              ${ICONS.arrow} Start Claude Code`);
+  console.log(`  ${color('gh auth status', 'cyan')}      ${ICONS.arrow} Check GitHub auth`);
+  console.log(`  ${color('gh pr create', 'cyan')}        ${ICONS.arrow} Create a pull request`);
+  console.log(`  ${color('supabase status', 'cyan')}     ${ICONS.arrow} Check Supabase status`);
+  console.log(`  ${color('supabase db push', 'cyan')}    ${ICONS.arrow} Push migrations to remote`);
+  console.log(`  ${color('supabase start', 'cyan')}      ${ICONS.arrow} Start local Supabase`);
+  console.log(`  ${color('vercel', 'cyan')}              ${ICONS.arrow} Deploy to Vercel`);
+  console.log(`  ${color('vercel dev', 'cyan')}          ${ICONS.arrow} Run Vercel dev server`);
   console.log(`  ${color('npm run fix', 'cyan')}         ${ICONS.arrow} Format + lint all files`);
   console.log(`  ${color('npm run check', 'cyan')}       ${ICONS.arrow} Verify code quality`);
   console.log(`  ${color('npm test', 'cyan')}            ${ICONS.arrow} Run tests`);
@@ -1924,17 +3342,45 @@ async function attemptAutoInstall(rl, prereqs, platformInfo) {
  * Continue setup after prerequisites are satisfied
  */
 async function continueSetup(rl, platformInfo, prereqs, results) {
+  // REQUIRED: Setup GitHub first
+  results.github = await setupGitHub(rl, platformInfo);
+
+  // REQUIRED: Setup Supabase
+  results.supabase = await setupSupabase(rl, platformInfo);
+
+  // OPTIONAL: Setup Vercel
+  results.vercel = await setupVercel(rl, platformInfo);
+
   // Check and optionally install Claude Code CLI
   results.claudeCode = await setupClaudeCode(rl, platformInfo);
 
-  // Configure MCP servers
-  results.mcp = await configureMcpServers(rl, platformInfo);
+  // Configure MCP servers (pass collected tokens and credentials)
+  results.mcp = await configureMcpServers(
+    rl,
+    platformInfo,
+    results.github?.token,
+    results.supabase?.credentials,
+    results.vercel?.token
+  );
 
   // Update gitignore (before creating files with secrets)
   updateGitignore();
 
   // Setup environment files
-  await setupEnvironmentFiles(rl, results.mcp?.envVars || {});
+  const envVars = { ...results.mcp?.envVars };
+  // Add GitHub token to env vars if configured
+  if (results.github?.token) {
+    envVars.GITHUB_PERSONAL_ACCESS_TOKEN = results.github.token;
+  }
+  // Add Supabase credentials to env vars
+  if (results.supabase?.credentials) {
+    Object.assign(envVars, results.supabase.credentials);
+  }
+  // Add Vercel token to env vars
+  if (results.vercel?.token) {
+    envVars.VERCEL_API_TOKEN = results.vercel.token;
+  }
+  await setupEnvironmentFiles(rl, envVars);
   results.envCreated = fs.existsSync(path.join(process.cwd(), '.env'));
 
   // Create directories
