@@ -1474,6 +1474,7 @@ Configure operations that don't require user confirmation:
 /test-and-build      # Run tests and build, fix errors
 /review-changes      # Code review before committing
 /security-review     # Security audit
+/open-localhost      # Open dev server in browser (auto-detects port)
 ```
 
 ### Most Used Agents (Weekly)

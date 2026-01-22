@@ -111,6 +111,30 @@ Then authenticate:
 gh auth login
 ```
 
+### Step 6: Running Your Project
+
+**Auto-Open Localhost** (Configured During Setup):
+
+If you enabled auto-open during setup, your browser will automatically open when you start the dev server:
+```bash
+npm run dev
+# Browser opens automatically to http://localhost:3000 (or configured port)
+```
+
+**Manual Browser Opening**:
+
+If you didn't enable auto-open or want to manually open localhost:
+```
+/open-localhost              # Auto-detects port from .env or package.json
+/open-localhost 3000         # Opens specific port
+```
+
+**Configuring Auto-Open After Setup**:
+
+- **Vite**: Edit `vite.config.ts` → add `server: { open: true }`
+- **Next.js**: Edit `package.json` → change `"dev": "next dev --open"`
+- **Other frameworks**: See `.claude/skills/dev-server-autoopen.md` for patterns
+
 ## 📋 Common Workflows
 
 ### Workflow 1: Adding a New Feature (Standard)
@@ -189,6 +213,7 @@ gh auth login
 | `/e2e [workflow]` | E2E test generation | Testing critical user workflows |
 | `/spike [question]` | Time-boxed technical research | Exploring technologies/approaches |
 | `/new-component [name]` | Scaffold component + tests + stories | Creating new React components |
+| `/open-localhost [port]` | Open browser to localhost | Manually open dev server in browser |
 
 ### Code Quality Commands
 | Command | Purpose | When to Use |

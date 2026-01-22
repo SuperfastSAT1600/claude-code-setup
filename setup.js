@@ -2214,6 +2214,277 @@ async function installClaudeCode(rl, platformInfo) {
   return verified;
 }
 
+// =============================================================================
+// AUTO-OPEN LOCALHOST CONFIGURATION
+// =============================================================================
+
+/**
+ * Detect the project framework by examining package.json dependencies
+ */
+function detectProjectFramework() {
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+
+  if (!fs.existsSync(packageJsonPath)) {
+    return 'unknown';
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+
+    // Check for framework markers
+    if (deps.vite || deps['@vitejs/plugin-react']) return 'vite';
+    if (deps.next) return 'nextjs';
+    if (deps['react-scripts']) return 'cra';
+    if (deps['@angular/core']) return 'angular';
+    if (deps['@vue/cli-service']) return 'vue';
+    if (deps.express || deps.fastify || deps.koa) return 'node';
+
+    return 'unknown';
+  } catch (error) {
+    return 'unknown';
+  }
+}
+
+/**
+ * Update Vite configuration to enable auto-open
+ */
+function updateViteConfig() {
+  const configPaths = [
+    path.join(process.cwd(), 'vite.config.ts'),
+    path.join(process.cwd(), 'vite.config.js'),
+  ];
+
+  let configPath = null;
+  for (const p of configPaths) {
+    if (fs.existsSync(p)) {
+      configPath = p;
+      break;
+    }
+  }
+
+  if (!configPath) {
+    log('No vite.config file found, skipping auto-open configuration', 'warning');
+    return false;
+  }
+
+  try {
+    let content = fs.readFileSync(configPath, 'utf8');
+
+    // Check if server.open already configured
+    if (content.includes('open:')) {
+      log('Vite auto-open already configured', 'info');
+      return true;
+    }
+
+    // Find the server configuration section or add it
+    if (content.includes('server:')) {
+      // Add open: true to existing server config
+      content = content.replace(
+        /(server:\s*{)/,
+        '$1\n    open: true,'
+      );
+    } else {
+      // Add entire server config
+      // Find the defineConfig section
+      if (content.includes('export default defineConfig({')) {
+        content = content.replace(
+          /(export default defineConfig\(\{)/,
+          '$1\n  server: {\n    open: true,\n  },'
+        );
+      } else if (content.includes('export default {')) {
+        content = content.replace(
+          /(export default \{)/,
+          '$1\n  server: {\n    open: true,\n  },'
+        );
+      }
+    }
+
+    fs.writeFileSync(configPath, content, 'utf8');
+    log(`Updated ${path.basename(configPath)} to auto-open browser`, 'success');
+    return true;
+  } catch (error) {
+    log(`Failed to update Vite config: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+/**
+ * Update Next.js dev script to include --open flag
+ */
+function updateNextJsDevScript() {
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+
+  if (!fs.existsSync(packageJsonPath)) {
+    return false;
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+    if (!packageJson.scripts) {
+      packageJson.scripts = {};
+    }
+
+    // Check if already has --open
+    if (packageJson.scripts.dev && packageJson.scripts.dev.includes('--open')) {
+      log('Next.js auto-open already configured', 'info');
+      return true;
+    }
+
+    // Update dev script
+    if (packageJson.scripts.dev) {
+      if (packageJson.scripts.dev.includes('next dev')) {
+        packageJson.scripts.dev = packageJson.scripts.dev.replace('next dev', 'next dev --open');
+      } else {
+        // Custom dev script, append --open
+        packageJson.scripts.dev += ' --open';
+      }
+    } else {
+      // Create dev script
+      packageJson.scripts.dev = 'next dev --open';
+    }
+
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', 'utf8');
+    log('Updated package.json dev script to auto-open browser', 'success');
+    return true;
+  } catch (error) {
+    log(`Failed to update Next.js config: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+/**
+ * Configure auto-open for other frameworks using environment variable
+ */
+function configureGenericAutoOpen() {
+  const envPath = path.join(process.cwd(), '.env');
+  let envContent = '';
+
+  if (fs.existsSync(envPath)) {
+    envContent = fs.readFileSync(envPath, 'utf8');
+  }
+
+  // Check if AUTO_OPEN_BROWSER already set
+  if (envContent.includes('AUTO_OPEN_BROWSER=')) {
+    log('Auto-open environment variable already configured', 'info');
+    return true;
+  }
+
+  // Add AUTO_OPEN_BROWSER to .env
+  const newLine = envContent && !envContent.endsWith('\n') ? '\n' : '';
+  envContent += `${newLine}# Auto-open browser when dev server starts\nAUTO_OPEN_BROWSER=true\n`;
+
+  try {
+    fs.writeFileSync(envPath, envContent, 'utf8');
+    log('Added AUTO_OPEN_BROWSER=true to .env', 'success');
+    log('You may need to configure your server to use this variable', 'info');
+    return true;
+  } catch (error) {
+    log(`Failed to update .env: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+/**
+ * Main auto-open configuration function
+ */
+async function configureAutoOpenLocalhost(rl) {
+  header('Auto-Open Localhost Configuration');
+
+  console.log('Configure your dev server to automatically open in the browser when it starts.');
+  console.log('');
+
+  const shouldConfigure = await askYesNo(
+    rl,
+    'Auto-open localhost when dev server starts?',
+    true
+  );
+
+  if (!shouldConfigure) {
+    log('Skipping auto-open configuration', 'info');
+    console.log('');
+    console.log(`You can manually open localhost later with: ${color('/open-localhost', 'cyan')}`);
+    return { configured: false };
+  }
+
+  const framework = detectProjectFramework();
+  console.log(`Detected framework: ${color(framework, 'cyan')}`);
+  console.log('');
+
+  let success = false;
+
+  switch (framework) {
+    case 'vite':
+      log('Configuring Vite auto-open...', 'info');
+      success = updateViteConfig();
+      break;
+
+    case 'nextjs':
+      log('Configuring Next.js auto-open...', 'info');
+      success = updateNextJsDevScript();
+      break;
+
+    case 'cra':
+      log('Configuring Create React App auto-open...', 'info');
+      success = configureGenericAutoOpen();
+      console.log('Note: CRA uses BROWSER environment variable for auto-open');
+      break;
+
+    case 'angular':
+    case 'vue':
+    case 'node':
+      log('Configuring auto-open via environment variable...', 'info');
+      success = configureGenericAutoOpen();
+      console.log(`Tip: See ${color('.claude/skills/dev-server-autoopen.md', 'cyan')} for ${framework}-specific configuration`);
+      break;
+
+    case 'unknown':
+      log('Could not detect framework automatically', 'warning');
+      console.log('');
+      const manualChoice = await askSelect(
+        rl,
+        'Which framework are you using?',
+        [
+          { value: 'vite', label: 'Vite', description: 'Vite-based project (React, Vue, etc.)' },
+          { value: 'nextjs', label: 'Next.js', description: 'Next.js framework' },
+          { value: 'other', label: 'Other/Custom', description: 'Custom Node server or other framework' },
+          { value: 'skip', label: 'Skip', description: 'Configure manually later' },
+        ],
+        'vite'
+      );
+
+      if (manualChoice === 'vite') {
+        success = updateViteConfig();
+      } else if (manualChoice === 'nextjs') {
+        success = updateNextJsDevScript();
+      } else if (manualChoice === 'other') {
+        success = configureGenericAutoOpen();
+        console.log(`\nSee ${color('.claude/skills/dev-server-autoopen.md', 'cyan')} for framework-specific instructions`);
+      } else {
+        log('Skipping auto-open configuration', 'info');
+        return { configured: false };
+      }
+      break;
+  }
+
+  console.log('');
+
+  if (success) {
+    log('✅ Auto-open configured successfully!', 'success');
+    console.log('');
+    console.log('Your browser will automatically open when you run:');
+    console.log(`  ${color('npm run dev', 'cyan')}`);
+  } else {
+    log('Auto-open configuration incomplete', 'warning');
+    console.log('');
+    console.log('You can still manually open localhost with:');
+    console.log(`  ${color('/open-localhost', 'cyan')}`);
+  }
+
+  return { configured: success, framework };
+}
+
 /**
  * Check and optionally install Claude Code
  */
@@ -3105,6 +3376,14 @@ function showSummary(results) {
     console.log(`  ${ICONS.bullet} Package.json: ${color('merged Claude Code dependencies', 'green')}`);
   }
 
+  // Auto-open status
+  if (results.autoOpen?.configured) {
+    const framework = results.autoOpen.framework || 'detected framework';
+    console.log(`  ${ICONS.bullet} Auto-open: ${color(`configured for ${framework}`, 'green')}`);
+  } else if (results.autoOpen?.configured === false) {
+    console.log(`  ${ICONS.bullet} Auto-open: ${color('skipped - use /open-localhost command', 'dim')}`);
+  }
+
   console.log(`  ${ICONS.bullet} Gitignore: ${color('secrets excluded', 'green')}`);
 
   // Check if hooks will work
@@ -3397,6 +3676,9 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
 
   // Install dependencies
   await installDependencies(rl, prereqs.packageManagers);
+
+  // Configure auto-open localhost (optional, after dependencies installed)
+  results.autoOpen = await configureAutoOpenLocalhost(rl);
 
   // Show summary
   showSummary(results);
