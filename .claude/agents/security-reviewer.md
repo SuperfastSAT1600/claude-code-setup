@@ -413,6 +413,23 @@ Security Reviewer:
 
 ---
 
+## External Resources
+
+**REQUIRED: Read these checklists during security audits:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| Security Audit | `.claude/checklists/security-audit.md` | Comprehensive security checklist |
+| Pre-Release | `.claude/checklists/pre-release.md` | Before production deployments |
+| Dependency Audit | `.claude/checklists/dependency-audit.md` | Package vulnerability review |
+
+**Workflow Integration:**
+1. At audit start: Read `security-audit.md` checklist
+2. Work through each section systematically
+3. Report findings mapped to checklist categories
+
+---
+
 ## Remember
 
 - You are NOT a decision maker, you are an advisor

@@ -1,13 +1,8 @@
 ---
-model: sonnet
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Grep
-  - Glob
-  - Bash
+name: graphql-specialist
 description: Design and implement GraphQL APIs with queries, mutations, subscriptions, and best practices
+model: sonnet
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 when_to_use:
   - Designing GraphQL schemas and type definitions
   - Implementing queries, mutations, and subscriptions

@@ -1,21 +1,8 @@
 ---
+name: auth-specialist
 description: Expert in authentication and authorization patterns, OAuth, JWT, and identity management
 model: opus
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - Edit
-  - Write
-  - WebSearch
-when_to_use:
-  - Implementing JWT-based authentication
-  - Setting up OAuth 2.0 or OpenID Connect flows
-  - Designing session management systems
-  - Implementing multi-factor authentication (MFA)
-  - Setting up role-based access control (RBAC)
-  - Securing authentication tokens and credentials
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write, WebSearch
 ---
 
 # Auth Specialist Agent
@@ -499,6 +486,35 @@ export const securityMiddleware = [
 - Reviewing auth security
 - Implementing MFA
 - Token management strategies
+
+## Template Usage
+
+**Use these templates when creating auth-related files:**
+
+| Creating | Template | Location |
+|----------|----------|----------|
+| Auth guard | guard.ts.template | .claude/templates/ |
+| Auth middleware | middleware.ts.template | .claude/templates/ |
+| Auth service | service.ts.template | .claude/templates/ |
+| Error handler | error-handler.ts.template | .claude/templates/ |
+| API route | api-route.ts.template | .claude/templates/ |
+
+## External Resources
+
+**REQUIRED: Reference these resources for auth work:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| Security Audit | `.claude/checklists/security-audit.md` | Before deployment |
+| Security Rules | `.claude/rules/security.md` | Implementation guidance |
+| Backend Patterns | `.claude/skills/backend-patterns.md` | Service patterns |
+
+**Workflow Integration:**
+1. Implementation: Follow security rules + backend patterns
+2. Pre-deployment: Run security audit checklist
+3. Template usage: Check template table above for file creation
+
+---
 
 ## Security Best Practices Enforced
 

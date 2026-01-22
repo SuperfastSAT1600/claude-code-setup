@@ -1,12 +1,8 @@
 ---
-model: haiku
-allowed-tools:
-  - Read
-  - Edit
-  - Grep
-  - Glob
-  - Bash
+name: type-safety-enforcer
 description: Enforce TypeScript strict mode and eliminate type safety issues
+model: haiku
+allowed-tools: Read, Edit, Grep, Glob, Bash
 when_to_use:
   - Eliminating `any` types from codebase
   - Enabling TypeScript strict mode

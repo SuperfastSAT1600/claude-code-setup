@@ -1,20 +1,8 @@
 ---
+name: docker-specialist
 description: Expert in containerization with Docker, multi-stage builds, and container orchestration
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - Edit
-  - Write
-when_to_use:
-  - Creating or optimizing Dockerfiles
-  - Implementing multi-stage builds to reduce image size
-  - Setting up docker-compose for local development
-  - Troubleshooting container issues
-  - Optimizing build times and layer caching
-  - Creating production-ready container images
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
 # Docker Specialist Agent

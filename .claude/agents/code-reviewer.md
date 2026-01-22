@@ -1,18 +1,8 @@
 ---
+name: code-reviewer
 description: Comprehensive code reviewer focusing on quality, patterns, and maintainability
 model: opus
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-when_to_use:
-  - Before creating pull requests to ensure code quality
-  - Reviewing uncommitted changes before commit
-  - Getting feedback on implementation approach
-  - Identifying code smells and anti-patterns
-  - Ensuring adherence to project standards
-  - Learning better coding practices through feedback
+allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Code Reviewer Agent
@@ -268,6 +258,24 @@ Must fix critical security issues before approval.
 - **performance-optimizer**: Defer complex performance issues
 - **refactor-cleaner**: For larger refactoring suggestions
 - **tech-debt-analyzer**: For tracking identified debt
+
+## External Resources
+
+**REQUIRED: Read these resources before completing any review:**
+
+| Resource | Location | When to Use |
+|----------|----------|-------------|
+| AI Code Detection | `.claude/checklists/ai-code-review.md` | Detect AI-generated code inconsistencies |
+| PR Review | `.claude/checklists/pr-review.md` | Pre-merge quality gates |
+| Code Style | `.claude/rules/coding-style.md` | Style violation checks |
+| Security | `.claude/rules/security.md` | Security concern identification |
+
+**Workflow Integration:**
+1. At review start: Read `ai-code-review.md` checklist
+2. Apply checklist items to identify inconsistencies
+3. Include relevant findings in review output
+
+---
 
 ## Review Philosophy
 

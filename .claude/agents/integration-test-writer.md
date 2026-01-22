@@ -1,13 +1,8 @@
 ---
+name: integration-test-writer
 description: Specialist for writing integration tests that verify component interactions
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - Edit
-  - Write
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 when_to_use:
   - Testing API endpoints with database interactions
   - Verifying service-to-service communication

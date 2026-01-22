@@ -1,11 +1,8 @@
 ---
-model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
+name: performance-optimizer
 description: Profile and optimize application performance bottlenecks
+model: sonnet
+allowed-tools: Read, Grep, Glob, Bash
 when_to_use:
   - Application is slow or unresponsive
   - Identifying N+1 database query problems

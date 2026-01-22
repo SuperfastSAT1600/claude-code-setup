@@ -26,9 +26,42 @@ const { execSync, spawn } = require('child_process');
 // =============================================================================
 
 const CONFIG = {
+  // Node.js requirements
   nodeMinVersion: 18,
+
+  // Claude Code system requirements
+  claudeCode: {
+    // Minimum OS versions
+    minOsVersions: {
+      darwin: '13.0',      // macOS 13.0+
+      linux: '20.04',      // Ubuntu 20.04+ (checked via lsb_release)
+      win32: '10.0',       // Windows 10+
+    },
+    // Minimum RAM in GB
+    minRamGB: 4,
+  },
+
+  // Required tools for this project
   requiredTools: ['git', 'npm'],
+
+  // Claude Code dependencies
+  claudeCodeDependencies: {
+    // Required for all platforms
+    common: ['git'],
+    // Required for native installation on Unix
+    unix: ['curl'],
+    // Windows needs either WSL or Git Bash
+    windows: {
+      options: ['wsl', 'bash'],  // At least one required
+      preferred: 'bash',         // Git Bash is simpler
+    },
+    // Recommended but not strictly required
+    recommended: ['rg'],         // ripgrep - bundled but good to have
+  },
+
+  // Optional package managers
   optionalTools: ['pnpm', 'yarn', 'bun'],
+
   templateFiles: [
     { from: '.env.example', to: '.env' },
   ],
@@ -168,24 +201,133 @@ function subheader(text) {
 // PLATFORM DETECTION
 // =============================================================================
 
+/**
+ * Get OS version string
+ */
+function getOsVersion() {
+  const platform = os.platform();
+
+  try {
+    if (platform === 'darwin') {
+      // macOS: use sw_vers
+      const version = execSync('sw_vers -productVersion', { stdio: 'pipe', encoding: 'utf8' }).trim();
+      return version; // e.g., "14.2.1"
+    } else if (platform === 'linux') {
+      // Linux: try lsb_release first, then /etc/os-release
+      try {
+        const version = execSync('lsb_release -rs', { stdio: 'pipe', encoding: 'utf8' }).trim();
+        return version; // e.g., "22.04"
+      } catch {
+        // Fallback to /etc/os-release
+        if (fs.existsSync('/etc/os-release')) {
+          const content = fs.readFileSync('/etc/os-release', 'utf8');
+          const match = content.match(/VERSION_ID="?([^"\n]+)"?/);
+          if (match) return match[1];
+        }
+        return 'unknown';
+      }
+    } else if (platform === 'win32') {
+      // Windows: use wmic or ver
+      try {
+        const version = execSync('wmic os get Version /value', { stdio: 'pipe', encoding: 'utf8' });
+        const match = version.match(/Version=(\d+\.\d+)/);
+        if (match) return match[1]; // e.g., "10.0"
+      } catch {
+        // Fallback to os.release()
+        return os.release().split('.').slice(0, 2).join('.');
+      }
+    }
+  } catch {
+    return 'unknown';
+  }
+
+  return 'unknown';
+}
+
+/**
+ * Get Linux distribution name
+ */
+function getLinuxDistro() {
+  try {
+    if (fs.existsSync('/etc/os-release')) {
+      const content = fs.readFileSync('/etc/os-release', 'utf8');
+      const match = content.match(/^ID=["']?(\w+)["']?/m);
+      if (match) return match[1].toLowerCase(); // e.g., "ubuntu", "debian", "alpine"
+    }
+    // Fallback to lsb_release
+    const distro = execSync('lsb_release -is', { stdio: 'pipe', encoding: 'utf8' }).trim();
+    return distro.toLowerCase();
+  } catch {
+    return 'unknown';
+  }
+}
+
+/**
+ * Get system RAM in GB
+ */
+function getSystemRamGB() {
+  const totalBytes = os.totalmem();
+  return Math.round(totalBytes / (1024 * 1024 * 1024));
+}
+
+/**
+ * Check if running in WSL
+ */
+function isRunningInWSL() {
+  if (process.platform !== 'linux') return false;
+
+  try {
+    // Check for WSL-specific markers
+    if (fs.existsSync('/proc/version')) {
+      const version = fs.readFileSync('/proc/version', 'utf8');
+      return version.toLowerCase().includes('microsoft') || version.toLowerCase().includes('wsl');
+    }
+    // Alternative: check for WSL environment variable
+    return !!process.env.WSL_DISTRO_NAME;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Get comprehensive platform information
+ */
 function getPlatformInfo() {
   const platform = os.platform();
   const arch = os.arch();
+  const osVersion = getOsVersion();
+  const ramGB = getSystemRamGB();
 
-  return {
+  const info = {
     platform,
     arch,
+    osVersion,
+    ramGB,
     isWindows: platform === 'win32',
     isMac: platform === 'darwin',
     isLinux: platform === 'linux',
+    isWSL: isRunningInWSL(),
     displayName: platform === 'win32' ? 'Windows' : platform === 'darwin' ? 'macOS' : 'Linux',
   };
+
+  // Add Linux distro info
+  if (info.isLinux) {
+    info.linuxDistro = getLinuxDistro();
+    info.isAlpine = info.linuxDistro === 'alpine';
+    info.isDebian = ['debian', 'ubuntu', 'linuxmint', 'pop'].includes(info.linuxDistro);
+    info.isRHEL = ['rhel', 'centos', 'fedora', 'rocky', 'almalinux'].includes(info.linuxDistro);
+  }
+
+  return info;
 }
 
 // =============================================================================
 // PREREQUISITES CHECK
 // =============================================================================
 
+/**
+ * Check if a command exists
+ */
 function checkCommand(cmd) {
   try {
     const checkCmd = process.platform === 'win32' ? `where ${cmd}` : `which ${cmd}`;
@@ -196,6 +338,23 @@ function checkCommand(cmd) {
   }
 }
 
+/**
+ * Get command version
+ */
+function getCommandVersion(cmd, versionFlag = '--version') {
+  try {
+    const result = execSync(`${cmd} ${versionFlag}`, { stdio: 'pipe', encoding: 'utf8' });
+    // Extract version number from output
+    const match = result.match(/(\d+\.\d+(\.\d+)?)/);
+    return match ? match[1] : 'unknown';
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Get Node.js version
+ */
 function getNodeVersion() {
   try {
     const version = process.version;
@@ -206,10 +365,271 @@ function getNodeVersion() {
   }
 }
 
-function checkPrerequisites() {
+/**
+ * Compare version strings (e.g., "14.2.1" >= "13.0")
+ */
+function compareVersions(current, minimum) {
+  if (current === 'unknown') return false;
+
+  const currentParts = current.split('.').map(Number);
+  const minimumParts = minimum.split('.').map(Number);
+
+  for (let i = 0; i < minimumParts.length; i++) {
+    const curr = currentParts[i] || 0;
+    const min = minimumParts[i] || 0;
+
+    if (curr > min) return true;
+    if (curr < min) return false;
+  }
+  return true; // Equal
+}
+
+/**
+ * Get installation instructions for a tool
+ */
+function getInstallInstructions(tool, platformInfo) {
+  const instructions = {
+    git: {
+      darwin: 'Install Xcode Command Line Tools: xcode-select --install\n    Or install via Homebrew: brew install git',
+      linux: platformInfo.isDebian
+        ? 'sudo apt-get update && sudo apt-get install -y git'
+        : platformInfo.isRHEL
+          ? 'sudo dnf install -y git'
+          : 'Install git using your package manager',
+      win32: 'Download from https://git-scm.com/downloads/win\n    Or use: winget install Git.Git',
+    },
+    curl: {
+      darwin: 'curl is included with macOS',
+      linux: platformInfo.isDebian
+        ? 'sudo apt-get update && sudo apt-get install -y curl'
+        : platformInfo.isRHEL
+          ? 'sudo dnf install -y curl'
+          : 'Install curl using your package manager',
+      win32: 'curl is included with Windows 10+',
+    },
+    rg: {
+      darwin: 'brew install ripgrep',
+      linux: platformInfo.isDebian
+        ? 'sudo apt-get update && sudo apt-get install -y ripgrep'
+        : platformInfo.isRHEL
+          ? 'sudo dnf install -y ripgrep'
+          : platformInfo.isAlpine
+            ? 'apk add ripgrep'
+            : 'Install ripgrep from https://github.com/BurntSushi/ripgrep',
+      win32: 'winget install BurntSushi.ripgrep.MSVC\n    Or: choco install ripgrep',
+    },
+    node: {
+      darwin: 'brew install node\n    Or download from https://nodejs.org/',
+      linux: 'curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -\n    sudo apt-get install -y nodejs',
+      win32: 'Download from https://nodejs.org/\n    Or: winget install OpenJS.NodeJS.LTS',
+    },
+    npm: {
+      darwin: 'npm is included with Node.js',
+      linux: 'npm is included with Node.js',
+      win32: 'npm is included with Node.js',
+    },
+    wsl: {
+      win32: 'wsl --install\n    Then restart your computer',
+    },
+    bash: {
+      win32: 'Install Git for Windows: https://git-scm.com/downloads/win\n    Git Bash is included',
+    },
+  };
+
+  const toolInstructions = instructions[tool];
+  if (!toolInstructions) return `Install ${tool} from its official website`;
+
+  return toolInstructions[platformInfo.platform] || `Install ${tool} from its official website`;
+}
+
+/**
+ * Check Claude Code specific dependencies
+ */
+function checkClaudeCodeDependencies(platformInfo) {
+  const results = {
+    passed: true,
+    issues: [],
+    warnings: [],
+    dependencies: {},
+  };
+
+  // Check common dependencies
+  for (const tool of CONFIG.claudeCodeDependencies.common) {
+    const installed = checkCommand(tool);
+    const version = installed ? getCommandVersion(tool) : null;
+    results.dependencies[tool] = { installed, version, required: true };
+
+    if (!installed) {
+      results.passed = false;
+      results.issues.push({
+        tool,
+        message: `${tool} is not installed (required for Claude Code)`,
+        instructions: getInstallInstructions(tool, platformInfo),
+      });
+    }
+  }
+
+  // Check Unix-specific dependencies
+  if (!platformInfo.isWindows) {
+    for (const tool of CONFIG.claudeCodeDependencies.unix) {
+      const installed = checkCommand(tool);
+      results.dependencies[tool] = { installed, required: true };
+
+      if (!installed) {
+        results.passed = false;
+        results.issues.push({
+          tool,
+          message: `${tool} is not installed (required for native Claude Code installation)`,
+          instructions: getInstallInstructions(tool, platformInfo),
+        });
+      }
+    }
+  }
+
+  // Check Windows-specific dependencies
+  if (platformInfo.isWindows) {
+    const { options, preferred } = CONFIG.claudeCodeDependencies.windows;
+    const hasAny = options.some(opt => checkCommand(opt));
+
+    for (const opt of options) {
+      const installed = checkCommand(opt);
+      results.dependencies[opt] = { installed, required: false };
+    }
+
+    if (!hasAny) {
+      results.passed = false;
+      results.issues.push({
+        tool: 'shell',
+        message: 'Claude Code on Windows requires either WSL or Git Bash',
+        instructions: `Option 1 (Recommended): Install Git for Windows\n    ${getInstallInstructions('bash', platformInfo)}\n\n    Option 2: Install WSL\n    ${getInstallInstructions('wsl', platformInfo)}`,
+      });
+    }
+  }
+
+  // Check recommended dependencies
+  for (const tool of CONFIG.claudeCodeDependencies.recommended) {
+    const installed = checkCommand(tool);
+    const version = installed ? getCommandVersion(tool) : null;
+    results.dependencies[tool] = { installed, version, required: false };
+
+    if (!installed) {
+      results.warnings.push({
+        tool,
+        message: `${tool} (ripgrep) is not installed - search functionality may be limited`,
+        instructions: getInstallInstructions(tool, platformInfo),
+      });
+    }
+  }
+
+  // Check Alpine Linux specific requirements
+  if (platformInfo.isAlpine) {
+    const alpineDeps = ['libgcc', 'libstdc++'];
+    results.warnings.push({
+      tool: 'alpine-deps',
+      message: 'Alpine Linux requires additional dependencies for Claude Code',
+      instructions: `apk add libgcc libstdc++ ripgrep\nSET USE_BUILTIN_RIPGREP=0`,
+    });
+  }
+
+  return results;
+}
+
+/**
+ * Check OS version meets requirements
+ */
+function checkOsVersion(platformInfo) {
+  const minVersions = CONFIG.claudeCode.minOsVersions;
+  const minVersion = minVersions[platformInfo.platform];
+
+  if (!minVersion) {
+    return { passed: true, message: 'OS version check not applicable' };
+  }
+
+  const currentVersion = platformInfo.osVersion;
+  const meetsRequirement = compareVersions(currentVersion, minVersion);
+
+  return {
+    passed: meetsRequirement,
+    currentVersion,
+    minVersion,
+    message: meetsRequirement
+      ? `${platformInfo.displayName} ${currentVersion} meets minimum requirement (${minVersion}+)`
+      : `${platformInfo.displayName} ${currentVersion} does not meet minimum requirement (${minVersion}+)`,
+  };
+}
+
+/**
+ * Check system RAM
+ */
+function checkSystemRam(platformInfo) {
+  const minRamGB = CONFIG.claudeCode.minRamGB;
+  const currentRamGB = platformInfo.ramGB;
+  const meetsRequirement = currentRamGB >= minRamGB;
+
+  return {
+    passed: meetsRequirement,
+    currentRamGB,
+    minRamGB,
+    message: meetsRequirement
+      ? `${currentRamGB}GB RAM meets minimum requirement (${minRamGB}GB+)`
+      : `${currentRamGB}GB RAM does not meet minimum requirement (${minRamGB}GB+)`,
+  };
+}
+
+/**
+ * Main prerequisites check function
+ */
+function checkPrerequisites(platformInfo) {
   header('Checking Prerequisites');
 
-  const results = { passed: true, issues: [] };
+  const results = {
+    passed: true,
+    issues: [],
+    warnings: [],
+    packageManagers: ['npm'],
+  };
+
+  // --- System Requirements ---
+  subheader('System Requirements');
+
+  // Check OS version
+  const osCheck = checkOsVersion(platformInfo);
+  if (osCheck.passed) {
+    log(osCheck.message, 'success');
+  } else {
+    log(osCheck.message, 'error');
+    results.passed = false;
+    results.issues.push(`Upgrade to ${platformInfo.displayName} ${osCheck.minVersion} or higher`);
+  }
+
+  // Check RAM
+  const ramCheck = checkSystemRam(platformInfo);
+  if (ramCheck.passed) {
+    log(ramCheck.message, 'success');
+  } else {
+    log(ramCheck.message, 'warning');
+    results.warnings.push(`Low RAM may cause performance issues (${ramCheck.currentRamGB}GB < ${ramCheck.minRamGB}GB)`);
+  }
+
+  // WSL info for Windows
+  if (platformInfo.isWindows) {
+    const hasWSL = checkCommand('wsl');
+    const hasBash = checkCommand('bash');
+    if (hasWSL) {
+      log('WSL is available', 'success');
+    }
+    if (hasBash) {
+      log('Git Bash is available', 'success');
+    }
+  }
+
+  // WSL detection for Linux
+  if (platformInfo.isWSL) {
+    log('Running in WSL environment', 'info');
+  }
+
+  // --- Node.js & npm ---
+  subheader('Node.js & npm');
 
   // Check Node.js version
   const nodeInfo = getNodeVersion();
@@ -221,28 +641,365 @@ function checkPrerequisites() {
     results.issues.push(`Upgrade Node.js to version ${CONFIG.nodeMinVersion} or higher`);
   }
 
-  // Check required tools
-  for (const tool of CONFIG.requiredTools) {
-    if (checkCommand(tool)) {
-      log(`${tool} is installed`, 'success');
+  // Check npm
+  if (checkCommand('npm')) {
+    const npmVersion = getCommandVersion('npm');
+    log(`npm ${npmVersion || ''} is installed`, 'success');
+  } else {
+    log('npm is not installed', 'error');
+    results.passed = false;
+    results.issues.push('Install npm (included with Node.js)');
+  }
+
+  // --- Claude Code Dependencies ---
+  subheader('Claude Code Dependencies');
+
+  const claudeDepCheck = checkClaudeCodeDependencies(platformInfo);
+
+  // Report on dependencies
+  for (const [tool, info] of Object.entries(claudeDepCheck.dependencies)) {
+    if (info.installed) {
+      const versionStr = info.version ? ` ${info.version}` : '';
+      const requiredStr = info.required ? '' : color(' (recommended)', 'dim');
+      log(`${tool}${versionStr} is installed${requiredStr}`, 'success');
+    } else if (info.required) {
+      log(`${tool} is not installed ${color('(required)', 'red')}`, 'error');
     } else {
-      log(`${tool} is not installed`, 'error');
-      results.passed = false;
-      results.issues.push(`Install ${tool}`);
+      log(`${tool} is not installed ${color('(recommended)', 'dim')}`, 'warning');
     }
   }
 
-  // Check optional tools (just informational)
-  const availablePackageManagers = ['npm'];
+  // Add issues from Claude Code dependency check
+  if (!claudeDepCheck.passed) {
+    results.passed = false;
+    for (const issue of claudeDepCheck.issues) {
+      results.issues.push({
+        message: issue.message,
+        instructions: issue.instructions,
+      });
+    }
+  }
+
+  // Add warnings
+  for (const warning of claudeDepCheck.warnings) {
+    results.warnings.push({
+      message: warning.message,
+      instructions: warning.instructions,
+    });
+  }
+
+  // --- Optional Package Managers ---
+  subheader('Package Managers');
+
+  log('npm is available (default)', 'success');
+
   for (const tool of CONFIG.optionalTools) {
     if (checkCommand(tool)) {
-      log(`${tool} is available ${color('(optional)', 'dim')}`, 'success');
-      availablePackageManagers.push(tool);
+      const version = getCommandVersion(tool);
+      log(`${tool} ${version || ''} is available ${color('(optional)', 'dim')}`, 'success');
+      results.packageManagers.push(tool);
     }
   }
 
-  results.packageManagers = availablePackageManagers;
   return results;
+}
+
+// =============================================================================
+// CLAUDE CODE INSTALLATION
+// =============================================================================
+
+/**
+ * Check if Claude Code CLI is installed
+ */
+async function checkClaudeCodeInstalled() {
+  try {
+    const result = execSync('claude --version', { stdio: 'pipe', encoding: 'utf8' });
+    return { installed: true, version: result.trim() };
+  } catch {
+    return { installed: false, version: null };
+  }
+}
+
+/**
+ * Check if a package manager is available
+ */
+function checkPackageManagerAvailable(pm) {
+  try {
+    const checkCmd = process.platform === 'win32' ? `where ${pm}` : `which ${pm}`;
+    execSync(checkCmd, { stdio: 'pipe' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Install Claude Code on Windows
+ */
+async function installClaudeCodeWindows(rl, method) {
+  const commands = {
+    winget: 'winget install Anthropic.ClaudeCode',
+    powershell: 'powershell -Command "irm https://claude.ai/install.ps1 | iex"',
+    npm: 'npm install -g @anthropic-ai/claude-code',
+  };
+
+  const command = commands[method];
+  if (!command) {
+    log(`Unknown installation method: ${method}`, 'error');
+    return false;
+  }
+
+  log(`Installing Claude Code via ${method}...`, 'info');
+  console.log(color(`  Running: ${command}`, 'dim'));
+  console.log(color('  (This may take a minute)', 'dim'));
+
+  try {
+    execSync(command, {
+      stdio: 'inherit',
+      shell: true,
+    });
+    return true;
+  } catch (error) {
+    log(`Installation failed: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+/**
+ * Install Claude Code on macOS/Linux
+ */
+async function installClaudeCodeUnix(rl, method) {
+  const commands = {
+    native: 'curl -fsSL https://claude.ai/install.sh | bash',
+    homebrew: 'brew install claude-code',
+    npm: 'npm install -g @anthropic-ai/claude-code',
+  };
+
+  const command = commands[method];
+  if (!command) {
+    log(`Unknown installation method: ${method}`, 'error');
+    return false;
+  }
+
+  log(`Installing Claude Code via ${method}...`, 'info');
+  console.log(color(`  Running: ${command}`, 'dim'));
+  console.log(color('  (This may take a minute)', 'dim'));
+
+  try {
+    execSync(command, {
+      stdio: 'inherit',
+      shell: true,
+    });
+    return true;
+  } catch (error) {
+    log(`Installation failed: ${error.message}`, 'error');
+    return false;
+  }
+}
+
+/**
+ * Verify Claude Code installation
+ */
+async function verifyClaudeCodeInstallation() {
+  log('Verifying Claude Code installation...', 'info');
+
+  // Give the system a moment to update PATH
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  try {
+    const result = execSync('claude --version', { stdio: 'pipe', encoding: 'utf8' });
+    log(`Claude Code installed successfully! (${result.trim()})`, 'success');
+    return true;
+  } catch {
+    log('Installation verification failed', 'error');
+    console.log(color('  You may need to:', 'yellow'));
+    console.log(color('  1. Restart your terminal', 'yellow'));
+    console.log(color('  2. Check that Claude Code is in your PATH', 'yellow'));
+    console.log(color('  3. Try running "claude --version" manually', 'yellow'));
+    return false;
+  }
+}
+
+/**
+ * Print authentication guidance after installation
+ */
+function printAuthGuidance() {
+  console.log('');
+  console.log(color('--- Claude Code Authentication ---', 'cyan'));
+  console.log('');
+  console.log('To use Claude Code, you need to authenticate:');
+  console.log('');
+  console.log(color('Option 1: Claude Pro/Max (Recommended)', 'green'));
+  console.log('  ' + ICONS.bullet + ' Subscribe at https://claude.ai/pricing');
+  console.log('  ' + ICONS.bullet + ' Run "claude" and follow the login prompts');
+  console.log('');
+  console.log(color('Option 2: Anthropic Console (API Credits)', 'yellow'));
+  console.log('  ' + ICONS.bullet + ' Sign up at https://console.anthropic.com');
+  console.log('  ' + ICONS.bullet + ' Add API credits to your account');
+  console.log('  ' + ICONS.bullet + ' Run "claude" and select Console login');
+  console.log('');
+  console.log(color('Run "claude" in this project directory to get started!', 'cyan'));
+  console.log('');
+}
+
+/**
+ * Get installation troubleshooting message
+ */
+function getTroubleshootingMessage(errorMsg) {
+  const troubleshooting = {
+    'command not found': 'Restart your terminal or add Claude Code to your PATH',
+    'permission denied': 'Try running with administrator/sudo privileges',
+    'network': 'Check your internet connection',
+    'winget': 'Install WinGet from Microsoft Store or use PowerShell method',
+    'ENOENT': 'The installation command was not found',
+    'EACCES': 'Permission denied - try running with elevated privileges',
+  };
+
+  for (const [key, msg] of Object.entries(troubleshooting)) {
+    if (errorMsg.toLowerCase().includes(key.toLowerCase())) {
+      return msg;
+    }
+  }
+  return 'Check the error message above and try again';
+}
+
+/**
+ * Main Claude Code installation orchestrator
+ */
+async function installClaudeCode(rl, platformInfo) {
+  header('Claude Code Installation');
+
+  console.log('Claude Code is the official CLI for Claude.');
+  console.log('');
+  console.log(color('Requirements:', 'bright'));
+  console.log('  ' + ICONS.bullet + ' macOS 13.0+, Ubuntu 20.04+/Debian 10+, or Windows 10+');
+  console.log('  ' + ICONS.bullet + ' 4GB+ RAM');
+  console.log('  ' + ICONS.bullet + ' Internet connection');
+  console.log('  ' + ICONS.bullet + ' Claude Pro/Max subscription OR Anthropic Console account');
+  console.log('');
+
+  // Determine available installation methods based on platform
+  let methods = [];
+
+  if (platformInfo.isWindows) {
+    // Windows installation methods
+    const hasWinget = checkPackageManagerAvailable('winget');
+
+    if (hasWinget) {
+      methods.push({
+        value: 'winget',
+        label: 'WinGet (Recommended)',
+        description: 'Windows Package Manager - manual updates',
+      });
+    }
+
+    methods.push({
+      value: 'powershell',
+      label: 'PowerShell Script',
+      description: 'Native installation - auto-updates',
+    });
+
+    methods.push({
+      value: 'npm',
+      label: 'NPM (Deprecated)',
+      description: 'Legacy method - requires Node.js',
+    });
+  } else {
+    // macOS/Linux installation methods
+    methods.push({
+      value: 'native',
+      label: 'Native Script (Recommended)',
+      description: 'Auto-updates, no dependencies',
+    });
+
+    const hasHomebrew = checkPackageManagerAvailable('brew');
+    if (hasHomebrew) {
+      methods.push({
+        value: 'homebrew',
+        label: 'Homebrew',
+        description: 'Manual updates via brew upgrade',
+      });
+    }
+
+    methods.push({
+      value: 'npm',
+      label: 'NPM (Deprecated)',
+      description: 'Legacy method - requires Node.js',
+    });
+  }
+
+  // Ask user to select installation method
+  const method = await askChoice(rl, 'Select installation method:', methods);
+
+  // Perform installation
+  let success = false;
+
+  if (platformInfo.isWindows) {
+    success = await installClaudeCodeWindows(rl, method);
+  } else {
+    success = await installClaudeCodeUnix(rl, method);
+  }
+
+  if (!success) {
+    console.log('');
+    log('Installation was not successful', 'warning');
+    console.log(color('You can try:', 'yellow'));
+    console.log('  1. Running this setup again with a different method');
+    console.log('  2. Installing manually from https://claude.ai/code');
+    console.log('');
+
+    const retry = await askYesNo(rl, 'Would you like to try a different installation method?', false);
+    if (retry) {
+      return installClaudeCode(rl, platformInfo);
+    }
+    return false;
+  }
+
+  // Verify installation
+  const verified = await verifyClaudeCodeInstallation();
+
+  if (verified) {
+    printAuthGuidance();
+  }
+
+  return verified;
+}
+
+/**
+ * Check and optionally install Claude Code
+ */
+async function setupClaudeCode(rl, platformInfo) {
+  header('Claude Code CLI');
+
+  const status = await checkClaudeCodeInstalled();
+
+  if (status.installed) {
+    log(`Claude Code is already installed (${status.version})`, 'success');
+    return { installed: true, version: status.version, wasInstalled: false };
+  }
+
+  log('Claude Code CLI is not installed', 'warning');
+  console.log('');
+  console.log('Claude Code is the official CLI for developing with Claude.');
+  console.log('It enables AI-assisted coding, code review, and more.');
+  console.log('');
+
+  const installNow = await askYesNo(rl, 'Would you like to install Claude Code now?', true);
+
+  if (!installNow) {
+    log('Skipping Claude Code installation', 'info');
+    console.log(color('You can install it later from https://claude.ai/code', 'dim'));
+    return { installed: false, version: null, wasInstalled: false };
+  }
+
+  const success = await installClaudeCode(rl, platformInfo);
+
+  if (success) {
+    const newStatus = await checkClaudeCodeInstalled();
+    return { installed: true, version: newStatus.version, wasInstalled: true };
+  }
+
+  return { installed: false, version: null, wasInstalled: false };
 }
 
 // =============================================================================
@@ -948,6 +1705,17 @@ function showSummary(results) {
 
   console.log('What was configured:\n');
 
+  // Claude Code status
+  if (results.claudeCode?.installed) {
+    if (results.claudeCode.wasInstalled) {
+      console.log(`  ${ICONS.bullet} Claude Code: ${color(`installed (${results.claudeCode.version})`, 'green')}`);
+    } else {
+      console.log(`  ${ICONS.bullet} Claude Code: ${color(`ready (${results.claudeCode.version})`, 'green')}`);
+    }
+  } else {
+    console.log(`  ${ICONS.bullet} Claude Code: ${color('not installed - install from https://claude.ai/code', 'yellow')}`);
+  }
+
   if (results.mcp) {
     const enabledCount = Object.values(results.mcp.config.mcpServers)
       .filter(s => !s.disabled).length;
@@ -975,13 +1743,23 @@ function showSummary(results) {
   }
 
   console.log('\n' + color('Next steps:', 'bright'));
-  console.log(`  1. Review ${color('.mcp.json', 'cyan')} and ${color('.env', 'cyan')} files`);
-  console.log(`  2. Add any missing API keys`);
+
+  let stepNum = 1;
+
+  // If Claude Code not installed, that's the first step
+  if (!results.claudeCode?.installed) {
+    console.log(`  ${stepNum++}. Install Claude Code from ${color('https://claude.ai/code', 'cyan')}`);
+  }
+
+  console.log(`  ${stepNum++}. Review ${color('.mcp.json', 'cyan')} and ${color('.env', 'cyan')} files`);
+  console.log(`  ${stepNum++}. Add any missing API keys`);
+
   if (!nodeModulesExist) {
-    console.log(`  3. Run ${color('npm install', 'cyan')} to enable auto-formatting hooks`);
-    console.log(`  4. Start Claude Code: ${color('claude', 'cyan')}`);
-  } else {
-    console.log(`  3. Start Claude Code: ${color('claude', 'cyan')}`);
+    console.log(`  ${stepNum++}. Run ${color('npm install', 'cyan')} to enable auto-formatting hooks`);
+  }
+
+  if (results.claudeCode?.installed) {
+    console.log(`  ${stepNum++}. Start Claude Code: ${color('claude', 'cyan')}`);
   }
 
   console.log('\n' + color('Useful commands:', 'bright'));
@@ -992,6 +1770,190 @@ function showSummary(results) {
   console.log(`  ${color('node setup.js', 'cyan')}       ${ICONS.arrow} Run this setup again`);
 
   console.log('');
+}
+
+// =============================================================================
+// DEPENDENCY INSTALLATION HELPERS
+// =============================================================================
+
+/**
+ * Attempt to install a missing dependency
+ */
+async function tryInstallDependency(tool, platformInfo) {
+  const installCommands = {
+    git: {
+      darwin: 'xcode-select --install',
+      linux: platformInfo.isDebian
+        ? 'sudo apt-get update && sudo apt-get install -y git'
+        : platformInfo.isRHEL
+          ? 'sudo dnf install -y git'
+          : null,
+      win32: 'winget install Git.Git',
+    },
+    curl: {
+      darwin: null, // Pre-installed
+      linux: platformInfo.isDebian
+        ? 'sudo apt-get update && sudo apt-get install -y curl'
+        : platformInfo.isRHEL
+          ? 'sudo dnf install -y curl'
+          : null,
+      win32: null, // Pre-installed on Windows 10+
+    },
+    rg: {
+      darwin: 'brew install ripgrep',
+      linux: platformInfo.isDebian
+        ? 'sudo apt-get update && sudo apt-get install -y ripgrep'
+        : platformInfo.isRHEL
+          ? 'sudo dnf install -y ripgrep'
+          : platformInfo.isAlpine
+            ? 'apk add ripgrep'
+            : null,
+      win32: 'winget install BurntSushi.ripgrep.MSVC',
+    },
+  };
+
+  const commands = installCommands[tool];
+  if (!commands) return { success: false, message: `No auto-install available for ${tool}` };
+
+  const command = commands[platformInfo.platform];
+  if (!command) return { success: false, message: `No auto-install available for ${tool} on ${platformInfo.displayName}` };
+
+  log(`Attempting to install ${tool}...`, 'info');
+  console.log(color(`  Running: ${command}`, 'dim'));
+
+  try {
+    execSync(command, { stdio: 'inherit', shell: true });
+    // Verify installation
+    if (checkCommand(tool)) {
+      log(`${tool} installed successfully!`, 'success');
+      return { success: true };
+    } else {
+      return { success: false, message: `Installation completed but ${tool} not found in PATH` };
+    }
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}
+
+/**
+ * Display prerequisite issues with installation instructions
+ */
+function displayPrerequisiteIssues(prereqs, platformInfo) {
+  console.log('\n' + color('═══ Missing Requirements ═══', 'red'));
+  console.log('');
+
+  for (const issue of prereqs.issues) {
+    if (typeof issue === 'string') {
+      console.log(`${color(ICONS.error, 'red')} ${issue}`);
+    } else {
+      console.log(`${color(ICONS.error, 'red')} ${issue.message}`);
+      if (issue.instructions) {
+        console.log(color('  How to fix:', 'yellow'));
+        issue.instructions.split('\n').forEach(line => {
+          console.log(color(`    ${line}`, 'dim'));
+        });
+      }
+    }
+    console.log('');
+  }
+
+  if (prereqs.warnings && prereqs.warnings.length > 0) {
+    console.log(color('═══ Warnings ═══', 'yellow'));
+    console.log('');
+    for (const warning of prereqs.warnings) {
+      if (typeof warning === 'string') {
+        console.log(`${color(ICONS.warning, 'yellow')} ${warning}`);
+      } else {
+        console.log(`${color(ICONS.warning, 'yellow')} ${warning.message}`);
+        if (warning.instructions) {
+          console.log(color('  Recommendation:', 'dim'));
+          warning.instructions.split('\n').forEach(line => {
+            console.log(color(`    ${line}`, 'dim'));
+          });
+        }
+      }
+      console.log('');
+    }
+  }
+}
+
+/**
+ * Attempt to auto-install missing dependencies
+ */
+async function attemptAutoInstall(rl, prereqs, platformInfo) {
+  // Find installable dependencies
+  const installable = [];
+
+  for (const issue of prereqs.issues) {
+    if (typeof issue === 'object' && issue.tool) {
+      // Check if we have auto-install capability for this tool
+      if (['git', 'curl', 'rg'].includes(issue.tool)) {
+        installable.push(issue.tool);
+      }
+    }
+  }
+
+  if (installable.length === 0) {
+    return false;
+  }
+
+  console.log('');
+  log(`Some dependencies can be installed automatically: ${installable.join(', ')}`, 'info');
+
+  const autoInstall = await askYesNo(rl, 'Would you like to try installing them now?', true);
+
+  if (!autoInstall) {
+    return false;
+  }
+
+  let anySuccess = false;
+
+  for (const tool of installable) {
+    const result = await tryInstallDependency(tool, platformInfo);
+    if (result.success) {
+      anySuccess = true;
+    } else {
+      log(`Failed to install ${tool}: ${result.message}`, 'warning');
+    }
+  }
+
+  return anySuccess;
+}
+
+/**
+ * Continue setup after prerequisites are satisfied
+ */
+async function continueSetup(rl, platformInfo, prereqs, results) {
+  // Check and optionally install Claude Code CLI
+  results.claudeCode = await setupClaudeCode(rl, platformInfo);
+
+  // Configure MCP servers
+  results.mcp = await configureMcpServers(rl, platformInfo);
+
+  // Update gitignore (before creating files with secrets)
+  updateGitignore();
+
+  // Setup environment files
+  await setupEnvironmentFiles(rl, results.mcp?.envVars || {});
+  results.envCreated = fs.existsSync(path.join(process.cwd(), '.env'));
+
+  // Create directories
+  createDirectories();
+
+  // Setup package.json (required for hooks to work)
+  results.packageJson = await setupPackageJson(rl);
+
+  // Create config files for ESLint, Prettier, TypeScript
+  if (results.packageJson?.created || results.packageJson?.merged) {
+    subheader('Creating Config Files');
+    createConfigFiles();
+  }
+
+  // Install dependencies
+  await installDependencies(rl, prereqs.packageManagers);
+
+  // Show summary
+  showSummary(results);
 }
 
 // =============================================================================
@@ -1009,46 +1971,68 @@ async function main() {
   const platformInfo = getPlatformInfo();
   const results = {};
 
-  // Check prerequisites
-  const prereqs = checkPrerequisites();
+  // Check prerequisites (pass platformInfo)
+  let prereqs = checkPrerequisites(platformInfo);
+
+  // If prerequisites failed, show detailed instructions
   if (!prereqs.passed) {
-    console.log('\n' + color('Please fix the above issues before continuing:', 'red'));
-    prereqs.issues.forEach(issue => console.log(`  ${ICONS.bullet} ${issue}`));
+    displayPrerequisiteIssues(prereqs, platformInfo);
+
+    // Create readline early to potentially offer auto-install
+    const rl = createReadlineInterface();
+
+    try {
+      // Attempt auto-install of missing dependencies
+      const installedSomething = await attemptAutoInstall(rl, prereqs, platformInfo);
+
+      if (installedSomething) {
+        // Re-check prerequisites after installation
+        console.log('\n');
+        prereqs = checkPrerequisites(platformInfo);
+
+        if (!prereqs.passed) {
+          displayPrerequisiteIssues(prereqs, platformInfo);
+          console.log(color('Please fix the remaining issues and run setup again.', 'red'));
+          rl.close();
+          process.exit(1);
+        }
+
+        log('All prerequisites now satisfied!', 'success');
+      } else {
+        console.log(color('Please fix the above issues and run setup again.', 'red'));
+        rl.close();
+        process.exit(1);
+      }
+    } catch (error) {
+      rl.close();
+      throw error;
+    }
+
+    // Continue with this readline interface
+    try {
+      await continueSetup(rl, platformInfo, prereqs, results);
+    } finally {
+      rl.close();
+    }
+    return;
+  }
+
+  // Show warnings even if passed
+  if (prereqs.warnings && prereqs.warnings.length > 0) {
     console.log('');
-    process.exit(1);
+    for (const warning of prereqs.warnings) {
+      if (typeof warning === 'string') {
+        log(warning, 'warning');
+      } else {
+        log(warning.message, 'warning');
+      }
+    }
   }
 
   const rl = createReadlineInterface();
 
   try {
-    // Configure MCP servers
-    results.mcp = await configureMcpServers(rl, platformInfo);
-
-    // Update gitignore (before creating files with secrets)
-    updateGitignore();
-
-    // Setup environment files
-    await setupEnvironmentFiles(rl, results.mcp?.envVars || {});
-    results.envCreated = fs.existsSync(path.join(process.cwd(), '.env'));
-
-    // Create directories
-    createDirectories();
-
-    // Setup package.json (required for hooks to work)
-    results.packageJson = await setupPackageJson(rl);
-
-    // Create config files for ESLint, Prettier, TypeScript
-    if (results.packageJson?.created || results.packageJson?.merged) {
-      subheader('Creating Config Files');
-      createConfigFiles();
-    }
-
-    // Install dependencies
-    await installDependencies(rl, prereqs.packageManagers);
-
-    // Show summary
-    showSummary(results);
-
+    await continueSetup(rl, platformInfo, prereqs, results);
   } catch (error) {
     console.error('\n' + color(`Setup failed: ${error.message}`, 'red'));
     process.exit(1);

@@ -1,13 +1,8 @@
 ---
+name: implementer
 description: Full-stack developer for implementing features following established plans and patterns
 model: sonnet
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Bash
-  - Edit
-  - Write
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 when_to_use:
   - Implementing features after planner creates plan
   - Writing code that follows established patterns
