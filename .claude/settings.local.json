@@ -64,7 +64,12 @@
       "Bash(supabase --version:*)",
       "Bash(where:*)",
       "Bash(supabase projects:*)",
-      "WebFetch(domain:render.com)"
+      "WebFetch(domain:render.com)",
+      "Bash(gh repo view:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git fetch:*)",
+      "Bash(bash:*)",
+      "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" status --short)"
     ]
   },
   "model": "sonnet",

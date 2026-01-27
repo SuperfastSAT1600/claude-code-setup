@@ -34,6 +34,13 @@ Hybrid principle: Main agent codes standard tasks, delegates specialized work. B
 - Requires deep domain expertise: Delegate
 - Multiple agents could work in parallel: Coordinate delegation. always prefer parallel work over sequential.
 
+### Subagent Self-Correction
+When delegating to a specialist, expect the subagent to fix `.claude/` issues it encounters during its work:
+- If a subagent finds its own agent definition has broken references or outdated content, it should fix them
+- If a skill it loads contains incorrect or outdated advice, it should update the skill
+- Subagents report all corrections in their response; main agent logs them to `.claude/health/changelog.md`
+- If the main agent itself makes an error, it appends a concise entry to the Error Log in `CLAUDE.md`
+
 ---
 
 ## Agent Quick Reference
@@ -174,6 +181,17 @@ chore: update dependencies
    - code-reviewer (optional)
    - doc-updater (if needed)
 3. Commit
+```
+
+### Post-Task Self-Improvement
+```
+1. Complete user's primary task
+2. If system observations were noted during task:
+   - Report observations grouped by type
+   - Auto-apply trivial fixes (INDEX, references)
+   - Propose significant changes for approval
+3. Log all changes to .claude/health/changelog.md
+4. Commit system changes separately from task changes
 ```
 
 ---

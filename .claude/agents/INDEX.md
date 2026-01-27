@@ -1,10 +1,10 @@
 # Agent Index
 
-Lightweight directory of all 33 specialized agents. Main agent handles standard development; use these agents for specialized expertise.
+Lightweight directory of all 34 specialized agents. Main agent handles standard development; use these agents for specialized expertise.
 
 **Refactored Structure** (2026-01-26):
 - Main agent now codes directly for standard tasks (CRUD, simple features, bug fixes)
-- 33 specialized agents for domain expertise
+- 34 specialized agents for domain expertise
 - All agents use valid YAML frontmatter (`tools`, `description`, `customInstructions`)
 - Each agent has curated skill knowledge via `skills` parameter
 - Simplified to <70 lines per agent on average
@@ -89,6 +89,12 @@ Lightweight directory of all 33 specialized agents. Main agent handles standard 
 | **ai-integration-specialist** | LLM APIs, RAG systems | AI/ML features |
 | **iac-specialist** | Terraform, CloudFormation | Infrastructure as Code |
 
+## System Health
+
+| Agent | Purpose | Load When |
+|-------|---------|-----------|
+| **system-health** | .claude/ config analysis, contradiction detection, coverage gaps | /health-check command |
+
 ## Model Tier Guidelines
 
 When delegating to Task tool, use appropriate model tier:
@@ -96,7 +102,7 @@ When delegating to Task tool, use appropriate model tier:
 | Tier | Use For | Agents |
 |------|---------|--------|
 | **haiku** | Documentation, exploration, deps | doc-updater, dependency-manager (2 agents) |
-| **sonnet** | Most specialized work (DEFAULT) | code-reviewer, auth-specialist, api-designer, etc. (29 agents) |
+| **sonnet** | Most specialized work (DEFAULT) | code-reviewer, auth-specialist, api-designer, system-health, etc. (30 agents) |
 | **opus** | Critical architecture, security | architect, security-reviewer (2 agents) |
 
 **Default**: Omit model parameter (uses sonnet). Only specify for haiku or opus agents.
