@@ -564,7 +564,7 @@ Potential future improvements (not implemented):
 
 - Skill: `.claude/skills/dev-server-autoopen.md` - Auto-open configuration patterns
 - Command: `/full-feature` - May suggest opening localhost after implementation
-- Setup: `setup.js` - Can configure auto-open during project setup
+- Setup: `setup.cjs` - Can configure auto-open during project setup
 
 ---
 

@@ -352,7 +352,6 @@
       }
     ]
   },
-  "model": "opus",
   "thinkingEnabled": true,
   "autoAcceptEdits": false
 }

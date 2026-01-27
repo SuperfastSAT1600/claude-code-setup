@@ -6,15 +6,26 @@ Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
 
 ## Quick Reference
 
-**Workflow**: Main agent codes standard tasks, delegates to 33 specialized agents for expertise
-**Agents (33)**: See `.claude/agents/` for full list and INDEX.md
+**Workflow**: Main agent codes standard tasks, delegates to 34 specialized agents for expertise
+**Agents (34)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
-- Rules: `.claude/rules/` (essential-rules.md, agent-workflow.md)
 - Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
 - Workflows: `.claude/workflows/`
 - Checklists: `.claude/checklists/`
 - Templates: `.claude/templates/`
+- Scripts: `.claude/scripts/`
+
+---
+
+## Self-Aware System
+
+This setup continuously improves itself. During every task, the system observes its own configuration and proposes fixes, evolutions, and simplifications after completing your work.
+
+- **Rules**: `.claude/rules/self-aware-system.md`
+- **Changelog**: `.claude/health/changelog.md`
+- **Health Check**: Run `/health-check` for a comprehensive audit
+- **Agent count**: 34 (33 specialists + 1 system-health)
 
 ---
 
@@ -39,7 +50,7 @@ Just describe what you want in plain English:
 
 **Frontend**: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS, React Query, Zod
 
-**Backend**: Node.js 20+, Express/Fastify, Prisma, PostgreSQL, Redis
+**Backend**: Node.js 20+, Supabase (includes PostgreSQL, Auth, Storage, Real-time, Broadcast), Supabase Edge Functions, Redis. Use Supabase client + generated types instead of Prisma.
 
 **Testing**: Vitest, Playwright, React Testing Library
 
@@ -71,6 +82,8 @@ src/
 ---
 
 ## Error Log
+
+Main agent: append here when you make a mistake so it never repeats. Subagents: report errors in your response for the main agent to log to `.claude/health/changelog.md`.
 
 - Never pass model parameter to Task unless explicitly requested
 

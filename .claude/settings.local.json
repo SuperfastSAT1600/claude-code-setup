@@ -60,7 +60,18 @@
       "Bash(npm --version:*)",
       "Bash(\"/c/Program Files/nodejs/npm\" install read)",
       "Bash(cd:*)",
-      "Bash(cmd.exe /c \"npm install read\")"
+      "Bash(cmd.exe /c \"npm install read\")",
+      "Bash(supabase --version:*)",
+      "Bash(where:*)",
+      "Bash(supabase projects:*)",
+      "WebFetch(domain:render.com)",
+      "Bash(gh repo view:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git fetch:*)",
+      "Bash(bash:*)",
+      "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" status --short)",
+      "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" status)",
+      "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" log --oneline -5)"
     ]
   },
   "model": "sonnet",

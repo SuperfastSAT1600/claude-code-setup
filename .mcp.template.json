@@ -3,7 +3,8 @@
     "filesystem": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
-      "env": {}
+      "env": {},
+      "description": "File system operations - read, write, search files"
     },
     "github": {
       "command": "npx",
@@ -11,176 +12,8 @@
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
       },
-      "disabled": true
-    },
-    "postgres": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost/YOUR_DATABASE_NAME"],
-      "env": {},
-      "disabled": true
-    },
-    "sqlite": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite", "path/to/your/database.db"],
-      "env": {},
-      "disabled": true
-    },
-    "brave-search": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
-      "env": {
-        "BRAVE_API_KEY": "YOUR_BRAVE_API_KEY_HERE"
-      },
-      "disabled": true
-    },
-    "google-maps": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-google-maps"],
-      "env": {
-        "GOOGLE_MAPS_API_KEY": "YOUR_GOOGLE_MAPS_API_KEY_HERE"
-      },
-      "disabled": true
-    },
-    "slack": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-slack"],
-      "env": {
-        "SLACK_BOT_TOKEN": "YOUR_SLACK_BOT_TOKEN_HERE",
-        "SLACK_TEAM_ID": "YOUR_SLACK_TEAM_ID_HERE"
-      },
-      "disabled": true
-    },
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "env": {},
-      "disabled": true
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "env": {},
-      "disabled": true
-    },
-    "vercel": {
-      "type": "http",
-      "url": "https://mcp.vercel.com",
-      "env": {
-        "VERCEL_API_TOKEN": "YOUR_VERCEL_TOKEN_HERE"
-      },
-      "disabled": true
-    },
-    "railway": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-railway"],
-      "env": {
-        "RAILWAY_API_TOKEN": "YOUR_RAILWAY_TOKEN_HERE"
-      },
-      "disabled": true
-    },
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "@mendable/firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY_HERE"
-      },
-      "disabled": true
-    },
-    "cloudflare-docs": {
-      "type": "http",
-      "url": "https://mcp.cloudflare.com/docs",
-      "env": {},
-      "disabled": true
-    },
-    "cloudflare-workers-builds": {
-      "type": "http",
-      "url": "https://mcp.cloudflare.com/workers/builds",
-      "env": {
-        "CLOUDFLARE_API_TOKEN": "YOUR_CLOUDFLARE_TOKEN_HERE"
-      },
-      "disabled": true
-    },
-    "cloudflare-workers-bindings": {
-      "type": "http",
-      "url": "https://mcp.cloudflare.com/workers/bindings",
-      "env": {
-        "CLOUDFLARE_API_TOKEN": "YOUR_CLOUDFLARE_TOKEN_HERE"
-      },
-      "disabled": true
-    },
-    "cloudflare-observability": {
-      "type": "http",
-      "url": "https://mcp.cloudflare.com/observability",
-      "env": {
-        "CLOUDFLARE_API_TOKEN": "YOUR_CLOUDFLARE_TOKEN_HERE"
-      },
-      "disabled": true
-    },
-    "clickhouse": {
-      "type": "http",
-      "url": "https://mcp.clickhouse.com",
-      "env": {
-        "CLICKHOUSE_URL": "YOUR_CLICKHOUSE_URL_HERE",
-        "CLICKHOUSE_PASSWORD": "YOUR_CLICKHOUSE_PASSWORD_HERE"
-      },
-      "disabled": true
-    },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@context7/mcp-server"],
-      "env": {},
-      "disabled": true
-    },
-    "magic": {
-      "command": "npx",
-      "args": ["-y", "@magic-mcp/server"],
-      "env": {},
-      "disabled": true
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-playwright"],
-      "env": {},
-      "disabled": true
-    },
-    "puppeteer": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-server-puppeteer"],
-      "env": {},
-      "disabled": true
-    },
-    "docker": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-docker"],
-      "env": {
-        "DOCKER_HOST": "unix:///var/run/docker.sock"
-      },
-      "disabled": true
-    },
-    "sentry": {
-      "command": "npx",
-      "args": ["-y", "@sentry/mcp-server"],
-      "env": {
-        "SENTRY_AUTH_TOKEN": "YOUR_SENTRY_AUTH_TOKEN_HERE",
-        "SENTRY_ORG": "YOUR_SENTRY_ORG_HERE"
-      },
-      "disabled": true
-    },
-    "linear": {
-      "command": "npx",
-      "args": ["-y", "@linear/mcp-server"],
-      "env": {
-        "LINEAR_API_KEY": "YOUR_LINEAR_API_KEY_HERE"
-      },
-      "disabled": true
-    },
-    "notion": {
-      "command": "npx",
-      "args": ["-y", "@notionhq/mcp-server"],
-      "env": {
-        "NOTION_API_KEY": "YOUR_NOTION_API_KEY_HERE"
-      },
-      "disabled": true
+      "disabled": true,
+      "description": "GitHub repository management - PRs, issues, files"
     },
     "supabase": {
       "command": "npx",
@@ -189,15 +22,107 @@
         "SUPABASE_URL": "YOUR_SUPABASE_URL_HERE",
         "SUPABASE_SERVICE_KEY": "YOUR_SUPABASE_SERVICE_KEY_HERE"
       },
-      "disabled": true
+      "disabled": true,
+      "description": "Supabase database operations, auth, and storage"
     },
-    "prisma": {
+    "memory": {
       "command": "npx",
-      "args": ["-y", "@prisma/mcp-server"],
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "env": {},
+      "disabled": true,
+      "description": "Persistent knowledge graph memory across sessions"
+    },
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-slack"],
       "env": {
-        "DATABASE_URL": "YOUR_DATABASE_URL_HERE"
+        "SLACK_BOT_TOKEN": "YOUR_SLACK_BOT_TOKEN_HERE",
+        "SLACK_TEAM_ID": "YOUR_SLACK_TEAM_ID_HERE"
       },
-      "disabled": true
+      "disabled": true,
+      "description": "⭐ RECOMMENDED: Slack workspace integration for team communication"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com",
+      "env": {
+        "VERCEL_API_TOKEN": "YOUR_VERCEL_TOKEN_HERE"
+      },
+      "disabled": true,
+      "description": "Vercel deployment management and logs"
+    },
+    "render": {
+      "type": "http",
+      "url": "https://mcp.render.com/mcp",
+      "env": {
+        "RENDER_API_KEY": "YOUR_RENDER_API_KEY_HERE"
+      },
+      "disabled": true,
+      "description": "Render deployment and infrastructure management"
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY_HERE"
+      },
+      "disabled": true,
+      "description": "⭐ RECOMMENDED: Web scraping and content extraction"
+    },
+    "cloudflare-docs": {
+      "type": "http",
+      "url": "https://docs.mcp.cloudflare.com",
+      "env": {},
+      "disabled": true,
+      "description": "Search Cloudflare documentation"
+    },
+    "cloudflare-workers-builds": {
+      "type": "http",
+      "url": "https://builds.mcp.cloudflare.com/mcp",
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "YOUR_CLOUDFLARE_TOKEN_HERE"
+      },
+      "disabled": true,
+      "description": "Cloudflare Workers build management"
+    },
+    "cloudflare-workers-bindings": {
+      "type": "http",
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "YOUR_CLOUDFLARE_TOKEN_HERE"
+      },
+      "disabled": true,
+      "description": "Cloudflare Workers bindings (D1, R2, KV)"
+    },
+    "cloudflare-observability": {
+      "type": "http",
+      "url": "https://observability.mcp.cloudflare.com/mcp",
+      "env": {
+        "CLOUDFLARE_API_TOKEN": "YOUR_CLOUDFLARE_TOKEN_HERE"
+      },
+      "disabled": true,
+      "description": "Cloudflare monitoring and analytics"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "env": {},
+      "disabled": true,
+      "description": "⭐ RECOMMENDED: Up-to-date package documentation and code examples"
+    },
+    "magic-ui": {
+      "command": "npx",
+      "args": ["-y", "@magicuidesign/mcp"],
+      "env": {},
+      "disabled": true,
+      "description": "Magic UI components library"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp"],
+      "env": {},
+      "disabled": true,
+      "description": "Browser automation for testing"
     }
   }
 }
