@@ -1,30 +1,38 @@
 # Agent & Workflow Rules (Ultra-Compact)
 
-Orchestrator principle: Delegate ALL implementation work. Parse intent, select agent, coordinate, report.
+Hybrid principle: Main agent codes standard tasks, delegates specialized work. Balance efficiency with expertise.
 
 ---
 
-## Orchestrator Principle
+## Hybrid Agent Principle
 
-**Main model is ORCHESTRATOR.** Coordinates work, never implements directly.
+**Main agent is both CODER and COORDINATOR.** Handles standard development directly, delegates specialized tasks.
 
-### Does
-- Parse user intent
-- Select and delegate to agents
-- Coordinate parallel execution
-- Report progress in plain English
+### Main Agent Handles Directly
+- Standard CRUD operations
+- Simple bug fixes (< 3 files)
+- Basic refactoring
+- Documentation updates
+- Simple feature implementation (components, routes, services)
 - Git operations (commit, push, PR)
+- Reading and analyzing code (<20 files)
+- Template usage and pattern following
 
-### Does NOT
-- Write production code
-- Implement features
-- Fix bugs directly
-- Read >10 files without delegating
+### Delegate to Specialists When
+- **Complex architecture** needed (architect, planner)
+- **Specialized domains**: Auth (auth-specialist), DB schema (database-architect), APIs (api-designer), GraphQL (graphql-specialist), WebSockets (websocket-specialist)
+- **Security-critical** work (security-reviewer)
+- **Testing strategies** (tdd-guide, unit-test-writer, e2e-runner)
+- **Performance optimization** (performance-optimizer)
+- **Operations work**: CI/CD (ci-cd-specialist), Docker (docker-specialist), Migrations (migration-specialist)
+- **Code quality reviews** (code-reviewer, security-reviewer)
+- **Accessibility compliance** (accessibility-auditor)
+- **Large refactors** (>5 files, refactor-cleaner)
 
-### Delegation Rule
-- ANY implementation > 2 steps: DELEGATE
-- ANY code writing: DELEGATE
-- Trivial 1-2 line changes: Handle directly
+### Delegation Guidelines
+- Small, straightforward tasks: Handle directly
+- Requires deep domain expertise: Delegate
+- Multiple agents could work in parallel: Coordinate delegation. always prefer parallel work over sequential.
 
 ---
 
@@ -52,13 +60,14 @@ Orchestrator principle: Delegate ALL implementation work. Parse intent, select a
 | e2e-runner | Playwright/Cypress tests |
 | verify-app | Integration verification |
 
-### Development
+### Development (Specialized)
 | Agent | Use For |
 |-------|---------|
-| implementer | Feature implementation |
-| api-designer | REST/GraphQL API design |
-| database-architect | Schema design, migrations |
-| auth-specialist | Authentication features |
+| api-designer | REST/GraphQL API design + OpenAPI specs |
+| database-architect | Complex schema design, migrations |
+| auth-specialist | OAuth, JWT, MFA implementation |
+| graphql-specialist | GraphQL schemas, resolvers, subscriptions |
+| websocket-specialist | Real-time Socket.io features |
 
 ### Operations
 | Agent | Use For |
@@ -70,8 +79,8 @@ Orchestrator principle: Delegate ALL implementation work. Parse intent, select a
 
 ### Model Tiers (for Task delegation)
 - **haiku**: doc-updater, dependency-manager, Explore tasks
-- **sonnet**: implementer, code-reviewer, most agents (DEFAULT)
-- **opus**: security-reviewer, architect, planner (critical only)
+- **sonnet**: code-reviewer, auth-specialist, most agents (DEFAULT)
+- **opus**: security-reviewer, architect (critical decisions only)
 
 ---
 
@@ -82,8 +91,8 @@ Orchestrator principle: Delegate ALL implementation work. Parse intent, select a
 - accessibility-auditor + performance-optimizer
 
 ### Must Be Sequential
-- planner -> implementer (needs plan)
-- implementer -> unit-test-writer (needs code)
+- planner -> main agent/specialist (needs plan if complex)
+- implementation -> unit-test-writer (needs code)
 
 ---
 
@@ -129,32 +138,41 @@ chore: update dependencies
 
 ## Common Workflows
 
-### New Feature
+### Simple Feature (Main Agent Handles)
 ```
-1. planner -> create plan
-2. implementer -> write code
-3. unit-test-writer -> add tests
+1. Main agent: Analyze requirements
+2. Main agent: Write code + tests
+3. Main agent: Self-verify (lint, test, build)
+4. Optional: code-reviewer (if complex)
+5. Commit & PR
+```
+
+### Complex Feature (Use Specialists)
+```
+1. Optional: architect/planner -> design if complex
+2. Main agent OR specialist -> implement
+3. unit-test-writer -> comprehensive tests
 4. code-reviewer + security-reviewer (parallel)
 5. doc-updater -> update docs
 6. Commit & PR
 ```
 
-### Bug Fix
+### Bug Fix (Main Agent Handles)
 ```
-1. code-reviewer -> analyze issue
-2. unit-test-writer -> write regression test
-3. implementer -> fix bug
-4. Verify fix
+1. Main agent: Identify root cause
+2. Main agent: Write regression test
+3. Main agent: Fix bug
+4. Main agent: Verify fix
 5. Commit
 ```
 
-### Pre-Commit
+### Pre-Commit Quality Check
 ```
-1. Implement feature
+1. Main agent implements feature
 2. Run in parallel:
    - security-reviewer
-   - doc-updater
-   - code-reviewer
+   - code-reviewer (optional)
+   - doc-updater (if needed)
 3. Commit
 ```
 
@@ -193,5 +211,25 @@ Avoid jargon. Say "Saving changes" not "git commit".
 | Gate | Run |
 |------|-----|
 | Before PR | pr-review checklist |
-| Before deploy | deployment checklist |
+| Before deploy | deployment-checklist |
 | Security changes | security-audit checklist |
+| Build errors | build-errors-checklist |
+| E2E tests | e2e-testing-checklist |
+| Database migrations | database-migration-review |
+| Dependencies | dependency-audit |
+| Hotfixes | hotfix-checklist |
+
+## Template Usage
+
+| Task | Template |
+|------|----------|
+| New component | component.tsx.template, form.tsx.template |
+| API route | api-route.ts.template |
+| Tests | test.spec.ts.template |
+| Migrations | migration.sql.template |
+| PRs | pr-description.md.template |
+| Auth guards | guard.ts.template, middleware.ts.template |
+| Services | service.ts.template |
+| Docker | Dockerfile.template |
+| CI/CD | github-workflow.yml |
+| E2E config | playwright.config.ts |

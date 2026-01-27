@@ -2,364 +2,37 @@
 
 Template for creating project-specific development guidelines. Copy and customize for each project.
 
----
-
-## EXAMPLE: Real Project Guidelines (Next.js + Firebase)
-
-Below is a complete example from a production Next.js + Firebase project. Use this as a reference when creating your own project guidelines.
-
-### Tech Stack
-- **Frontend**: Next.js 14 (App Router), React 18, TypeScript 5
-- **Backend**: Firebase (Auth + Firestore + Storage + Functions)
-- **Styling**: TailwindCSS 3 + shadcn/ui components
-- **Forms**: React Hook Form + Zod validation
-- **State**: React Query (server state) + Zustand (client state)
-- **Testing**: Vitest (unit) + Playwright (E2E)
-- **Deployment**: Vercel (frontend) + Firebase (backend)
-
-### Project-Specific Patterns
-
-#### Authentication with Firebase
-All authentication uses Firebase Auth. Never roll your own auth logic.
-
-```typescript
-// app/lib/firebase.ts - Client SDK
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-
-export const app = initializeApp({
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
-});
-
-export const auth = getAuth(app);
-
-// app/lib/firebase-admin.ts - Admin SDK (backend only)
-import admin from 'firebase-admin';
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID!,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
-    })
-  });
-}
-
-export const adminAuth = admin.auth();
-export const adminDb = admin.firestore();
-```
-
-#### API Routes Pattern
-All API routes live in `app/api/` and follow this structure:
-
-```typescript
-// app/api/projects/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import { adminAuth, adminDb } from '@/lib/firebase-admin';
-
-// 1. Define schema
-const CreateProjectSchema = z.object({
-  name: z.string().min(3).max(100),
-  description: z.string().max(500).optional(),
-});
-
-export async function POST(request: NextRequest) {
-  try {
-    // 2. Verify authentication
-    const token = request.headers.get('authorization')?.split('Bearer ')[1];
-    if (!token) {
-      return NextResponse.json(
-        { error: { code: 'UNAUTHORIZED', message: 'Missing auth token' } },
-        { status: 401 }
-      );
-    }
-
-    const decodedToken = await adminAuth.verifyIdToken(token);
-    const userId = decodedToken.uid;
-
-    // 3. Parse and validate body
-    const body = await request.json();
-    const data = CreateProjectSchema.parse(body);
-
-    // 4. Business logic
-    const projectRef = await adminDb.collection('projects').add({
-      ...data,
-      userId,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    const project = await projectRef.get();
-
-    // 5. Return standard format
-    return NextResponse.json(
-      { data: { id: projectRef.id, ...project.data() } },
-      { status: 201 }
-    );
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: { code: 'VALIDATION_ERROR', message: error.errors } },
-        { status: 400 }
-      );
-    }
-
-    console.error('Create project failed:', error);
-    return NextResponse.json(
-      { error: { code: 'INTERNAL_ERROR', message: 'Failed to create project' } },
-      { status: 500 }
-    );
-  }
-}
-```
-
-#### Firestore Query Patterns
-Use custom hooks to encapsulate Firestore queries:
-
-```typescript
-// app/hooks/useProjects.ts
-import { useQuery } from '@tanstack/react-query';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase';
-
-export function useProjects() {
-  return useQuery({
-    queryKey: ['projects', auth.currentUser?.uid],
-    queryFn: async () => {
-      if (!auth.currentUser) throw new Error('Not authenticated');
-
-      const q = query(
-        collection(db, 'projects'),
-        where('userId', '==', auth.currentUser.uid)
-      );
-
-      const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-    },
-    enabled: !!auth.currentUser,
-  });
-}
-```
-
-#### File Organization
-```
-app/
-├── (auth)/                 # Auth-related pages (grouped route)
-│   ├── login/
-│   ├── register/
-│   └── layout.tsx         # Auth-specific layout
-├── (dashboard)/           # Dashboard pages (grouped route)
-│   ├── projects/
-│   ├── settings/
-│   └── layout.tsx         # Dashboard layout with sidebar
-├── api/                   # API routes
-│   ├── projects/
-│   └── users/
-├── components/
-│   ├── ui/               # shadcn/ui components
-│   ├── forms/            # Form components
-│   └── layout/           # Layout components
-├── hooks/                # Custom React hooks
-│   ├── useAuth.ts        # Auth state hook
-│   ├── useProjects.ts    # Projects query hook
-│   └── useFirestore.ts   # Generic Firestore hook
-├── lib/
-│   ├── firebase.ts       # Firebase client SDK
-│   ├── firebase-admin.ts # Firebase Admin SDK
-│   └── utils.ts          # Utility functions
-└── types/
-    ├── project.ts        # Project types
-    └── user.ts           # User types
-```
-
-#### Common Mistakes in THIS Project
-
-**❌ Mistake 1: Using Admin SDK on Client**
-```typescript
-// WRONG: Admin SDK in client component
-import admin from 'firebase-admin';
-
-export default function ClientComponent() {
-  admin.firestore().collection('users').get(); // ❌ Breaks app
-}
-```
-
-**✅ Correct: Use Client SDK**
-```typescript
-// CORRECT: Client SDK in client component
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-
-export default function ClientComponent() {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    getDocs(collection(db, 'users')).then(snapshot => {
-      setUsers(snapshot.docs.map(doc => doc.data()));
-    });
-  }, []);
-}
-```
-
-**❌ Mistake 2: Not Using React Query for Firestore**
-```typescript
-// WRONG: Manual state management
-const [projects, setProjects] = useState([]);
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState(null);
-
-useEffect(() => {
-  setLoading(true);
-  fetch('/api/projects')
-    .then(res => res.json())
-    .then(data => setProjects(data))
-    .catch(err => setError(err))
-    .finally(() => setLoading(false));
-}, []);
-```
-
-**✅ Correct: Use React Query**
-```typescript
-// CORRECT: React Query handles caching, loading, errors
-const { data: projects, isLoading, error } = useQuery({
-  queryKey: ['projects'],
-  queryFn: async () => {
-    const res = await fetch('/api/projects');
-    if (!res.ok) throw new Error('Failed to fetch');
-    return res.json();
-  }
-});
-```
-
-**❌ Mistake 3: Direct Firestore Access in Components**
-```typescript
-// WRONG: Direct Firestore access scattered across components
-function ProjectList() {
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    getDocs(collection(db, 'projects')).then(snapshot => {
-      setProjects(snapshot.docs.map(doc => doc.data()));
-    });
-  }, []);
-}
-```
-
-**✅ Correct: Centralized in Custom Hook**
-```typescript
-// CORRECT: Custom hook encapsulates query logic
-function ProjectList() {
-  const { data: projects, isLoading } = useProjects();
-
-  if (isLoading) return <Spinner />;
-  return <div>{projects.map(p => <ProjectCard key={p.id} project={p} />)}</div>;
-}
-```
-
-#### Security Rules (Firestore)
-Our Firestore security rules are in `firestore.rules`:
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Users can only read/write their own user document
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Projects: users can only access their own projects
-    match /projects/{projectId} {
-      allow read, update, delete: if request.auth != null
-        && resource.data.userId == request.auth.uid;
-      allow create: if request.auth != null
-        && request.resource.data.userId == request.auth.uid;
-    }
-  }
-}
-```
-
-#### Testing Pattern
-```typescript
-// __tests__/api/projects.test.ts
-import { POST } from '@/app/api/projects/route';
-import { adminAuth } from '@/lib/firebase-admin';
-
-jest.mock('@/lib/firebase-admin');
-
-describe('POST /api/projects', () => {
-  it('should create project for authenticated user', async () => {
-    // Arrange
-    const mockToken = 'valid-token';
-    (adminAuth.verifyIdToken as jest.Mock).mockResolvedValue({ uid: 'user-123' });
-
-    const request = new Request('http://localhost/api/projects', {
-      method: 'POST',
-      headers: { authorization: `Bearer ${mockToken}` },
-      body: JSON.stringify({ name: 'Test Project' })
-    });
-
-    // Act
-    const response = await POST(request as any);
-    const data = await response.json();
-
-    // Assert
-    expect(response.status).toBe(201);
-    expect(data.data.name).toBe('Test Project');
-  });
-});
-```
-
----
-
-## Template Sections (Customize for Your Project)
-
----
-
 ## Purpose
 
-This file contains project-specific patterns, conventions, and guidelines that complement the general rules. Use this to capture:
-- Project-specific architectural decisions
+Capture project-specific patterns, conventions, and guidelines that complement general rules:
+- Architectural decisions
 - Domain-specific patterns
 - Team agreements
 - Technology-specific conventions
 - Common pitfalls in THIS project
 
----
-
 ## Project Information
 
-### Tech Stack
-- **Frontend**: [e.g., React 18, TypeScript, Tailwind CSS]
-- **Backend**: [e.g., Node.js, Express, PostgreSQL]
-- **Infrastructure**: [e.g., AWS, Docker, Kubernetes]
-- **Testing**: [e.g., Jest, Playwright, Cypress]
-- **Build Tools**: [e.g., Vite, esbuild, Turbo]
+### Tech Stack Template
+- **Frontend**: Framework, UI library, styling
+- **Backend**: Runtime, framework, database
+- **Infrastructure**: Cloud provider, containers, orchestration
+- **Testing**: Unit, integration, E2E frameworks
+- **Build Tools**: Bundler, transpiler, monorepo tools
 
 ### Key Dependencies
-- [Package name]: [Version] - [Purpose]
-- [Package name]: [Version] - [Purpose]
-
----
+List critical packages with versions and purposes
 
 ## Architecture Overview
 
 ### System Design
-[Describe high-level architecture]
-- Monolith / Microservices / Monorepo?
-- Frontend/Backend separation?
-- Database architecture?
-- Caching strategy?
-- Authentication approach?
+- Architecture pattern (monolith, microservices, monorepo)
+- Frontend/backend separation strategy
+- Database architecture
+- Caching strategy
+- Authentication approach
 
-### Directory Structure
+### Directory Structure Template
 ```
 src/
 ├── components/       # Reusable UI components
@@ -371,272 +44,224 @@ src/
 └── types/          # TypeScript types
 ```
 
----
-
 ## Project-Specific Patterns
 
 ### API Response Format
-[Define standard response structure]
-```typescript
-// Success
-{
-  "data": { ... },
-  "meta": { ... }
-}
-
-// Error
-{
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human-readable message"
-  }
-}
-```
+Define standard structure:
+- Success format: `{ data, meta }`
+- Error format: `{ error: { code, message } }`
+- Status codes mapping
 
 ### Error Handling
-[Define how errors are handled]
-```typescript
-// Example
-try {
-  await operation();
-} catch (error) {
-  logger.error('Operation failed', { error });
-  throw new AppError('User-friendly message');
-}
-```
+- Try-catch patterns
+- Error logging strategy
+- User-facing error messages
+- Error boundary setup
 
 ### State Management
-[Define state management approach]
-- Global state: [Redux / Zustand / Context]
-- Server state: [React Query / SWR]
-- Form state: [React Hook Form / Formik]
-
----
+- Global state solution (Redux, Zustand, Context)
+- Server state solution (React Query, SWR)
+- Form state solution (React Hook Form, Formik)
+- When to use each type
 
 ## Domain-Specific Rules
 
 ### Business Logic
-[Project-specific business rules]
+Document key business rules:
 - User roles and permissions
 - Pricing calculations
 - Workflow states
 - Validation rules
+- Domain constraints
 
 ### Data Models
-[Key domain objects and their relationships]
-```typescript
-// Example
-interface User {
-  id: string;
-  role: 'admin' | 'user' | 'guest';
-  permissions: Permission[];
-}
-
-interface Order {
-  id: string;
-  userId: string;
-  status: 'pending' | 'processing' | 'completed';
-}
-```
-
----
+Key domain objects and relationships:
+- Core entities
+- Relationship types
+- Required fields
+- Validation rules
 
 ## Common Patterns
 
-### Authentication
-[How auth is handled in this project]
-```typescript
-// Example
-function useAuth() {
-  // Project-specific auth hook
-}
-```
+### Authentication Pattern
+How auth is handled:
+- Authentication provider
+- Token storage location
+- Session management
+- Protected route pattern
+- Auth hook usage
 
-### Database Queries
-[Query patterns for this project]
-```typescript
-// Example
-async function findUserWithOrders(userId: string) {
-  return db.users.findUnique({
-    where: { id: userId },
-    include: { orders: true }
-  });
-}
-```
+### Database Queries Pattern
+Query conventions:
+- Repository pattern or direct access
+- Transaction handling
+- Pagination approach
+- Eager vs lazy loading
+- Query optimization rules
 
-### File Uploads
-[How file uploads are handled]
+### File Uploads Pattern
+File handling approach:
+- Storage service (S3, Cloudinary, local)
+- File size limits
+- Allowed file types
+- Upload progress tracking
+- Security validations
 
-### Background Jobs
-[How async work is processed]
-
----
+### Background Jobs Pattern
+Async work processing:
+- Queue service (BullMQ, SQS, Cloud Tasks)
+- Job retry strategy
+- Dead letter queue handling
+- Monitoring approach
 
 ## Technology-Specific Guidelines
 
-### React Patterns
-[Project-specific React conventions]
-- Component organization
-- Props naming
-- Hook usage
-- Context usage
+### React Patterns (if applicable)
+- Component organization (atomic, feature-based)
+- Props naming conventions
+- Hook usage rules
+- Context usage guidelines
+- Re-render optimization
 
 ### Database Patterns
-[Project-specific DB conventions]
 - Migration strategy
 - Indexing guidelines
 - Query optimization rules
+- Connection pooling
+- Transaction patterns
 
 ### API Patterns
-[Project-specific API conventions]
-- Endpoint naming
-- Versioning strategy
+- Endpoint naming conventions
+- Versioning strategy (URL, header)
 - Rate limiting rules
-
----
+- Pagination format
+- Filtering and sorting
 
 ## Common Mistakes to Avoid
 
-### [Mistake Category]
-**Problem**: [Describe what people keep doing wrong]
-**Why it's wrong**: [Explain the issue]
-**Correct approach**: [Show the right way]
+### Mistake Template
+**Problem**: What people keep doing wrong
+**Why it's wrong**: Technical or architectural issue
+**Correct approach**: Recommended pattern
 
-**Example**:
-```typescript
-// ❌ Wrong
-[bad example]
-
-// ✅ Correct
-[good example]
-```
-
----
+Document 3-5 most common mistakes specific to this project
 
 ## Testing Strategy
 
 ### Test Coverage Requirements
-- Business logic: [e.g., 90%]
-- API endpoints: [e.g., 85%]
-- UI components: [e.g., 70%]
+- Business logic: Target percentage
+- API endpoints: Target percentage
+- UI components: Target percentage
 
 ### Test Organization
-[Where tests live, naming conventions]
-```
-__tests__/
-  unit/
-  integration/
-  e2e/
-```
+- Test file locations
+- Naming conventions
+- Test data management
 
 ### Mocking Strategy
-[What to mock, what not to mock]
-
----
+- What to mock (external APIs, DB)
+- What not to mock (internal utils)
+- Mock service locations
 
 ## Security Considerations
 
 ### Project-Specific Security Rules
-- [e.g., All payments must use Stripe]
-- [e.g., User data must be encrypted at rest]
-- [e.g., API keys stored in Vault]
+- Payment processing requirements
+- Data encryption requirements
+- API key storage approach
+- Authentication requirements
+- Authorization patterns
 
 ### Sensitive Data Handling
-[How to handle PII, secrets, etc. in this project]
-
----
+- PII handling guidelines
+- Secret management approach
+- Data retention policies
 
 ## Performance Requirements
 
 ### Targets
-- Page load: [e.g., < 2s]
-- API response: [e.g., < 200ms p95]
-- Database queries: [e.g., < 50ms]
+- Page load time target
+- API response time target
+- Database query time target
+- Bundle size limit
 
 ### Optimization Strategies
-[Project-specific performance patterns]
-
----
+- Code splitting approach
+- Image optimization
+- Caching strategy
+- CDN usage
 
 ## Deployment
 
 ### Environments
-- **Development**: [URL, purpose]
-- **Staging**: [URL, purpose]
-- **Production**: [URL, purpose]
+- **Development**: URL, purpose, data source
+- **Staging**: URL, purpose, data source
+- **Production**: URL, purpose, data source
 
 ### Deployment Process
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+1. Create PR
+2. Pass CI/CD checks
+3. Get approval
+4. Merge to main
+5. Auto-deploy or manual trigger
+6. Verify deployment
 
 ### Rollback Procedure
-[How to rollback if deployment fails]
-
----
+Steps to rollback failed deployment
 
 ## Monitoring & Logging
 
 ### Key Metrics
-- [Metric 1]
-- [Metric 2]
-- [Metric 3]
+- Application metrics to track
+- Business metrics to track
+- Infrastructure metrics to track
 
 ### Logging Standards
-[What to log, how to log it]
-```typescript
-// Example
-logger.info('User action', {
-  userId,
-  action: 'purchase',
-  orderId
-});
-```
+- What to log (events, errors, user actions)
+- How to log (structured, levels)
+- What NOT to log (secrets, PII)
 
 ### Alerting Rules
-[When to alert, who gets alerted]
-
----
+- When to alert (error rates, latency)
+- Who gets alerted (on-call, team)
+- Alert escalation process
 
 ## Third-Party Services
 
-### [Service Name]
-- **Purpose**: [What it's used for]
-- **Documentation**: [Link]
-- **API Keys**: [Where stored]
-- **Rate Limits**: [Limits to be aware of]
-
----
+### Service Template
+- **Purpose**: What it's used for
+- **Documentation**: Link to docs
+- **API Keys**: Where stored
+- **Rate Limits**: Limits to be aware of
+- **Fallback**: Behavior if unavailable
 
 ## Team Conventions
 
 ### Code Review Checklist
-- [ ] [Project-specific item]
-- [ ] [Project-specific item]
-- [ ] [Project-specific item]
+Project-specific items to check in every PR
 
 ### PR Size Guidelines
-- Ideal: [e.g., < 300 lines]
-- Maximum: [e.g., < 800 lines]
+- Ideal size: < 300 lines
+- Maximum size: < 800 lines
+- When to split large PRs
 
 ### Branch Naming
-[Project-specific branch naming rules]
-
----
+- Feature: `feature/description`
+- Bug fix: `fix/description`
+- Hotfix: `hotfix/description`
 
 ## Resources
 
 ### Internal Documentation
-- [Architecture Docs]: [Link]
-- [API Docs]: [Link]
-- [Database Schema]: [Link]
-- [Design System]: [Link]
+- Architecture docs location
+- API documentation location
+- Database schema location
+- Design system location
 
 ### External Resources
-- [Service 1 Docs]: [Link]
-- [Library Docs]: [Link]
-
----
+- Framework documentation
+- Library documentation
+- Service provider docs
 
 ## Onboarding Checklist
 
@@ -650,23 +275,44 @@ For new team members:
 - [ ] Review recent PRs
 - [ ] Understand deployment process
 
----
-
 ## Maintenance
 
 ### Updating This Document
 - Update when patterns change
-- Add new mistakes as they're discovered
+- Add new mistakes as discovered
 - Remove outdated information
 - Review monthly in team meetings
 
 ### Last Updated
-- **Date**: [YYYY-MM-DD]
-- **By**: [Team member]
-- **Changes**: [What was updated]
+- **Date**: YYYY-MM-DD
+- **By**: Team member
+- **Changes**: Summary of changes
 
----
+## Example: Firebase Project Patterns
 
-## Notes
+### Firebase-Specific Setup
+- Client SDK in `lib/firebase.ts` with public env vars
+- Admin SDK in `lib/firebase-admin.ts` with private env vars
+- Never use Admin SDK in client components
+- Use React Query hooks for Firestore queries
+- Centralize queries in custom hooks
 
-[Any additional project-specific information that doesn't fit elsewhere]
+### Common Firebase Mistakes
+1. Using Admin SDK on client (causes build errors)
+2. Not using React Query (manual state management)
+3. Direct Firestore access in components (scattered logic)
+4. Not validating with Zod schemas
+5. Forgetting security rules in `firestore.rules`
+
+### Firebase API Route Pattern
+1. Define Zod schema for validation
+2. Verify authentication token
+3. Parse and validate body
+4. Execute business logic
+5. Return standard format
+
+### Firebase Testing Pattern
+- Mock `firebase-admin` in tests
+- Mock authentication token verification
+- Test API routes with mocked Firebase
+- Test React Query hooks with mock data

@@ -308,7 +308,13 @@ src/components/layout/DashboardLayout/
 
 ## Customization
 
-### Use Project Template
+### Use Project Templates
+The command uses templates from `.claude/templates/`:
+- `component.tsx.template` - Standard React components
+- `form.tsx.template` - Form components with React Hook Form + Zod
+- `hook.ts.template` - Custom React hooks
+- `test.spec.ts.template` - Test file generation
+
 If `.claude/templates/component.tsx.template` exists, the command uses it:
 
 ```typescript

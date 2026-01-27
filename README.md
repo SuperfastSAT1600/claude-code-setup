@@ -1,6 +1,8 @@
 # Claude Code Workflow Template
 
-A ready-to-use template implementing the Boris Cherny workflow for Claude Code, featuring **34 specialized agents**, **20 powerful commands**, **5 orchestrated workflows**, **13 review checklists**, **16 code templates**, **20 skill references**, and **17 auto-enforced rules**.
+A ready-to-use template implementing a hybrid coding workflow for Claude Code, featuring **33 specialized agents**, **20 powerful commands**, **5 orchestrated workflows**, **13 review checklists**, **16 code templates**, **20 skill references**, and **17 auto-enforced rules**.
+
+**Key Feature**: Main agent codes directly for standard tasks (CRUD, simple features, bug fixes) and delegates to specialized agents for complex domains (auth, databases, performance, security).
 
 ---
 
@@ -20,7 +22,7 @@ git clone <this-repo> my-project
 cd my-project
 
 # 2. Run the setup wizard
-node setup.js
+node setup.cjs
 
 # 3. Start Claude Code
 claude
@@ -79,12 +81,13 @@ cp .env.example .env
 - `/security-review` - Comprehensive security audit
 - `/update-docs` - Sync documentation with code changes
 
-### 🤖 Custom Agents (34)
+### 🤖 Custom Agents (33 Specialists)
+
+**Philosophy**: Main agent handles standard development directly. Specialized agents provide expert guidance for complex domains.
 
 **Core Workflow:**
-- **planner** - Implementation planning and task breakdown
+- **planner** - Implementation planning and task breakdown (optional for complex features)
 - **architect** - System design and architectural decisions
-- **implementer** - Feature implementation following plans
 - **code-reviewer** - Comprehensive code quality review
 - **security-reviewer** - OWASP security audits
 - **verify-app** - End-to-end application verification
@@ -132,7 +135,7 @@ cp .env.example .env
 - **13 Review Checklists** - PR review, security, performance, accessibility, pre-release, onboarding, ai-code-review, database-migration, dependency-audit, deployment, hotfix, build-errors, e2e-testing
 - **16 Code Templates** - component, API route, test, migration, PR description, error-handler, form, guard, hook, middleware, service, API documentation, GitHub workflow, Dockerfile, Playwright config, README
 - **20 Skill References** - React, Next.js, REST API, GraphQL, WebSocket, TDD, backend patterns, frontend patterns, coding standards, Node.js, Prisma, GitHub Actions, project guidelines, user intent, prompt engineering, RAG patterns, auth patterns, database patterns, Docker patterns, documentation patterns
-- **17 Auto-Enforced Rules** - security, coding style, testing, git workflow, performance, API design, code review, error handling, documentation, hooks, patterns, context management, orchestrator, agents, AI code detection, intent routing, non-technical mode
+- **Hybrid Agent Rules** - Main agent codes standard tasks, delegates specialized work for efficiency and expertise
 
 ### 📚 Documentation
 - [QUICKSTART.md](QUICKSTART.md) - Daily workflow quick reference (5-minute setup)
@@ -145,7 +148,7 @@ cp .env.example .env
 - `.claude/settings.json` - Shared team settings (49 pre-approved operations, hooks)
 - `.mcp.template.json` - MCP server template (27 servers, cross-platform)
 - `.env.example` - Environment variables template
-- `setup.js` - Cross-platform setup wizard
+- `setup.cjs` - Cross-platform setup wizard
 - `.gitignore` - Sensible defaults for various project types
 
 ---
@@ -205,12 +208,12 @@ See [WORKFLOW.md](WORKFLOW.md) Section 7 for the complete customization roadmap.
 ```
 .
 ├── .claude/
-│   ├── agents/               # 34 specialized agents
+│   ├── agents/               # 33 specialized agents
 │   │   ├── planner.md
 │   │   ├── architect.md
-│   │   ├── implementer.md
 │   │   ├── code-reviewer.md
-│   │   └── ... (30 more)
+│   │   ├── auth-specialist.md
+│   │   └── ... (29 more)
 │   ├── commands/             # 20 slash commands
 │   │   ├── full-feature.md
 │   │   ├── quick-fix.md
@@ -230,11 +233,10 @@ See [WORKFLOW.md](WORKFLOW.md) Section 7 for the complete customization roadmap.
 │   │   ├── api-route.ts.template
 │   │   ├── Dockerfile.template
 │   │   └── ... (13 more)
-│   ├── rules/                # 17 auto-enforced guidelines
-│   │   ├── security.md
-│   │   ├── coding-style.md
-│   │   ├── orchestrator.md
-│   │   └── ... (14 more)
+│   ├── rules/                # Core guidelines
+│   │   ├── essential-rules.md
+│   │   ├── agent-workflow.md (hybrid model)
+│   │   └── ...
 │   ├── skills/               # 20 reference knowledge files
 │   │   ├── react-patterns.md
 │   │   ├── auth-patterns.md
@@ -246,7 +248,7 @@ See [WORKFLOW.md](WORKFLOW.md) Section 7 for the complete customization roadmap.
 ├── .mcp.json                 # MCP config with keys (gitignored, generated)
 ├── .env.example              # Environment template
 ├── .env                      # Your secrets (gitignored, generated)
-├── setup.js                  # Cross-platform setup wizard
+├── setup.cjs                 # Cross-platform setup wizard
 ├── CLAUDE.md                 # Team guidelines ⚠️ CUSTOMIZE
 ├── WORKFLOW.md               # Complete 1500+ line guide
 ├── QUICKSTART.md             # Quick reference
@@ -311,6 +313,6 @@ claude
 
 ---
 
-**Template Version**: 2.0
-**Based On**: Boris Cherny Workflow
-**Last Updated**: 2026-01-22
+**Template Version**: 2.1
+**Model**: Hybrid agent system (main agent codes + specialists)
+**Last Updated**: 2026-01-26

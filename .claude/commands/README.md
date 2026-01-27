@@ -523,10 +523,10 @@ Details...
 
 ## Resources
 
-- [INDEX.md](../INDEX.md) - Quick lookup of all commands
-- [GUIDE.md](../GUIDE.md) - Comprehensive usage guide
-- [Agents README](../agents/README.md) - Agent documentation
+- [Agents Index](../agents/INDEX.md) - Agent directory and usage guide
+- [Skills Index](../skills/INDEX.md) - Skills directory and selection guide
 - [Workflows](../workflows/) - Detailed workflow definitions
+- [Checklists](../checklists/) - Quality gate checklists
 
 ---
 

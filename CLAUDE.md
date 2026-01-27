@@ -6,7 +6,8 @@ Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
 
 ## Quick Reference
 
-**Agents (34)**: See `.claude/agents/` for full list and INDEX.md
+**Workflow**: Main agent codes standard tasks, delegates to 33 specialized agents for expertise
+**Agents (33)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
 - Rules: `.claude/rules/` (essential-rules.md, agent-workflow.md)
@@ -17,16 +18,20 @@ Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
 
 ---
 
-## Intent Detection
+## How It Works
+
+**Main agent codes directly** for standard tasks (CRUD, simple features, bug fixes).
+**Specialists handle** complex domains (auth, databases, performance, security).
 
 Just describe what you want in plain English:
 
 | You say | What happens |
 |---------|--------------|
-| "I want users to log in" | full-feature with auth-specialist |
-| "The checkout is broken" | quick-fix workflow |
-| "Is this code secure?" | security-review |
-| "Make the page faster" | performance-optimizer |
+| "Add a user profile page" | Main agent implements directly |
+| "I want users to log in with OAuth" | Delegates to auth-specialist |
+| "The checkout is broken" | Main agent fixes via quick-fix workflow |
+| "Is this code secure?" | Delegates to security-reviewer |
+| "Make the page faster" | Delegates to performance-optimizer |
 
 ---
 
@@ -71,4 +76,4 @@ src/
 
 ---
 
-**Last Updated**: 2025-01-22
+**Last Updated**: 2026-01-26

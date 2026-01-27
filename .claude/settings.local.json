@@ -48,7 +48,19 @@
       "Bash(for f in ai-code-detection.md code-review.md documentation.md non-technical-mode.md intent-routing.md context-management.md api-design.md patterns.md performance.md error-handling.md security.md testing.md coding-style.md git-workflow.md agents.md orchestrator.md hooks.md)",
       "Bash(do if [ -f \"$f\" ])",
       "Bash(then mv \"$f\" _archive/)",
-      "Bash(xargs -I{} sh -c 'echo \"\"=== {} ===\"\"; head -6 {}')"
+      "Bash(xargs -I{} sh -c 'echo \"\"=== {} ===\"\"; head -6 {}')",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:platform.openai.com)",
+      "WebFetch(domain:help.openai.com)",
+      "WebFetch(domain:www.promptingguide.ai)",
+      "Bash(for:*)",
+      "Bash(do sed -i \"s/require\\(''\\\\.\\\\/\\\\\\([^'']*\\\\\\)''\\)/require\\(''.\\\\/\\\\1.cjs''\\)/g\" \"$file\")",
+      "Bash(npm install:*)",
+      "Bash(npm init:*)",
+      "Bash(npm --version:*)",
+      "Bash(\"/c/Program Files/nodejs/npm\" install read)",
+      "Bash(cd:*)",
+      "Bash(cmd.exe /c \"npm install read\")"
     ]
   },
   "model": "sonnet",

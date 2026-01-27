@@ -7,9 +7,9 @@ Your complete guide to maximizing productivity with Claude Code.
 **Who is this for?** Developers adopting Claude Code, whether solo or in teams, from quickstart to power user.
 
 **Quick Navigation:**
-- 📋 **[.claude/INDEX.md](.claude/INDEX.md)** - Quick reference for all features (2-minute scan)
-- 📚 **[.claude/GUIDE.md](.claude/GUIDE.md)** - Comprehensive how-to guide (consolidated all READMEs)
-- ⚡ **[QUICKSTART.md](QUICKSTART.md)** - 5-minute getting started
+- 📋 **[.claude/agents/INDEX.md](.claude/agents/INDEX.md)** - Agent directory and usage guide
+- 📚 **[.claude/skills/INDEX.md](.claude/skills/INDEX.md)** - Skills directory and selection guide
+- ⚡ **[README.md](README.md)** - Project overview
 
 ---
 
@@ -57,54 +57,63 @@ This template integrates three powerful approaches:
 
 ### 1.2 Key Principles
 
-**Principle 1: Always Plan Complex Work**
-Use Plan Mode (`Shift+Tab` twice) for features touching 3+ files. Get the plan right before implementing.
+**Principle 1: Main Agent Codes First**
+Main agent handles standard development directly (CRUD, simple features, bug fixes). Delegate to specialists for complex domains (auth, database schema, security, performance).
 
-**Principle 2: Verify Continuously**
+**Principle 2: Plan Complex Work**
+Use Plan Mode (`Shift+Tab` twice) for complex features touching 5+ files or requiring architectural decisions. Most simple features don't need planning.
+
+**Principle 3: Verify Continuously**
 Run `/test-and-build` and `/security-review` before every commit. Verification loops improve quality 2-3x.
 
-**Principle 3: Delegate to Specialists**
-Use agents for specialized tasks (security audits, refactoring, testing). They have isolated context and focused expertise.
+**Principle 4: Delegate to Specialists**
+Use specialized agents for domain expertise (auth-specialist, security-reviewer, performance-optimizer, etc.). They have isolated context and focused expertise.
 
-**Principle 4: Compound Knowledge**
+**Principle 5: Compound Knowledge**
 Update CLAUDE.md after every mistake. Your team's shared knowledge grows with the project.
 
-**Principle 5: Manage Context**
+**Principle 6: Manage Context**
 Keep context under 80k tokens. Disable unused MCPs, delegate heavy tasks to agents, start fresh sessions when needed.
 
 ### 1.3 System Overview
 
+**Hybrid Agent Model** - Main agent codes, specialists provide expertise
+- Main agent handles 70% of work directly (CRUD, simple features, bug fixes)
+- 33 specialized agents available for complex domains
+- Efficient workflow: code first, delegate when specialized expertise needed
+
 **Commands** - User-triggered workflows
 - Slash commands like `/full-feature`, `/commit-push-pr`, `/lint-fix`, `/type-check`
 - Execute complete workflows in one command
-- **15 commands available** covering workflow orchestration, development, quality, and maintenance
+- **21 commands available** covering workflow orchestration, development, quality, and maintenance
 
-**Agents** - Specialized autonomous workers
-- Delegate complex tasks to focused experts
+**Agents** - Specialized autonomous workers (33 total)
+- Main agent codes directly for standard tasks
+- Delegate to specialists for domain expertise
 - Agents have isolated context and specific tools
-- **18 agents available**: api-designer, code-reviewer, graphql-specialist, websocket-specialist, unit-test-writer, performance-optimizer, etc.
+- Categories: Planning & Architecture (2), Code Quality (6), Testing (6), Development (5), Operations (6), Accessibility & i18n (2), Documentation (2), Performance (1), Specialized Domains (3)
 
 **Rules** - Always-active guardrails
+- Core guidelines: `essential-rules.md` (security, coding style, TypeScript, testing, error handling, API design)
+- Workflow rules: `agent-workflow.md` (hybrid model delegation principles)
 - Automatically enforced on every interaction
-- Prevent security vulnerabilities, enforce code style, ensure test coverage
-- **9 rules** covering security, style, testing, git, performance, agents, hooks, patterns, context-management
 
-**Skills** - Reusable knowledge patterns
-- Referenced by commands and agents
+**Skills** - Reusable knowledge patterns (22 total)
+- Referenced by main agent and specialist agents
 - Reduce repetition, ensure consistency
-- **8 skills**: react-patterns, nextjs-patterns, nodejs-patterns, rest-api-design, graphql-patterns, websocket-patterns, plus core skills
+- Categories: Framework patterns (React, Next.js, Node.js), API design (REST, GraphQL, WebSocket), Development practices (TDD, auth, database, documentation), Project management (guidelines, user intent, prompt engineering)
 
-**Workflows** - Orchestrated agent sequences
-- Multi-step automated workflows combining multiple agents
+**Workflows** - Orchestrated sequences
+- Multi-step automated workflows
 - **5 workflows**: full-feature, bug-fix, refactor, release, security-audit
 
 **Checklists** - Review standards
 - Comprehensive checklists for quality gates
-- **6 checklists**: PR review, security audit, performance audit, accessibility audit, pre-release, onboarding
+- **13 checklists**: PR review, security audit, performance audit, accessibility audit, pre-release, onboarding, deployment, database migration, dependency audit, hotfix, AI code review, build errors, E2E testing
 
 **Templates** - Code scaffolding
 - Reusable code templates for common patterns
-- **5 templates**: component, API route, test, migration, PR description
+- **16 templates**: component, API route, test, migration, PR description, form, guard, hook, service, middleware, error-handler, Dockerfile, GitHub workflow, Playwright config, API docs, README
 
 **Scripts** - Automation helpers
 - Shell scripts for common automation tasks
@@ -214,10 +223,13 @@ I need to...
 
 ### 3.1 New Feature Development (Full Cycle)
 
-**Step 1: Planning Phase** (for medium/complex features)
+**Step 1: Planning Phase** (optional - for complex features only)
 
 ```
-For features touching 3+ files:
+For simple features (CRUD, components, basic routes):
+→ Skip planning, main agent implements directly
+
+For complex features (5+ files, architectural decisions):
 [Shift+Tab twice] or /plan
 
 → planner agent creates implementation plan
@@ -229,20 +241,33 @@ For features touching 3+ files:
 
 **Step 2: Implementation Phase**
 
-Option A - TDD Approach (recommended):
+Option A - Main Agent Direct Implementation (most common):
+```
+Main agent implements feature
+→ Reads relevant files for context
+→ Writes code following project patterns
+→ Creates tests alongside implementation
+→ Uses templates from .claude/templates/
+→ Handles errors and edge cases
+```
+
+Option B - TDD Approach (recommended for complex logic):
 ```
 /tdd "feature name"
 → tdd-guide agent walks through Red-Green-Refactor
 → Write failing test first
-→ Implement minimum code to pass
+→ Main agent implements minimum code to pass
 → Refactor with test safety net
 ```
 
-Option B - Regular Implementation:
+Option C - Specialist Implementation (for complex domains):
 ```
-Implement based on approved plan
-→ Use code-simplifier agent if code feels complex
-→ Follow project patterns in CLAUDE.md
+Delegate to appropriate specialist:
+→ auth-specialist for OAuth, JWT, MFA
+→ database-architect for schema design
+→ api-designer for complex REST/GraphQL APIs
+→ graphql-specialist for GraphQL schemas
+→ websocket-specialist for real-time features
 ```
 
 **Step 3: Verification Phase**
@@ -332,12 +357,14 @@ Dependencies to install:
 
 User: "Approved, proceed"
 
-Claude: [Implements according to plan]
+Main Agent: "This is complex auth work, delegating to auth-specialist"
+
+auth-specialist agent: [Implements according to plan]
 → Creates database migration
 → Implements API routes with validation
-→ Creates authentication middleware
+→ Creates authentication middleware with JWT
 → Builds frontend components
-→ Adds error handling
+→ Adds proper error handling and rate limiting
 
 User: "Run code-simplifier agent on the auth service"
 
@@ -470,11 +497,12 @@ Coverage: 95% test coverage, all edge cases handled
 **Complex Bug** (investigation needed):
 
 ```
-1. Reproduce bug
-2. Investigate root cause
-3. [Shift+Tab twice] Create fix plan
-4. Implement fix
-5. Delegate to verify-app agent (ensure bug is actually fixed)
+1. Main agent reproduces bug
+2. Main agent investigates root cause
+3. For simple fix: main agent implements directly
+   For complex fix: [Shift+Tab twice] Create fix plan
+4. Main agent implements fix
+5. Optional: Delegate to verify-app agent (ensure bug is actually fixed)
 6. /test-and-build
 7. /commit-push-pr
 ```
@@ -484,26 +512,17 @@ Coverage: 95% test coverage, all edge cases handled
 ```
 User: "Date picker shows wrong dates when user is in different timezone"
 
-Claude: [Investigates]
-→ Reads date picker component
+Main Agent: [Investigates directly]
+→ Reads DatePicker.tsx component
 → Finds issue: using new Date() instead of UTC
 → Root cause: Not respecting user timezone preference
 
-[Shift+Tab twice] Create Fix Plan:
-1. Store dates in UTC in database
-2. Convert to user timezone in frontend
-3. Add timezone selector to user settings
-4. Update date picker to use user timezone
-5. Add tests for multiple timezones
-
-User: "Approved"
-
-Claude: [Implements fix]
-
-verify-app agent:
-→ Tests with multiple timezones (US/Pacific, US/Eastern, Europe/London, Asia/Tokyo)
-→ Confirms dates display correctly in all timezones
-→ ✅ Bug is fixed
+Main Agent: "This is a straightforward fix, implementing directly"
+→ Stores dates in UTC in database
+→ Converts to user timezone in frontend
+→ Updates date picker to use user timezone
+→ Adds tests for multiple timezones (US/Pacific, US/Eastern, Europe/London, Asia/Tokyo)
+→ Implements fix in 3 files: DatePicker.tsx, formatDate.ts, date.test.ts
 
 /test-and-build
 → All tests pass ✅
@@ -514,16 +533,36 @@ verify-app agent:
 
 ### 3.4 Refactoring Legacy Code
 
+**Small Refactor (<5 files)**:
+```
+Step 1: Ensure Tests Exist
+/test-coverage [path]
+→ If coverage <80%, main agent writes tests FIRST
+→ Tests are your safety net
+
+Step 2: Main agent refactors directly
+→ Extract functions, rename for clarity
+→ Remove duplication, simplify conditionals
+→ Run tests after each change
+
+Step 3: Verify No Breakage
+/test-and-build
+→ All tests still pass
+
+Step 4: Commit
+/commit-push-pr
+→ refactor: simplify [module name]
+```
+
+**Large Refactor (>5 files)**:
 ```
 Step 1: Ensure Tests Exist
 /test-coverage [path]
 → If coverage <80%, write tests FIRST
-→ Tests are your safety net during refactoring
 
-Step 2: Create Refactoring Strategy
+Step 2: Create Refactoring Strategy (optional)
 /plan "refactor [module name]"
 → planner agent creates strategy
-→ Identifies patterns to extract
 → Plans incremental steps
 
 Step 3: Modernize Code
@@ -531,24 +570,19 @@ Delegate to refactor-cleaner agent
 → Systematic modernization
 → Removes dead code
 → Updates to modern patterns
-→ Improves readability
 
-Step 4: Simplify Logic
+Step 4: Simplify Logic (if needed)
 Delegate to code-simplifier agent
 → Removes over-engineering
-→ Inlines single-use functions
 → Reduces complexity
-→ Improves performance
 
 Step 5: Verify No Breakage
 /test-and-build
-→ Ensures refactoring didn't break anything
 → All tests still pass
 
 Step 6: Code Review
 /review-changes
-→ Check refactoring quality
-→ Verify improvements made
+→ Verify improvements
 
 Step 7: Commit
 /commit-push-pr
@@ -636,99 +670,176 @@ Then:
 
 ## 4. Agent Orchestration
 
-### 4.1 Sequential Agent Patterns
+### 4.1 Hybrid Agent Model
 
-**Pattern 1: Plan → Implement → Simplify → Verify**
+**Core Philosophy**: Main agent codes directly for standard tasks, delegates to specialists for expertise.
+
+**Main Agent Handles Directly**:
+- Standard CRUD operations
+- Simple bug fixes (< 3 files)
+- Basic refactoring
+- Documentation updates
+- Simple feature implementation (components, routes, services)
+- Git operations (commit, push, PR)
+- Template usage and pattern following
+
+**Delegate to Specialists When**:
+- Complex architecture needed → `architect`, `planner`
+- Specialized domains → `auth-specialist`, `database-architect`, `api-designer`, `graphql-specialist`, `websocket-specialist`
+- Security-critical work → `security-reviewer`
+- Testing strategies → `tdd-guide`, `unit-test-writer`, `e2e-runner`
+- Performance optimization → `performance-optimizer`
+- Operations work → `ci-cd-specialist`, `docker-specialist`, `migration-specialist`
+- Code quality reviews → `code-reviewer`, `security-reviewer`
+- Accessibility compliance → `accessibility-auditor`
+- Large refactors (>5 files) → `refactor-cleaner`
+
+### 4.2 Sequential Patterns
+
+**Pattern 1: Simple Feature (Main Agent Only)**
 
 ```
-1. Delegate to planner agent
+1. Main agent analyzes requirements
+   → Understands context
+   → Identifies files to change
+
+2. Main agent implements directly
+   → Writes code + tests
+   → Follows project patterns
+   → Uses templates
+
+3. Main agent self-verifies
+   → Runs tests
+   → Checks lint/build
+   → Optional: delegate to code-reviewer if complex
+
+4. Main agent commits
+   → /commit-push-pr
+```
+
+**Pattern 2: Complex Feature (With Specialists)**
+
+```
+1. Optional: delegate to planner agent (if complex)
    → Creates detailed implementation plan
    → Identifies dependencies
    → Suggests testing strategy
 
-2. [Implement based on plan in main context]
+2. Main agent OR specialist implements
+   → If standard: main agent codes directly
+   → If specialized: delegate to domain expert
    → Follow plan step-by-step
-   → Reference skills for patterns
 
-3. Delegate to code-simplifier agent
+3. Delegate to code-simplifier agent (optional)
    → Removes over-engineering
    → Simplifies complex logic
    → Improves readability
 
-4. Delegate to verify-app agent
+4. Delegate to verify-app agent (optional)
    → End-to-end validation
    → Integration testing
    → User workflow verification
 ```
 
-**Pattern 2: Refactor → Test → Document**
+**Pattern 3: Refactor → Test → Document**
 
 ```
-1. Delegate to refactor-cleaner agent
+1. For small refactors: main agent handles directly
+   For large refactors (>5 files): delegate to refactor-cleaner agent
    → Modernizes legacy code
    → Removes dead code
    → Updates patterns
 
-2. Delegate to tdd-guide agent
+2. Delegate to tdd-guide OR unit-test-writer agent
    → Adds missing tests
    → Ensures coverage
    → Tests edge cases
 
-3. Delegate to doc-updater agent
+3. For simple docs: main agent updates directly
+   For comprehensive docs: delegate to doc-updater agent
    → Syncs documentation with code
    → Updates API docs
    → Refreshes examples
 ```
 
-**Pattern 3: Build → Fix → Verify**
+**Pattern 4: Build → Fix → Verify**
 
 ```
-1. Run /build-fix command
+1. Main agent runs /build-fix command
    → Auto-fixes build errors
    → Handles type errors
    → Fixes imports
 
-2. (If manual fixes needed)
+2. (If complex build issues)
    Delegate to build-error-resolver agent
    → Systematic error fixing
    → Prioritizes by impact
 
-3. Run /test-and-build
+3. Main agent runs /test-and-build
    → Comprehensive verification
    → Ensures everything works
 ```
 
-### 4.2 Parallel Agent Patterns
+### 4.3 Parallel Agent Patterns
 
-Run multiple agents simultaneously in separate Claude Code sessions:
+**Within Single Session** (preferred for most work):
+Main agent can delegate multiple specialists in parallel using single message with multiple Task tool calls:
 
 ```
-Terminal 1 (Main): Feature implementation
-Terminal 2: Delegate to security-reviewer agent (background audit)
-Terminal 3: Delegate to e2e-runner agent (generate tests)
-Terminal 4: Delegate to doc-updater agent (update docs)
+Main agent delegates in parallel:
+- security-reviewer agent (background audit)
+- code-reviewer agent (code quality)
+- doc-updater agent (update docs)
+
+All results come back to main agent for review
+```
+
+**Multiple Sessions** (for large independent work):
+Run parallel Claude Code sessions when needed:
+
+```
+Terminal 1 (Main): Main agent implements feature A
+Terminal 2: Main agent implements feature B
+Terminal 3: Delegate to security-reviewer agent (comprehensive audit)
+Terminal 4: Delegate to e2e-runner agent (generate full test suite)
 Terminal 5: Run /test-and-build (continuous testing)
 ```
 
-**Benefits of Parallel Sessions**:
+**Benefits of Parallel Execution**:
 - ✅ Faster overall completion (work happens simultaneously)
 - ✅ Independent contexts (no context pollution between tasks)
-- ✅ Specialized focus per session (agents work in their domain)
+- ✅ Specialized focus per agent (agents work in their domain)
 - ✅ Better resource utilization (maximize Claude usage)
 
-**When to Use Parallel Sessions**:
+**When to Use Parallel Execution**:
 - Large features with independent aspects
-- When multiple reviews needed (security, code quality, performance)
+- Multiple reviews needed (security, code quality, performance) - use single session parallel
 - Background documentation updates
 - Continuous test generation
+- Completely separate features - use multiple sessions
 
 **Limits**:
-- Recommended: 3-5 parallel sessions
+- Recommended: 3-5 parallel sessions (if using multiple terminals)
 - Maximum: 5 sessions (diminishing returns beyond this)
+- Prefer single-session parallel delegation for review tasks
 
-### 4.3 Agent Context Management
+### 4.4 Agent Context Management
 
 **Key Principle**: Agents have isolated context separate from main session
+
+**Delegation Decision Matrix**:
+
+| Task Type | Handler | Reason |
+|-----------|---------|--------|
+| Create component | Main agent | Standard React work |
+| Add CRUD endpoint | Main agent | Standard REST pattern |
+| Fix typo/bug | Main agent | Trivial change |
+| OAuth integration | auth-specialist | Complex auth protocol |
+| GraphQL schema | graphql-specialist | Specialized knowledge |
+| DB migration | migration-specialist | Risk mitigation needed |
+| Security audit | security-reviewer | Expert verification required |
+| Performance tune | performance-optimizer | Requires profiling expertise |
+| Large refactor (>5 files) | refactor-cleaner | Systematic approach needed |
 
 **Best Practices**:
 
@@ -750,18 +861,17 @@ Terminal 5: Run /test-and-build (continuous testing)
    ✅ Good: "Analyze the 3 authentication files: auth.ts, jwt.ts, middleware.ts"
    ```
 
-4. **Review Agent Output Before Applying**
+4. **Main Agent Handles Standard Work**
    ```
-   → Agent returns findings/suggestions
-   → You review in main context
-   → You decide what to apply
-   → You make final changes
+   → For CRUD, components, simple routes: main agent codes directly
+   → For specialized domains: delegate to appropriate specialist
+   → For reviews: delegate in parallel (security, code quality)
    ```
 
-**Agent Delegation Threshold**:
-- <5 files: Work in main context
-- 5-10 files: Consider delegating to agent
-- >10 files: MUST delegate to agent (avoid context bloat)
+**Context Size Guidelines**:
+- <3 files & standard work: Main agent handles directly
+- 3-10 files & specialized: Consider delegating to specialist
+- >10 files OR complex domain: Delegate to appropriate specialist
 
 ---
 
@@ -787,7 +897,7 @@ Model Context Protocol (MCP) servers provide external tool integrations:
 - **context7**: Context management tools
 - **magic**: Additional utilities
 
-**Current Configuration**: 18 pre-configured servers, most disabled by default
+**Current Configuration**: 27 pre-configured servers in `.mcp.template.json`, most disabled by default for performance. Enable only what you need.
 
 ### 5.2 Enabling MCP Servers
 
@@ -917,7 +1027,7 @@ grep '"disabled": false' .mcp.json | wc -l
 
 ### 6.1 Context Window Management
 
-See [`.claude/rules/context-management.md`](.claude/rules/context-management.md) for complete details.
+See `.claude/rules/essential-rules.md` for complete details.
 
 **Hard Limits** (battle-tested thresholds):
 - **MCPs enabled**: <10 per project
@@ -1035,7 +1145,7 @@ Terminal/VSCode Window 5: Code review (/review-changes)
 
 ```
 Day 1:
-- [ ] Read [QUICKSTART.md](QUICKSTART.md)
+- [ ] Read README.md and CLAUDE.md
 - [ ] Initialize git repository
 - [ ] Run first command: /test-and-build
 - [ ] Explore available commands (/help)
@@ -1363,15 +1473,15 @@ npx @modelcontextprotocol/server-github
 
 **Self-Service**:
 1. Check this WORKFLOW.md
-2. Review [QUICKSTART.md](QUICKSTART.md)
+2. Review [README.md](README.md)
 3. Read relevant rule files in `.claude/rules/`
 4. Search CLAUDE.md for project-specific guidance
 5. Check skill files in `.claude/skills/`
+6. Check agent index in `.claude/agents/INDEX.md`
 
 **Community Support**:
-1. Check [CONTRIBUTING.md](CONTRIBUTING.md) for support channels
-2. Search existing GitHub issues
-3. Open new issue with:
+1. Search existing GitHub issues
+2. Open new issue with:
    - Clear description of problem
    - Steps to reproduce
    - Expected vs actual behavior
@@ -1383,7 +1493,7 @@ npx @modelcontextprotocol/server-github
 
 ### 10.1 Hook Customization
 
-See [`.claude/rules/hooks.md`](.claude/rules/hooks.md) for complete guide.
+Configure hooks in `.claude/settings.json` - see `hooks` section.
 
 **Pre-Tool Hooks** (warnings before action):
 
@@ -1489,10 +1599,8 @@ code-simplifier     # Remove complexity
 ### Most Important Rules
 
 ```bash
-security.md          # Never hardcode secrets, validate input
-testing.md           # 80% coverage, TDD when possible
-context-management.md # <10 MCPs, <80k context
-patterns.md          # API format, error handling
+essential-rules.md   # Security, testing, coding standards (all consolidated)
+agent-workflow.md    # Delegation, workflows, git standards
 ```
 
 ### Critical Performance Thresholds
@@ -1509,7 +1617,7 @@ Context usage: 60-80k target (warning if >120k)
 
 ## Next Steps
 
-**New Users**: Start with [QUICKSTART.md](QUICKSTART.md) for 5-minute setup
+**New Users**: Start with [README.md](README.md) for project overview
 
 **Getting Started**: Follow [Week 1: Essential Setup](#71-week-1-essential-setup)
 
@@ -1523,12 +1631,14 @@ Context usage: 60-80k target (warning if >120k)
 
 ## Additional Resources
 
-- **Setup Guide**: [QUICKSTART.md](QUICKSTART.md)
-- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Plugin Ecosystem**: [plugins/README.md](plugins/README.md)
-- **Rules Documentation**: [.claude/rules/README.md](.claude/rules/README.md)
-- **Skills Documentation**: [.claude/skills/README.md](.claude/skills/README.md)
-- **Project Guidelines Template**: [.claude/skills/project-guidelines.md](.claude/skills/project-guidelines.md)
+- **Project Overview**: [README.md](README.md)
+- **Team Guidelines**: [CLAUDE.md](CLAUDE.md)
+- **Agent Directory**: [.claude/agents/INDEX.md](.claude/agents/INDEX.md)
+- **Skills Directory**: [.claude/skills/INDEX.md](.claude/skills/INDEX.md)
+- **Commands Guide**: [.claude/commands/README.md](.claude/commands/README.md)
+- **Checklists**: [.claude/checklists/README.md](.claude/checklists/README.md)
+- **Templates**: [.claude/templates/README.md](.claude/templates/README.md)
+- **Workflows**: [.claude/workflows/README.md](.claude/workflows/README.md)
 
 ---
 

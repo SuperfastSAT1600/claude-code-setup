@@ -10,7 +10,7 @@ Checklists ensure consistent quality by providing step-by-step verification crit
 
 ---
 
-## Available Checklists (11)
+## Available Checklists (13)
 
 | Checklist | Purpose | When to Use |
 |-----------|---------|-------------|
@@ -25,6 +25,8 @@ Checklists ensure consistent quality by providing step-by-step verification crit
 | `database-migration-review.md` | Schema change validation | Before running migrations |
 | `dependency-audit.md` | Package review | Adding/updating dependencies |
 | `hotfix-checklist.md` | Urgent fix process | P0/P1 production issues |
+| `build-errors-checklist.md` | Build error resolution | Systematic troubleshooting of build failures |
+| `e2e-testing-checklist.md` | E2E test quality | Creating reliable end-to-end tests |
 
 ---
 

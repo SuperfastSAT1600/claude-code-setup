@@ -9,7 +9,7 @@ Core rules that must be followed. For detailed patterns, see archived rules or s
 ### Never Hardcode Secrets
 - Use environment variables: `process.env.API_KEY`
 - Add `.env` to `.gitignore`
-- Use secret management (AWS Secrets Manager, Vault)
+- Use secret management (Supabase Vault)
 
 ### Input Validation
 ```typescript
