@@ -28,7 +28,6 @@ const { checkPrerequisites } = require('./lib/prerequisites.cjs');
 const { ask, askYesNo } = require('./lib/input.cjs');
 const { setupGitHub } = require('./lib/github.cjs');
 const { setupSupabase } = require('./lib/supabase.cjs');
-const { setupVercel } = require('./lib/vercel.cjs');
 const { setupClaudeCode } = require('./lib/claude-code.cjs');
 const { configureAutoOpenLocalhost } = require('./lib/localhost.cjs');
 const { configureMcpServers } = require('./lib/mcp.cjs');
@@ -92,25 +91,22 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
   // Step 2: Supabase Setup (REQUIRED)
   results.supabase = await setupSupabase(rl, platformInfo);
 
-  // Step 3: Vercel Setup (OPTIONAL)
-  results.vercel = await setupVercel(rl, platformInfo);
-
-  // Step 4: Claude Code Installation
+  // Step 3: Claude Code Installation
   results.claudeCode = await setupClaudeCode(rl, platformInfo);
 
-  // Step 5: Auto-open localhost configuration
+  // Step 4: Auto-open localhost configuration
   results.localhost = await configureAutoOpenLocalhost(rl);
 
-  // Step 6: MCP Configuration
+  // Step 5: MCP Configuration
   results.mcp = await configureMcpServers(
     rl,
     platformInfo,
-    results.github?.token || null,
-    results.supabase?.credentials || null,
-    results.vercel?.token || null
+    results.github || null,
+    results.supabase || null,
+    null  // No Vercel token - it can be configured in MCP step if needed
   );
 
-  // Step 7: Environment Files
+  // Step 6: Environment Files
   const collectedEnvVars = {};
   if (results.github?.token) {
     collectedEnvVars.GITHUB_PERSONAL_ACCESS_TOKEN = results.github.token;
@@ -118,28 +114,25 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
   if (results.supabase?.credentials) {
     Object.assign(collectedEnvVars, results.supabase.credentials);
   }
-  if (results.vercel?.token) {
-    collectedEnvVars.VERCEL_API_TOKEN = results.vercel.token;
-  }
   if (results.mcp?.collectedEnvVars) {
     Object.assign(collectedEnvVars, results.mcp.collectedEnvVars);
   }
 
   results.env = await setupEnvironmentFiles(rl, collectedEnvVars);
 
-  // Step 8: Create Directories
+  // Step 7: Create Directories
   results.directories = createDirectories();
 
-  // Step 9: Create Config Files
+  // Step 8: Create Config Files
   results.configFiles = createConfigFiles();
 
-  // Step 10: Update .gitignore
+  // Step 9: Update .gitignore
   results.gitignore = updateGitignore();
 
-  // Step 11: Package.json Setup
+  // Step 10: Package.json Setup
   results.packageJson = await setupPackageJson(rl);
 
-  // Step 12: Install Dependencies
+  // Step 11: Install Dependencies
   if (results.packageJson?.created) {
     results.dependencies = await installDependencies(rl, prereqs.packageManagers);
   }

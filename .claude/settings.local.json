@@ -60,7 +60,11 @@
       "Bash(npm --version:*)",
       "Bash(\"/c/Program Files/nodejs/npm\" install read)",
       "Bash(cd:*)",
-      "Bash(cmd.exe /c \"npm install read\")"
+      "Bash(cmd.exe /c \"npm install read\")",
+      "Bash(supabase --version:*)",
+      "Bash(where:*)",
+      "Bash(supabase projects:*)",
+      "WebFetch(domain:render.com)"
     ]
   },
   "model": "sonnet",

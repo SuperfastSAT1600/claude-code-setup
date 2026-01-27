@@ -1,6 +1,6 @@
 # Claude Code Workflow Template
 
-A ready-to-use template implementing a hybrid coding workflow for Claude Code, featuring **33 specialized agents**, **20 powerful commands**, **5 orchestrated workflows**, **13 review checklists**, **16 code templates**, **20 skill references**, and **17 auto-enforced rules**.
+A ready-to-use template implementing a hybrid coding workflow for Claude Code, featuring **33 specialized agents**, **20 powerful commands**, **5 orchestrated workflows**, **13 review checklists**, **16 code templates**, **20 skill references**, and **2 auto-enforced rule files**.
 
 **Key Feature**: Main agent codes directly for standard tasks (CRUD, simple features, bug fixes) and delegates to specialized agents for complex domains (auth, databases, performance, security).
 
@@ -141,7 +141,7 @@ cp .env.example .env
 - [QUICKSTART.md](QUICKSTART.md) - Daily workflow quick reference (5-minute setup)
 - [WORKFLOW.md](WORKFLOW.md) - **Complete workflow guide (1500+ lines)** with decision trees and real-world examples
 - [CLAUDE.md](CLAUDE.md) - Team guidelines (customize for your project)
-- `.claude/rules/` - Auto-enforced guidelines (17 rule files)
+- `.claude/rules/` - Auto-enforced guidelines (2 rule files)
 - `.claude/skills/` - Pattern references (20 skill files)
 
 ### ⚙️ Configuration

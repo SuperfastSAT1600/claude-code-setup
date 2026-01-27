@@ -10,11 +10,11 @@ Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
 **Agents (33)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
-- Rules: `.claude/rules/` (essential-rules.md, agent-workflow.md)
 - Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
 - Workflows: `.claude/workflows/`
 - Checklists: `.claude/checklists/`
 - Templates: `.claude/templates/`
+- Scripts: `.claude/scripts/`
 
 ---
 
@@ -39,7 +39,7 @@ Just describe what you want in plain English:
 
 **Frontend**: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS, React Query, Zod
 
-**Backend**: Node.js 20+, Express/Fastify, Prisma, PostgreSQL, Redis
+**Backend**: Node.js 20+, Supabase (includes PostgreSQL, Auth, Storage, Real-time, Broadcast), Supabase Edge Functions, Redis. Use Supabase client + generated types instead of Prisma.
 
 **Testing**: Vitest, Playwright, React Testing Library
 
