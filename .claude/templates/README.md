@@ -10,7 +10,9 @@ Templates are boilerplate files with placeholders that can be used to quickly sc
 
 ---
 
-## Available Templates (11)
+## Available Templates (16)
+
+### Code Templates (.template files)
 
 | Template | Purpose | Usage |
 |----------|---------|-------|
@@ -25,6 +27,21 @@ Templates are boilerplate files with placeholders that can be used to quickly sc
 | `service.ts.template` | Business logic service class | Service layer |
 | `middleware.ts.template` | Express/Next.js middleware | API middleware |
 | `error-handler.ts.template` | Centralized error handling | Error management |
+| `Dockerfile.template` | Docker containerization | Container builds |
+
+### Configuration Templates
+
+| Template | Purpose | Usage |
+|----------|---------|-------|
+| `github-workflow.yml` | GitHub Actions CI/CD pipeline | CI/CD setup |
+| `playwright.config.ts` | Playwright E2E test configuration | E2E testing setup |
+
+### Documentation Templates
+
+| Template | Purpose | Usage |
+|----------|---------|-------|
+| `api-documentation.md` | API reference documentation | Documenting APIs |
+| `readme.template.md` | Project README template | New project setup |
 
 ---
 

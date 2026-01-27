@@ -1,612 +1,260 @@
 # User Intent Patterns
 
-Reference patterns for classifying user intent and routing to appropriate automation.
+Pattern matching for natural language user requests to appropriate workflows, agents, and commands.
 
-This skill provides detailed pattern matching examples for the intent-routing rule.
+## Core Principle
 
----
+Users describe what they want in plain English. Classify intent, select appropriate action, execute without asking users to memorize commands.
 
 ## Intent Categories
 
-### 1. Feature Request Patterns
+### Feature Development
+**Triggers**: "I want...", "Add...", "Build...", "Create...", "Enable...", "Implement...", "Make it so..."
+**Route to**: `/full-feature` skill
+**Examples**:
+- "I want users to log in" → full-feature with auth-specialist
+- "Add a checkout flow" → main agent implements via full-feature
+- "Build a dashboard" → main agent implements (optionally with planner for complex features)
 
-**High Confidence Indicators:**
-```
-"I want..."
-"I need..."
-"Can you add..."
-"Can you build..."
-"Can you create..."
-"Can you make..."
-"We need..."
-"Users should be able to..."
-"The app should..."
-"Add a..."
-"Build a..."
-"Create a..."
-"Implement..."
-"Set up..."
-"Enable..."
-"Let users..."
-"Allow users to..."
-"Make it possible to..."
-"Add the ability to..."
-"Add support for..."
-```
+### Bug Fixes
+**Triggers**: "Fix...", "Broken...", "Error...", "Bug...", "Not working...", "Issue with...", "Problem with..."
+**Route to**: `/quick-fix` skill
+**Examples**:
+- "Fix the login button" → quick-fix workflow
+- "The checkout is broken" → quick-fix workflow
+- "Error on the homepage" → quick-fix workflow
 
-**Medium Confidence (Check Context):**
-```
-"I was thinking about..."
-"What if we had..."
-"Would it be possible to..."
-"How hard would it be to..."
-"Could we..."
-"Is there a way to..."
-```
+### Code Review
+**Triggers**: "Review...", "Check...", "Is this okay?", "Look at...", "Audit...", "Examine..."
+**Route to**: `/review-changes` skill
+**Examples**:
+- "Review my changes" → review-changes
+- "Check if this is secure" → security-review
+- "Is this code good?" → code-reviewer agent
 
-**Feature Subtype Detection:**
+### Security Audit
+**Triggers**: "Secure?", "Safe?", "Vulnerable?", "Security...", "Hack...", "Exploit..."
+**Route to**: `/security-review` skill
+**Examples**:
+- "Is this secure?" → security-review
+- "Check for vulnerabilities" → security-review
+- "Audit security" → security-review
 
-| Keywords | Feature Type | Suggested Agent |
-|----------|--------------|-----------------|
-| login, auth, sign in, password, register, account | Authentication | auth-specialist |
-| pay, checkout, cart, purchase, order, subscription | E-commerce | api-designer |
-| upload, download, file, image, document, attachment | File handling | - |
-| notify, alert, email, message, notification | Notifications | - |
-| search, filter, find, query, browse | Search | - |
-| dashboard, analytics, report, chart, metrics | Analytics | - |
-| admin, manage, moderate, settings, config | Admin panel | - |
-| share, social, post, comment, like | Social features | - |
-| schedule, calendar, booking, appointment, event | Scheduling | - |
-| chat, message, conversation, real-time | Messaging | websocket-patterns |
+### Performance Optimization
+**Triggers**: "Slow...", "Fast...", "Optimize...", "Speed up...", "Performance...", "Faster..."
+**Route to**: `performance-optimizer` agent
+**Examples**:
+- "Make the page faster" → performance-optimizer
+- "Optimize database queries" → performance-optimizer
+- "Speed up the app" → performance-optimizer
 
----
+### Testing
+**Triggers**: "Test...", "Coverage...", "TDD...", "Verify...", "E2E...", "Unit test..."
+**Route to**: `/test-coverage`, `tdd-guide`, or `e2e-runner`
+**Examples**:
+- "Add tests" → test-coverage
+- "Write unit tests" → unit-test-writer agent
+- "TDD for login" → tdd-guide agent
+- "E2E tests" → e2e-runner agent
 
-### 2. Bug Fix Patterns
+### Documentation
+**Triggers**: "Document...", "README...", "API docs...", "Comment...", "Explain..."
+**Route to**: `/update-docs` or `doc-updater` agent
+**Examples**:
+- "Update the README" → update-docs
+- "Document the API" → api-designer agent
+- "Add comments" → doc-updater agent
 
-**High Confidence Indicators:**
-```
-"...doesn't work"
-"...isn't working"
-"...not working"
-"...is broken"
-"...is failing"
-"...stopped working"
-"...used to work but now..."
-"...crashes"
-"...errors"
-"...bug"
-"...issue"
-"...problem with"
-"Fix..."
-"Something's wrong with..."
-"There's an error..."
-"Getting an error..."
-"I'm seeing an error..."
-"The app shows..."
-"It won't..."
-"Can't..."
-"Unable to..."
-```
+### Refactoring
+**Triggers**: "Clean up...", "Simplify...", "Dead code...", "Modernize...", "Refactor..."
+**Route to**: `/refactor-clean` or `code-simplifier` agent
+**Examples**:
+- "Clean up the code" → refactor-clean
+- "Remove dead code" → refactor-cleaner agent
+- "Simplify this" → code-simplifier agent
 
-**Symptoms to Bug Mapping:**
+### Quality Improvements
+**Triggers**: "Lint...", "Format...", "Type errors...", "TypeScript...", "ESLint..."
+**Route to**: `/lint-fix` or `/type-check`
+**Examples**:
+- "Fix linting errors" → lint-fix
+- "Fix type errors" → type-check
+- "Format the code" → lint-fix
 
-| Symptom | Likely Issue Area |
-|---------|-------------------|
-| "blank page", "nothing shows" | Rendering/component error |
-| "wrong data", "shows incorrect" | Data fetching/state |
-| "slow", "takes forever" | Performance issue |
-| "disappears", "goes away" | State management |
-| "can't click", "button doesn't respond" | Event handler |
-| "can't type", "input not working" | Form handling |
-| "error message" | Validation/backend |
-| "logged out", "session lost" | Authentication |
-| "after refresh", "when I reload" | State persistence |
-| "on mobile", "on phone" | Responsive/mobile |
+### Deployment
+**Triggers**: "Deploy...", "Release...", "Ship...", "Go live...", "Publish..."
+**Route to**: `release` workflow or `ci-cd-specialist`
+**Examples**:
+- "Deploy to production" → release workflow
+- "Ship this feature" → release workflow
 
----
+### Component Creation
+**Triggers**: "New component...", "Add a button/form/modal...", "Create component..."
+**Route to**: `/new-component` skill
+**Examples**:
+- "Create a login form" → new-component
+- "Add a modal component" → new-component
 
-### 3. Code Review Patterns
+### Database Changes
+**Triggers**: "Migration...", "Schema...", "Add field...", "Database...", "SQL..."
+**Route to**: `/create-migration` or `database-architect`
+**Examples**:
+- "Add a field to users table" → create-migration
+- "Create new table" → database-architect agent
 
-**High Confidence Indicators:**
-```
-"Review..."
-"Check..."
-"Look at..."
-"Can you see if..."
-"Is this okay?"
-"Is this right?"
-"Is this correct?"
-"Did I do this right?"
-"What do you think of..."
-"How does this look?"
-"Can you give me feedback..."
-"Anything wrong with..."
-"Am I doing this right?"
-"Best practice?"
-"Is this a good approach?"
-```
+## Context-Based Auto-Delegation
 
-**Review Type Detection:**
+### By Technology Mentioned
+- Authentication/login → `auth-specialist`
+- Database/schema → `database-architect`
+- API/endpoints → `api-designer`
+- GraphQL → `graphql-specialist`
+- WebSocket/real-time → `websocket-specialist`
+- Docker/containers → `docker-specialist`
+- CI/CD/pipeline → `ci-cd-specialist`
+- Infrastructure → `iac-specialist`
+- AI/LLM/RAG → `ai-integration-specialist`
 
-| Keywords | Review Type |
-|----------|-------------|
-| "security", "safe", "vulnerable" | Security review |
-| "performance", "fast", "efficient" | Performance review |
-| "clean", "readable", "maintainable" | Code quality review |
-| "test", "coverage", "tested" | Test coverage review |
-| "architecture", "structure", "design" | Architecture review |
+### By File Context
+- `.tsx`, `.jsx` files → Frontend work
+- `/api` routes → Backend work
+- `.sql`, `.prisma` → Database work
+- `.yml` in `.github` → CI/CD work
+- `.test.ts` → Testing work
 
----
-
-### 4. Performance Patterns
-
-**High Confidence Indicators:**
-```
-"...is slow"
-"...takes too long"
-"...is laggy"
-"...loading forever"
-"Speed up..."
-"Make...faster"
-"Optimize..."
-"Performance..."
-"Too much memory"
-"High CPU"
-"Loading time"
-"Response time"
-"Page speed"
-"Slow queries"
-"Bottleneck"
-```
-
-**Performance Issue Types:**
-
-| Symptom | Likely Cause | Suggested Focus |
-|---------|--------------|-----------------|
-| "page loads slowly" | Bundle size, API calls | Frontend optimization |
-| "API is slow" | Database queries, N+1 | Backend optimization |
-| "memory issues" | Memory leaks, large objects | Memory profiling |
-| "database slow" | Missing indexes, bad queries | Database optimization |
-| "images slow" | Large images, no lazy load | Asset optimization |
-
----
-
-### 5. Testing Patterns
-
-**High Confidence Indicators:**
-```
-"Add tests..."
-"Write tests..."
-"Test..."
-"Coverage..."
-"Unit test..."
-"Integration test..."
-"E2E test..."
-"End to end..."
-"Make sure it works..."
-"Verify..."
-"TDD..."
-"Test driven..."
-"Test coverage..."
-"How do I test..."
-```
-
-**Test Type Detection:**
-
-| Keywords | Test Type | Command/Agent |
-|----------|-----------|---------------|
-| "unit", "function", "isolated" | Unit tests | /test-coverage |
-| "integration", "together", "API" | Integration tests | integration-test-writer |
-| "e2e", "end to end", "user flow" | E2E tests | /e2e |
-| "TDD", "red green", "test first" | TDD workflow | tdd-guide agent |
-
----
-
-### 6. Security Patterns
-
-**High Confidence Indicators:**
-```
-"Is this secure?"
-"Security..."
-"Vulnerable..."
-"Safe?"
-"Hack..."
-"Attack..."
-"SQL injection"
-"XSS"
-"CSRF"
-"Authentication"
-"Authorization"
-"Permissions"
-"Audit..."
-"OWASP"
-"Penetration"
-"Secrets"
-"API keys"
-```
-
----
-
-### 7. Documentation Patterns
-
-**High Confidence Indicators:**
-```
-"Document..."
-"Documentation..."
-"Docs..."
-"README..."
-"Explain..."
-"Comment..."
-"API docs..."
-"How does this work..."
-"Write docs..."
-"Update docs..."
-"Add comments..."
-"JSDoc..."
-"Describe..."
-```
-
----
-
-### 8. Refactoring Patterns
-
-**High Confidence Indicators:**
-```
-"Refactor..."
-"Clean up..."
-"Simplify..."
-"Make cleaner..."
-"Reorganize..."
-"Restructure..."
-"Dead code..."
-"Unused..."
-"Remove unused..."
-"Modernize..."
-"Update old..."
-"Legacy..."
-"Better structure..."
-"Improve code..."
-```
-
-**Refactor Type Detection:**
-
-| Keywords | Refactor Type | Command/Agent |
-|----------|---------------|---------------|
-| "dead code", "unused" | Remove dead code | /dead-code |
-| "simplify", "complex" | Simplify | code-simplifier agent |
-| "legacy", "modernize", "old" | Modernize | /refactor-clean |
-| "duplicate", "DRY" | Remove duplication | /refactor-clean |
-| "rename", "naming" | Rename refactor | Manual |
-| "extract", "split" | Extract/split | code-simplifier agent |
-
----
-
-### 9. Deployment Patterns
-
-**High Confidence Indicators:**
-```
-"Deploy..."
-"Release..."
-"Ship..."
-"Go live..."
-"Push to production..."
-"Publish..."
-"Launch..."
-"Put online..."
-"Make live..."
-"Update production..."
-"Roll out..."
-```
-
----
-
-### 10. Code Quality Patterns
-
-**High Confidence Indicators:**
-```
-"Lint..."
-"Format..."
-"ESLint..."
-"Prettier..."
-"Type errors..."
-"TypeScript..."
-"Fix types..."
-"Style issues..."
-"Formatting..."
-"Code style..."
-```
-
----
+### By Modifiers
+- "simple", "quick", "just" → Less ceremony, skip planning
+- "robust", "production" → More thorough approach
+- "urgent", "asap" → Skip optional steps
+- "carefully", "thoroughly" → Comprehensive approach
 
 ## Disambiguation Patterns
 
-### When Intent Is Unclear
+When intent is unclear, ask ONE clear question:
 
-**Vague Requests:**
+**Vague Request Patterns:**
+- "Help with X" → Ask: add functionality / fix issue / improve / review?
+- "Change X" → Ask: add features / fix bug / refactor / change appearance?
+- "Update X" → Ask: add functionality / fix / modernize / update docs?
+- "Work on X" → Ask: implement / debug / optimize / review?
+
+**Disambiguation Format:**
 ```
-"Help me with X" → Ask what kind of help
-"Look at X" → Ask what to look for
-"Change X" → Ask what kind of change
-"Update X" → Ask what kind of update
-"Work on X" → Ask what to do with X
-"Something with X" → Ask to describe more
-```
-
-**Ambiguous Verbs:**
-- "Fix" usually means bug fix, but could mean improve
-- "Update" could mean bug fix, feature, or docs
-- "Change" could mean feature, bug fix, or refactor
-- "Add" usually means feature, but context matters
-
-### Disambiguation Questions
-
-**General Template:**
-```
-I can help with [X]! What would you like to do?
-
-1. Add new functionality
-2. Fix something broken
-3. Improve/optimize
-4. Review/check quality
-5. Something else
+What would you like to do?
+1. Build something new (feature)
+2. Fix something broken (bug)
+3. Improve existing code (refactor)
+4. Check code quality (review)
 ```
 
-**Context-Specific Templates:**
+## Confirmation Rules
 
-For UI mentions:
+### Confirm Before
+- Creating >3 new files
+- Modifying >5 files
+- Database migrations
+- Deployment to production
+- Deleting files/code
+- Major refactoring
+
+### Skip Confirmation
+- Code reviews (read-only)
+- Linting/formatting
+- Single file edits
+- Running tests
+- Reading/exploring code
+
+### Confirmation Format
 ```
-What would you like to do with [component]?
-
-1. Add new features
-2. Fix a bug
-3. Change how it looks
-4. Improve performance
-```
-
-For API mentions:
-```
-What would you like to do with the [API/endpoint]?
-
-1. Add new capabilities
-2. Fix an issue
-3. Improve performance
-4. Add documentation
-```
-
-For database mentions:
-```
-What would you like to do with the database?
-
-1. Add new tables/fields
-2. Fix data issues
-3. Improve query performance
-4. Update the schema
+I'll [action]. This will:
+- [Change 1]
+- [Change 2]
+Proceed? (y/n)
 ```
 
----
+## Natural Language Translation
 
-## Context Clues
+### Technical → Plain English
+- "Running /full-feature" → "Building your new feature..."
+- "Delegating to agent" → "Analyzing/checking/designing..."
+- "git commit" → "Saving changes..."
+- "git push" → "Uploading changes..."
+- "Creating PR" → "Preparing for review..."
+- "Build failed" → "There's an error to fix..."
+- "Tests passing" → "All checks passed!"
 
-### File Path Patterns
+### Avoid Jargon
+Never say technical terms when simpler words work:
+- API → "Connection to [service]"
+- Endpoint → "Feature/function"
+- Component → "Part of the page"
+- Repository → "Project"
+- Deploy → "Put online"
+- Environment variable → "Setting"
 
-| Path Contains | Likely Domain |
-|---------------|---------------|
-| `/components/` | React components |
-| `/pages/` or `/app/` | Page routing |
-| `/api/` | Backend API |
-| `/services/` | Business logic |
-| `/hooks/` | React hooks |
-| `/utils/` | Utility functions |
-| `/types/` | TypeScript types |
-| `/tests/` or `/__tests__/` | Testing |
-| `/styles/` | CSS/styling |
-| `/public/` | Static assets |
+## Multi-Intent Detection
 
-### Recent Activity
+### Sequential Intents
+Detect multiple requests in one message:
+- "Add login and update the README" → feature + docs
+- "Fix the bug and add tests" → fix + testing
+- "Review the code and deploy" → review + deployment
 
-If user recently:
-- Created files → Likely wants to continue building
-- Fixed bugs → Might have related issues
-- Ran tests → Might want to see results/coverage
-- Reviewed code → Might want to implement changes
+### Parallel Execution
+When intents are independent:
+- "Check security and performance" → Run both in parallel
+- "Add tests and lint" → Run both in parallel
 
----
+## Confidence Levels
 
-## Urgency Detection
+### High Confidence (Execute)
+Clear, unambiguous intent with known pattern
 
-### Urgent Indicators
-```
-"ASAP"
-"urgent"
-"right now"
-"immediately"
-"quickly"
-"fast"
-"as soon as possible"
-"critical"
-"emergency"
-"production is down"
-"users are affected"
-"blocking"
-```
+### Medium Confidence (Confirm)
+Intent is clear but action is significant (>5 file changes, database changes)
 
-**Response**: Skip optional steps, prioritize speed, minimal ceremony.
-
-### Thorough Indicators
-```
-"carefully"
-"thoroughly"
-"properly"
-"completely"
-"make sure"
-"double-check"
-"comprehensive"
-"full"
-"extensive"
-```
-
-**Response**: Include all steps, extra validation, comprehensive testing.
-
----
-
-## Multi-Intent Requests
-
-Sometimes users combine multiple intents:
-
-**Example 1: "Fix the bug and add a test"**
-- Intent 1: Bug fix (/quick-fix)
-- Intent 2: Testing
-- Action: Fix bug, then add regression test
-
-**Example 2: "Add login and make sure it's secure"**
-- Intent 1: Feature (authentication)
-- Intent 2: Security review
-- Action: Build feature, then security audit
-
-**Example 3: "Clean up the code and update the docs"**
-- Intent 1: Refactor
-- Intent 2: Documentation
-- Action: Refactor, then update docs
-
----
+### Low Confidence (Clarify)
+Vague or ambiguous intent, need more information
 
 ## Edge Cases
 
-### Questions vs Requests
+### No Clear Intent
+"What should I do next?" → Suggest based on project state (tests missing, docs outdated, etc.)
 
-**Questions (provide information):**
-```
-"What is..."
-"How does...work"
-"Why does..."
-"Can you explain..."
-"What's the difference between..."
-```
+### Multiple Possible Interpretations
+Offer options with context for each
 
-**Requests (take action):**
-```
-"Can you..."
-"Please..."
-"I need..."
-"Help me..."
-```
+### Contradictory Requests
+"Make it simple but add all features" → Clarify priority
 
-### Research vs Implementation
+## Best Practices
 
-**Research (gather information):**
-```
-"Is it possible to..."
-"What would be involved in..."
-"How would we..."
-"What's the best way to..."
-"Should we..."
-```
+### DO
+- Accept natural language
+- Infer intent from context
+- Execute when confident
+- Confirm significant actions
+- Use plain English in responses
+- Adapt to user's technical level
 
-**Implementation (do the work):**
-```
-"Add..."
-"Build..."
-"Create..."
-"Fix..."
-"Let's..."
-"Go ahead and..."
-```
-
----
-
-## Pattern Confidence Scoring
-
-### High Confidence (Auto-Route)
-- Clear action verb + specific target
-- Unambiguous intent words
-- Single clear intent
-- Example: "Fix the broken checkout button"
-
-### Medium Confidence (Brief Confirm)
-- Action implied but not stated
-- Multiple possible interpretations
-- Example: "The checkout has issues"
-
-### Low Confidence (Disambiguate)
-- Vague or general language
-- No clear action
-- Multiple intents possible
-- Example: "Help with checkout"
-
----
-
-## Routing Decision Tree
-
-```
-User Input
-    │
-    ├─► Contains clear action verb?
-    │   ├─► Yes → Route based on verb
-    │   └─► No → Check for symptoms
-    │
-    ├─► Contains symptom words (broken, slow, error)?
-    │   ├─► Yes → Route to fix/optimize
-    │   └─► No → Check for questions
-    │
-    ├─► Is it a question?
-    │   ├─► Yes → Provide information or clarify
-    │   └─► No → Check context
-    │
-    └─► Default
-        └─► Ask disambiguation question
-```
-
----
+### DON'T
+- Force users to memorize commands
+- Use jargon unless user does
+- Ask "which agent?" or "which command?"
+- Require precise syntax
+- Assume user knows technical terms
+- Execute destructive actions without confirmation
 
 ## Examples
 
-### Example 1: Clear Feature Request
-```
-Input: "I want users to be able to reset their passwords"
-Analysis:
-- "I want" = feature request indicator
-- "users to be able to" = capability request
-- "reset passwords" = authentication feature
-Route: /full-feature with auth-specialist consultation
-```
+### Good Intent Matching
+- User: "Users need to reset passwords" → Feature: auth-specialist
+- User: "The cart total is wrong" → Bug: quick-fix
+- User: "Make the dashboard load faster" → Optimize: performance-optimizer
+- User: "Is this PR ready?" → Review: review-changes
+- User: "Ship it" → Deploy: release workflow
 
-### Example 2: Clear Bug Report
-```
-Input: "The checkout page shows a blank screen when I click pay"
-Analysis:
-- "shows a blank screen" = symptom (rendering error)
-- "when I click pay" = trigger condition
-- "checkout page" = specific location
-Route: /quick-fix targeting checkout
-```
-
-### Example 3: Ambiguous Request
-```
-Input: "Help me with the user profile"
-Analysis:
-- "Help me with" = unclear action
-- "user profile" = specific area
-- No symptoms or features mentioned
-Route: Disambiguation question
-```
-
-### Example 4: Multi-Intent
-```
-Input: "Add a dark mode and make sure it's accessible"
-Analysis:
-- "Add dark mode" = feature request
-- "make sure it's accessible" = accessibility requirement
-Route: /full-feature with accessibility-auditor consultation
-```
-
----
-
-## Remember
-
-The goal is to understand what the user wants to accomplish, not what words they use. Focus on:
-
-1. **Outcomes**: What result do they want?
-2. **Problems**: What issue are they facing?
-3. **Improvements**: What do they want to be better?
-
-Then route to the automation that achieves that outcome.
+### Handling Vagueness
+- User: "Do something with auth" → Clarify: add feature / fix issue / review?
+- User: "Update the app" → Clarify: new features / bug fixes / dependencies?
+- User: "Fix it" → Clarify: what needs fixing?

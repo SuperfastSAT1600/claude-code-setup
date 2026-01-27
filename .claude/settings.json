@@ -282,6 +282,35 @@
             "command": "echo '[Hook] Publishing package - ensure version is bumped and tests pass!' >&2"
           }
         ]
+      },
+      {
+        "matcher": "tool == \"Read\" && tool_input.file_path matches \"\\\\.mcp\\\\.json$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nENABLED=$(grep -c '\"disabled\": false' ~/.mcp.json 2>/dev/null || echo 0)\nif [ \"$ENABLED\" -gt 10 ]; then\n  echo \"[Hook] WARNING: $ENABLED MCPs enabled (max 10 recommended). Performance may degrade. Disable unused MCPs in .mcp.json\" >&2\nfi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Read\" && tool_input.file_path matches \"\\\\.(agents|skills)/.*\\\\.md$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nLINES=$(wc -l < \"$file_path\" 2>/dev/null || echo 0)\nLIMIT=500\nif [ \"$LINES\" -gt \"$LIMIT\" ]; then\n  echo \"[Hook] WARNING: File $file_path has $LINES lines (limit: $LIMIT). Consider splitting or reducing.\" >&2\nfi"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "subagent_name == \"security-reviewer\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/log-security-review.sh\" ]; then\n  ./.claude/scripts/log-security-review.sh 2>&1 | head -10\nfi || true"
+          }
+        ]
       }
     ],
     "PostToolUse": [

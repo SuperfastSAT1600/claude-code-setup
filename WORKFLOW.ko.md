@@ -7,9 +7,9 @@ Claude Code를 활용하여 생산성을 극대화하는 완전한 가이드입�
 **누구를 위한 것인가요?** 개인이든 팀이든, 처음 시작하는 개발자부터 파워 유저까지 Claude Code를 도입하는 모든 개발자를 위한 것입니다.
 
 **빠른 내비게이션:**
-- 📋 **[.claude/INDEX.md](.claude/INDEX.md)** - 모든 기능의 빠른 참조 (2분 스캔)
-- 📚 **[.claude/GUIDE.md](.claude/GUIDE.md)** - 포괄적인 사용법 가이드 (모든 README 통합)
-- ⚡ **[QUICKSTART.md](QUICKSTART.md)** - 5분 빠른 시작
+- 📋 **[.claude/agents/INDEX.md](.claude/agents/INDEX.md)** - 에이전트 디렉토리 및 사용 가이드
+- 📚 **[.claude/skills/INDEX.md](.claude/skills/INDEX.md)** - 스킬 디렉토리 및 선택 가이드
+- ⚡ **[README.md](README.md)** - 프로젝트 개요
 
 ---
 
@@ -57,54 +57,63 @@ Claude Code를 활용하여 생산성을 극대화하는 완전한 가이드입�
 
 ### 1.2 핵심 원칙
 
-**원칙 1: 항상 복잡한 작업을 계획하세요**
-3개 이상의 파일을 다루는 기능의 경우 플랜 모드(`Shift+Tab` 두 번)를 사용하세요. 구현 전에 계획을 올바르게 수립하세요.
+**원칙 1: 메인 에이전트가 먼저 코딩합니다**
+메인 에이전트는 표준 개발 작업(CRUD, 간단한 기능, 버그 수정)을 직접 처리합니다. 복잡한 도메인(인증, 데이터베이스 스키마, 보안, 성능)에만 전문가에게 위임하세요.
 
-**원칙 2: 지속적으로 검증하세요**
+**원칙 2: 복잡한 작업은 계획하세요**
+5개 이상의 파일을 다루거나 아키텍처 결정이 필요한 복잡한 기능의 경우 플랜 모드(`Shift+Tab` 두 번)를 사용하세요. 대부분의 간단한 기능은 계획이 필요하지 않습니다.
+
+**원칙 3: 지속적으로 검증하세요**
 모든 커밋 전에 `/test-and-build`와 `/security-review`를 실행하세요. 검증 루프는 품질을 2-3배 향상시킵니다.
 
-**원칙 3: 전문가에게 위임하세요**
-전문 작업(보안 감사, 리팩토링, 테스트)에는 에이전트를 사용하세요. 에이전트는 격리된 컨텍스트와 집중된 전문성을 가지고 있습니다.
+**원칙 4: 전문가에게 위임하세요**
+도메인 전문성(auth-specialist, security-reviewer, performance-optimizer 등)이 필요한 경우 전문 에이전트를 사용하세요. 에이전트는 격리된 컨텍스트와 집중된 전문성을 가지고 있습니다.
 
-**원칙 4: 지식을 축적하세요**
+**원칙 5: 지식을 축적하세요**
 모든 실수 후에 CLAUDE.md를 업데이트하세요. 팀의 공유 지식은 프로젝트와 함께 성장합니다.
 
-**원칙 5: 컨텍스트를 관리하세요**
+**원칙 6: 컨텍스트를 관리하세요**
 컨텍스트 사용량을 80k 토큰 이하로 유지하세요. 사용하지 않는 MCP를 비활성화하고, 무거운 작업을 에이전트에 위임하며, 필요할 때 새로운 세션을 시작하세요.
 
 ### 1.3 시스템 개요
 
+**하이브리드 에이전트 모델** - 메인 에이전트가 코딩하고, 전문가가 전문성을 제공
+- 메인 에이전트가 70%의 작업을 직접 처리 (CRUD, 간단한 기능, 버그 수정)
+- 복잡한 도메인을 위한 33개의 전문 에이전트 사용 가능
+- 효율적인 워크플로우: 먼저 코딩하고, 전문 지식이 필요할 때 위임
+
 **명령어(Commands)** - 사용자가 트리거하는 워크플로우
 - `/full-feature`, `/commit-push-pr`, `/lint-fix`, `/type-check` 같은 슬래시 명령어
 - 하나의 명령어로 전체 워크플로우 실행
-- **15개의 명령어 사용 가능** 워크플로우 오케스트레이션, 개발, 품질, 유지보수를 다룸
+- **21개의 명령어 사용 가능** 워크플로우 오케스트레이션, 개발, 품질, 유지보수를 다룸
 
-**에이전트(Agents)** - 전문화된 자율 작업자
-- 복잡한 작업을 집중된 전문가에게 위임
+**에이전트(Agents)** - 전문화된 자율 작업자 (총 33개)
+- 메인 에이전트는 표준 작업을 직접 코딩
+- 도메인 전문성이 필요한 경우 전문가에게 위임
 - 에이전트는 격리된 컨텍스트와 특정 도구를 가집니다
-- **18개의 에이전트 사용 가능**: api-designer, code-reviewer, graphql-specialist, websocket-specialist, unit-test-writer, performance-optimizer 등
+- 카테고리: 계획 및 아키텍처 (2), 코드 품질 (6), 테스트 (6), 개발 (5), 운영 (6), 접근성 및 i18n (2), 문서화 (2), 성능 (1), 특수 도메인 (3)
 
 **규칙(Rules)** - 항상 활성화된 가드레일
+- 핵심 가이드라인: `essential-rules.md` (보안, 코딩 스타일, TypeScript, 테스트, 에러 처리, API 디자인)
+- 워크플로우 규칙: `agent-workflow.md` (하이브리드 모델 위임 원칙)
 - 모든 상호작용에서 자동으로 강제됩니다
-- 보안 취약점 방지, 코드 스타일 강제, 테스트 커버리지 보장
-- **9개의 규칙** 보안, 스타일, 테스트, git, 성능, 에이전트, 훅, 패턴, 컨텍스트 관리를 다룸
 
-**스킬(Skills)** - 재사용 가능한 지식 패턴
-- 명령어와 에이전트에서 참조됩니다
+**스킬(Skills)** - 재사용 가능한 지식 패턴 (총 22개)
+- 메인 에이전트와 전문 에이전트가 참조합니다
 - 반복을 줄이고 일관성을 보장합니다
-- **8개의 스킬**: react-patterns, nextjs-patterns, nodejs-patterns, rest-api-design, graphql-patterns, websocket-patterns 및 핵심 스킬
+- 카테고리: 프레임워크 패턴 (React, Next.js, Node.js), API 디자인 (REST, GraphQL, WebSocket), 개발 관행 (TDD, 인증, 데이터베이스, 문서화), 프로젝트 관리 (가이드라인, 사용자 의도, 프롬프트 엔지니어링)
 
-**워크플로우(Workflows)** - 오케스트레이션된 에이전트 시퀀스
-- 여러 에이전트를 결합한 다단계 자동화 워크플로우
+**워크플로우(Workflows)** - 오케스트레이션된 시퀀스
+- 다단계 자동화 워크플로우
 - **5개의 워크플로우**: full-feature, bug-fix, refactor, release, security-audit
 
 **체크리스트(Checklists)** - 검토 표준
 - 품질 게이트를 위한 포괄적인 체크리스트
-- **6개의 체크리스트**: PR 검토, 보안 감사, 성능 감사, 접근성 감사, 출시 전, 온보딩
+- **13개의 체크리스트**: PR 검토, 보안 감사, 성능 감사, 접근성 감사, 출시 전, 온보딩, 배포, 데이터베이스 마이그레이션, 의존성 감사, 핫픽스, AI 코드 리뷰, 빌드 오류, E2E 테스트
 
 **템플릿(Templates)** - 코드 스캐폴딩
 - 일반적인 패턴을 위한 재사용 가능한 코드 템플릿
-- **5개의 템플릿**: component, API route, test, migration, PR description
+- **16개의 템플릿**: component, API route, test, migration, PR description, form, guard, hook, service, middleware, error-handler, Dockerfile, GitHub workflow, Playwright config, API docs, README
 
 **스크립트(Scripts)** - 자동화 헬퍼
 - 일반적인 자동화 작업을 위한 셸 스크립트
@@ -636,95 +645,158 @@ verify-app 에이전트에 위임
 
 ## 4. 에이전트 오케스트레이션
 
-### 4.1 순차적 에이전트 패턴
+### 4.1 하이브리드 에이전트 모델
 
-**패턴 1: 계획 → 구현 → 단순화 → 검증**
+**핵심 철학**: 메인 에이전트는 표준 작업을 직접 코딩하고, 전문성이 필요한 경우 전문가에게 위임합니다.
+
+**메인 에이전트가 직접 처리하는 작업**:
+- 표준 CRUD 작업
+- 간단한 버그 수정 (< 3개 파일)
+- 기본 리팩토링
+- 문서 업데이트
+- 간단한 기능 구현 (컴포넌트, 라우트, 서비스)
+- Git 작업 (커밋, 푸시, PR)
+- 템플릿 사용 및 패턴 따르기
+
+**전문가에게 위임해야 하는 경우**:
+- 복잡한 아키텍처 필요 → `architect`, `planner`
+- 특수 도메인 → `auth-specialist`, `database-architect`, `api-designer`, `graphql-specialist`, `websocket-specialist`
+- 보안이 중요한 작업 → `security-reviewer`
+- 테스트 전략 → `tdd-guide`, `unit-test-writer`, `e2e-runner`
+- 성능 최적화 → `performance-optimizer`
+- 운영 작업 → `ci-cd-specialist`, `docker-specialist`, `migration-specialist`
+- 코드 품질 리뷰 → `code-reviewer`, `security-reviewer`
+- 접근성 준수 → `accessibility-auditor`
+- 대규모 리팩토링 (>5개 파일) → `refactor-cleaner`
+
+### 4.2 순차적 패턴
+
+**패턴 1: 간단한 기능 (메인 에이전트만 사용)**
 
 ```
-1. planner 에이전트에 위임
+1. 메인 에이전트가 요구사항 분석
+   → 컨텍스트 이해
+   → 변경할 파일 식별
+
+2. 메인 에이전트가 직접 구현
+   → 코드 + 테스트 작성
+   → 프로젝트 패턴 따르기
+   → 템플릿 사용
+
+3. 메인 에이전트가 자체 검증
+   → 테스트 실행
+   → lint/build 확인
+   → 선택사항: 복잡한 경우 code-reviewer에 위임
+
+4. 메인 에이전트가 커밋
+   → /commit-push-pr
+```
+
+**패턴 2: 복잡한 기능 (전문가 사용)**
+
+```
+1. 선택사항: planner 에이전트에 위임 (복잡한 경우)
    → 상세한 구현 계획 생성
    → 의존성 식별
    → 테스트 전략 제안
 
-2. [메인 컨텍스트에서 계획에 따라 구현]
+2. 메인 에이전트 OR 전문가가 구현
+   → 표준 작업: 메인 에이전트가 직접 코딩
+   → 특수 작업: 도메인 전문가에게 위임
    → 계획을 단계별로 따름
-   → 패턴을 위해 스킬 참조
 
-3. code-simplifier 에이전트에 위임
+3. code-simplifier 에이전트에 위임 (선택사항)
    → 과도한 엔지니어링 제거
    → 복잡한 로직 단순화
    → 가독성 향상
 
-4. verify-app 에이전트에 위임
+4. verify-app 에이전트에 위임 (선택사항)
    → 엔드투엔드 검증
    → 통합 테스트
    → 사용자 워크플로우 검증
 ```
 
-**패턴 2: 리팩토링 → 테스트 → 문서화**
+**패턴 3: 리팩토링 → 테스트 → 문서화**
 
 ```
-1. refactor-cleaner 에이전트에 위임
+1. 작은 리팩토링: 메인 에이전트가 직접 처리
+   큰 리팩토링 (>5개 파일): refactor-cleaner 에이전트에 위임
    → 레거시 코드 현대화
    → 죽은 코드 제거
    → 패턴 업데이트
 
-2. tdd-guide 에이전트에 위임
+2. tdd-guide OR unit-test-writer 에이전트에 위임
    → 누락된 테스트 추가
    → 커버리지 확보
    → 엣지 케이스 테스트
 
-3. doc-updater 에이전트에 위임
+3. 간단한 문서: 메인 에이전트가 직접 업데이트
+   포괄적인 문서: doc-updater 에이전트에 위임
    → 코드와 문서 동기화
    → API 문서 업데이트
    → 예제 새로고침
 ```
 
-**패턴 3: 빌드 → 수정 → 검증**
+**패턴 4: 빌드 → 수정 → 검증**
 
 ```
-1. /build-fix 명령어 실행
+1. 메인 에이전트가 /build-fix 명령어 실행
    → 빌드 오류 자동 수정
    → 타입 오류 처리
    → import 수정
 
-2. (수동 수정이 필요한 경우)
+2. (복잡한 빌드 문제인 경우)
    build-error-resolver 에이전트에 위임
    → 체계적인 오류 수정
    → 영향별 우선순위 지정
 
-3. /test-and-build 실행
+3. 메인 에이전트가 /test-and-build 실행
    → 종합적 검증
    → 모든 것이 작동하는지 확인
 ```
 
-### 4.2 병렬 에이전트 패턴
+### 4.3 병렬 에이전트 패턴
 
-별도의 Claude Code 세션에서 여러 에이전트를 동시에 실행:
+**단일 세션 내에서** (대부분의 작업에 권장):
+메인 에이전트는 단일 메시지에서 여러 Task 도구 호출로 여러 전문가에게 병렬 위임할 수 있습니다:
 
 ```
-터미널 1 (메인): 기능 구현
-터미널 2: security-reviewer 에이전트에 위임 (백그라운드 감사)
-터미널 3: e2e-runner 에이전트에 위임 (테스트 생성)
-터미널 4: doc-updater 에이전트에 위임 (문서 업데이트)
+메인 에이전트가 병렬로 위임:
+- security-reviewer 에이전트 (백그라운드 감사)
+- code-reviewer 에이전트 (코드 품질)
+- doc-updater 에이전트 (문서 업데이트)
+
+모든 결과가 메인 에이전트로 돌아와 검토됩니다
+```
+
+**여러 세션** (큰 독립적인 작업을 위해):
+필요한 경우 병렬 Claude Code 세션을 실행:
+
+```
+터미널 1 (메인): 메인 에이전트가 기능 A 구현
+터미널 2: 메인 에이전트가 기능 B 구현
+터미널 3: security-reviewer 에이전트에 위임 (포괄적 감사)
+터미널 4: e2e-runner 에이전트에 위임 (전체 테스트 스위트 생성)
 터미널 5: /test-and-build 실행 (지속적 테스트)
 ```
 
-**병렬 세션의 이점**:
+**병렬 실행의 이점**:
 - ✅ 더 빠른 전체 완료 (작업이 동시에 진행됨)
 - ✅ 독립적인 컨텍스트 (작업 간 컨텍스트 오염 없음)
-- ✅ 전문화된 집중 (각 세션이 하나의 작업을 수행)
+- ✅ 에이전트별 전문화된 집중 (각 에이전트가 자신의 도메인에서 작업)
 - ✅ 더 나은 리소스 활용 (Claude 사용 극대화)
 
-**병렬 세션을 사용해야 할 때**:
+**병렬 실행을 사용해야 할 때**:
 - 독립적인 측면이 있는 대규모 기능
-- 여러 리뷰가 필요한 경우 (보안, 코드 품질, 성능)
+- 여러 리뷰가 필요한 경우 (보안, 코드 품질, 성능) - 단일 세션 병렬 사용
 - 백그라운드 문서 업데이트
 - 지속적 테스트 생성
+- 완전히 별도의 기능 - 여러 세션 사용
 
 **한계**:
-- 권장: 3-5개 병렬 세션
+- 권장: 3-5개 병렬 세션 (여러 터미널을 사용하는 경우)
 - 최대: 5개 세션 (이 이상은 수익 감소)
+- 리뷰 작업의 경우 단일 세션 병렬 위임 선호
 
 ### 4.3 에이전트 컨텍스트 관리
 
@@ -787,7 +859,7 @@ Model Context Protocol(MCP) 서버는 외부 도구 통합을 제공합니다:
 - **context7**: 컨텍스트 관리 도구
 - **magic**: 추가 유틸리티
 
-**현재 구성**: 18개의 사전 구성된 서버, 대부분 기본적으로 비활성화됨
+**현재 구성**: `.mcp.template.json`에 27개의 사전 구성된 서버, 성능을 위해 대부분 기본적으로 비활성화됨. 필요한 것만 활성화하세요.
 
 ### 5.2 MCP 서버 활성화
 
@@ -917,7 +989,7 @@ grep '"disabled": false' .mcp.json | wc -l
 
 ### 6.1 컨텍스트 윈도우 관리
 
-전체 세부사항은 [`.claude/rules/context-management.md`](.claude/rules/context-management.md)를 참조하세요.
+전체 세부사항은 `.claude/rules/essential-rules.md`를 참조하세요.
 
 **하드 리미트** (실전 테스트된 임계값):
 - **활성화된 MCP**: 프로젝트당 10개 미만
@@ -1035,7 +1107,7 @@ grep '"disabled": false' .mcp.json | wc -l
 
 ```
 1일차:
-- [ ] [QUICKSTART.md](QUICKSTART.md) 읽기
+- [ ] README.md와 CLAUDE.md 읽기
 - [ ] git 리포지토리 초기화
 - [ ] 첫 명령어 실행: /test-and-build
 - [ ] 사용 가능한 명령어 탐색 (/help)
@@ -1363,15 +1435,15 @@ npx @modelcontextprotocol/server-github
 
 **셀프 서비스**:
 1. 이 WORKFLOW.md 확인
-2. [QUICKSTART.md](QUICKSTART.md) 검토
+2. [README.md](README.md) 검토
 3. `.claude/rules/`의 관련 규칙 파일 읽기
 4. 프로젝트별 안내는 CLAUDE.md 검색
 5. `.claude/skills/`의 스킬 파일 확인
+6. `.claude/agents/INDEX.md`의 에이전트 인덱스 확인
 
 **커뮤니티 지원**:
-1. 지원 채널은 [CONTRIBUTING.md](CONTRIBUTING.md) 확인
-2. 기존 GitHub 이슈 검색
-3. 다음을 포함한 새 이슈 열기:
+1. 기존 GitHub 이슈 검색
+2. 다음을 포함한 새 이슈 열기:
    - 문제에 대한 명확한 설명
    - 재현 단계
    - 예상 대 실제 동작
@@ -1383,7 +1455,7 @@ npx @modelcontextprotocol/server-github
 
 ### 10.1 훅 커스터마이제이션
 
-전체 가이드는 [`.claude/rules/hooks.md`](.claude/rules/hooks.md)를 참조하세요.
+`.claude/settings.json`에서 훅을 구성하세요 - `hooks` 섹션을 참조하세요.
 
 **프리 툴 훅** (작업 전 경고):
 
@@ -1488,10 +1560,8 @@ code-simplifier     # 복잡성 제거
 ### 가장 중요한 규칙
 
 ```bash
-security.md          # 시크릿 하드코딩 금지, 입력 유효성 검사
-testing.md           # 80% 커버리지, 가능하면 TDD
-context-management.md # 10개 미만 MCP, 80k 미만 컨텍스트
-patterns.md          # API 형식, 오류 처리
+essential-rules.md   # 보안, 테스트, 코딩 표준 (통합됨)
+agent-workflow.md    # 위임, 워크플로우, git 표준
 ```
 
 ### 중요한 성능 임계값
@@ -1508,7 +1578,7 @@ patterns.md          # API 형식, 오류 처리
 
 ## 다음 단계
 
-**신규 사용자**: 5분 설정을 위해 [QUICKSTART.md](QUICKSTART.md)로 시작하세요
+**신규 사용자**: 프로젝트 개요는 [README.md](README.md)로 시작하세요
 
 **시작하기**: [1주차: 필수 설정](#71-1주차-필수-설정)을 따르세요
 
@@ -1522,12 +1592,14 @@ patterns.md          # API 형식, 오류 처리
 
 ## 추가 리소스
 
-- **설정 가이드**: [QUICKSTART.md](QUICKSTART.md)
-- **기여하기**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **플러그인 생태계**: [plugins/README.md](plugins/README.md)
-- **규칙 문서**: [.claude/rules/README.md](.claude/rules/README.md)
-- **스킬 문서**: [.claude/skills/README.md](.claude/skills/README.md)
-- **프로젝트 가이드라인 템플릿**: [.claude/skills/project-guidelines.md](.claude/skills/project-guidelines.md)
+- **프로젝트 개요**: [README.md](README.md)
+- **팀 가이드라인**: [CLAUDE.md](CLAUDE.md)
+- **에이전트 디렉토리**: [.claude/agents/INDEX.md](.claude/agents/INDEX.md)
+- **스킬 디렉토리**: [.claude/skills/INDEX.md](.claude/skills/INDEX.md)
+- **명령어 가이드**: [.claude/commands/README.md](.claude/commands/README.md)
+- **체크리스트**: [.claude/checklists/README.md](.claude/checklists/README.md)
+- **템플릿**: [.claude/templates/README.md](.claude/templates/README.md)
+- **워크플로우**: [.claude/workflows/README.md](.claude/workflows/README.md)
 
 ---
 

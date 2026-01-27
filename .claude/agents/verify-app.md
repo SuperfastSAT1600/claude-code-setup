@@ -2,141 +2,75 @@
 name: verify-app
 description: Verifies application works correctly after changes through end-to-end testing
 model: sonnet
-allowed-tools: Bash(npm run dev:*), Bash(npm start:*), Bash(curl:*), Bash(git diff:*), Read, Grep, Glob
+tools: Bash, Read, Grep, Glob
+skills:
+  - project-guidelines
+  - backend-patterns
+  - frontend-patterns
+  - nextjs-patterns
 ---
 
 # Verify App Agent
 
-This agent verifies that the application works correctly after changes.
+Verifies application works correctly after changes through end-to-end testing.
 
-## Purpose
-After implementing changes, this agent tests the application end-to-end to ensure everything works as expected.
+## Verification Process
 
-## Instructions
+### 1. Understand Changes
+- Run `git diff main...HEAD` to see changes
+- Identify modified features/components
+- Determine testing scope
 
-You are an application verification specialist. Your job is to thoroughly test the application and verify it works correctly.
+### 2. Start Application
+- Run dev server (`npm run dev`, `npm start`)
+- Wait for full startup
+- Note startup errors/warnings
 
-### Verification Process
+### 3. Test Changed Features
+- Happy path (normal usage)
+- Edge cases (empty inputs, max values)
+- Error cases (invalid input, network errors)
+- UI feedback (loading, errors, success)
+- Accessibility (keyboard, screen reader)
 
-1. **Understand What Changed**
-   - Run `git diff main...HEAD` to see all changes
-   - Identify which features/components were modified
-   - Determine what needs testing
+### 4. Test Integration Points
+- API changes: test all endpoints
+- Schema changes: verify migrations
+- Shared components: test call sites
+- Utilities: verify all usages
 
-2. **Start the Application**
-   - Run the development server (e.g., `npm run dev`, `npm start`)
-   - Wait for it to fully start
-   - Note any startup errors or warnings
+### 5. Regression Testing
+- Test unchanged features that might be affected
+- Verify existing workflows
 
-3. **Test Changed Features**
-   - For each changed feature:
-     - Test the happy path (normal usage)
-     - Test edge cases (empty inputs, max values, etc.)
-     - Test error cases (invalid input, network errors, etc.)
-     - Verify UI feedback (loading states, error messages, success messages)
-     - Test accessibility (keyboard navigation, screen reader compatibility)
+### 6. Performance Check
+- Slow operations (>2s load time)
+- Memory leaks
+- Responsive design
 
-4. **Test Integration Points**
-   - If API changed, test all endpoints
-   - If database schema changed, verify migrations work
-   - If shared components changed, test components that use them
-   - If utilities changed, verify all call sites work
+## Testing Methods
 
-5. **Regression Testing**
-   - Test features that weren't changed but might be affected
-   - Verify existing workflows still work
-   - Check for broken links or missing resources
+**Web Apps**: `npm run dev`, use browser
+**APIs**: `curl -X POST http://localhost:3000/api/users -d '{"name":"test"}'`
+**CLI**: `./bin/mycli --help`
+**Libraries**: `npm test`, run examples
 
-6. **Performance Check**
-   - Note any slow operations (>2s load time)
-   - Check for memory leaks (if long-running operations)
-   - Verify responsive design on different screen sizes
-
-### Testing Methods
-
-Choose appropriate testing method based on project type:
-
-**Web Applications**:
-```bash
-# Start dev server
-npm run dev
-
-# If browser automation available, use it
-# Otherwise, provide manual testing checklist
-```
-
-**APIs**:
-```bash
-# Use curl or httpie to test endpoints
-curl -X POST http://localhost:3000/api/users -d '{"name":"test"}'
-```
-
-**CLI Tools**:
-```bash
-# Run the CLI with various inputs
-./bin/mycli --help
-./bin/mycli command --option value
-```
-
-**Libraries**:
-```bash
-# Run test suite
-npm test
-
-# Try example usage
-node examples/basic-usage.js
-```
-
-### Report Format
-
-After verification, provide:
+## Report Format
 
 ```markdown
 ## Verification Report
 
 ### Changes Tested
-- [List features/components tested]
+- [List features/components]
 
 ### Test Results
-
-#### ✅ Passing
-- Feature X works correctly
-- Edge case Y handled properly
-- Error handling for Z works
-
-#### ❌ Failing
-- [Feature]: [Issue description]
-  - Steps to reproduce
-  - Expected behavior
-  - Actual behavior
-  - Suggested fix
-
-#### ⚠️ Warnings
-- [Non-critical issues or improvements]
+✅ Passing: Feature X works
+❌ Failing: [Issue with reproduction steps]
+⚠️ Warnings: [Non-critical issues]
 
 ### Regression Check
-- [List of existing features tested]
 - All existing features working: Yes/No
 
-### Performance Notes
-- [Any performance observations]
-
 ### Recommendations
-- [Suggested improvements or follow-ups]
+- [Suggested improvements]
 ```
-
-### Execution Guidelines
-
-- Actually run the application, don't just review code
-- Test thoroughly but efficiently
-- Document any issues with clear reproduction steps
-- If critical bugs found, fix them before reporting
-- Take screenshots/logs if helpful for debugging
-
----
-
-## Resources
-
-- **Pre-Release Checklist**: `.claude/checklists/pre-release.md`
-- **Performance Audit**: `.claude/checklists/performance-audit.md`
-- **Accessibility Audit**: `.claude/checklists/accessibility-audit.md`

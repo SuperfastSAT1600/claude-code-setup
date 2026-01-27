@@ -17,7 +17,7 @@ Commands differ from agents:
 
 ---
 
-## Available Commands (20 Total)
+## Available Commands (21 Total)
 
 ### Workflow Orchestration
 
@@ -206,6 +206,28 @@ Commands differ from agents:
 - Updates README if needed
 
 **Duration**: 5-10 minutes
+
+---
+
+#### [`open-localhost.md`](open-localhost.md)
+**Usage**: `/open-localhost [port]`
+
+**Purpose**: Automatically detect and open localhost in browser
+
+**What It Does**:
+- Auto-detects running dev server port
+- Validates server is responding
+- Opens browser using platform-specific command
+- Provides helpful error messages
+
+**Duration**: < 5 seconds
+
+**Example**:
+```
+/open-localhost              # Auto-detect port
+/open-localhost 3000         # Open specific port
+/open-localhost 5173         # Open Vite default
+```
 
 ---
 
@@ -403,7 +425,7 @@ Some commands accept arguments:
 
 | Duration | Commands |
 |----------|----------|
-| **Fast** (<1 min) | `/lint-fix`, `/audit-deps`, `/new-component` |
+| **Fast** (<1 min) | `/lint-fix`, `/audit-deps`, `/new-component`, `/open-localhost` |
 | **Medium** (5-15 min) | `/quick-fix`, `/create-migration`, `/update-docs`, `/test-coverage` |
 | **Long** (30+ min) | `/full-feature`, `/security-review`, `/e2e` |
 
@@ -417,6 +439,7 @@ Some commands accept arguments:
 | **Testing** | `/tdd`, `/test-coverage`, `/e2e`, `/test-and-build` |
 | **Security** | `/security-review`, `/audit-deps` |
 | **Documentation** | `/update-docs` |
+| **Development Tools** | `/new-component`, `/create-migration`, `/open-localhost` |
 | **Git/CI** | `/commit-push-pr`, `/build-fix` |
 
 ---
@@ -500,10 +523,10 @@ Details...
 
 ## Resources
 
-- [INDEX.md](../INDEX.md) - Quick lookup of all commands
-- [GUIDE.md](../GUIDE.md) - Comprehensive usage guide
-- [Agents README](../agents/README.md) - Agent documentation
+- [Agents Index](../agents/INDEX.md) - Agent directory and usage guide
+- [Skills Index](../skills/INDEX.md) - Skills directory and selection guide
 - [Workflows](../workflows/) - Detailed workflow definitions
+- [Checklists](../checklists/) - Quality gate checklists
 
 ---
 

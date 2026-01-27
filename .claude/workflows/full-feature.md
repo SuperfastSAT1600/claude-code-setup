@@ -61,9 +61,13 @@ Complete feature development from planning through deployment-ready PR.
 ---
 
 ### Step 3: Implementation
-**Agent**: `implementer`
+**Agent**: Main agent OR specialist (if complex domain)
 **Duration**: Variable
 **Parallel with**: Can run parallel with `api-designer` (docs) if API feature
+
+**Decision**:
+- **Standard feature**: Main agent implements directly
+- **Complex domain**: Delegate to specialist (auth-specialist, database-architect, etc.)
 
 **Actions**:
 1. Implement code to pass tests (TDD green phase)
@@ -72,7 +76,7 @@ Complete feature development from planning through deployment-ready PR.
 4. Handle error cases
 5. Add logging where appropriate
 
-**Context to Provide**:
+**Context to Consider**:
 - Implementation plan from Step 1
 - Test specs from Step 2
 - Relevant templates (component.tsx, api-route.ts, etc.)
@@ -81,7 +85,6 @@ Complete feature development from planning through deployment-ready PR.
 **Output**:
 - Source code changes
 - Passing tests
-- Implementation report
 
 **Quality Check**:
 - [ ] All tests passing
@@ -215,15 +218,15 @@ Closes #123
 ## Parallel Execution Opportunities
 
 ```
-Phase 1: Planning (Sequential)
-  planner → creates plan
-  ↓ USER APPROVAL GATE
+Phase 1: Planning (Optional - for complex features only)
+  planner → creates plan (if needed)
+  ↓ USER APPROVAL GATE (if plan created)
 
-Phase 2: Test + Implementation (Sequential, but can parallel with API docs)
-  tdd-guide → test specs
-  implementer → implementation
-  ┌─ api-designer (docs) ─┐ (if API feature)
-  └────────────────────────┘
+Phase 2: Test + Implementation
+  Main agent OR specialist:
+  - Write tests
+  - Implement feature
+  - Can parallel with api-designer (docs) if API feature
 
 Phase 3: Review (Parallel)
   ┌─ code-reviewer ────────┐
@@ -231,11 +234,11 @@ Phase 3: Review (Parallel)
   └─ doc-updater ──────────┘
 
 Phase 4: Verification (Sequential)
-  verify-app → final checks
+  Main agent OR verify-app → final checks
   ↓ AUTO GATE (checklist)
 
-Phase 5: Commit (Orchestrator)
-  orchestrator → git operations, PR creation
+Phase 5: Commit (Main Agent)
+  Main agent → git operations, PR creation
 ```
 
 ---

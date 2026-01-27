@@ -1,489 +1,178 @@
 # Documentation Patterns
 
-Best practices for writing and maintaining technical documentation.
+Essential documentation standards for code, APIs, and projects. Covers JSDoc/TSDoc, README structure, ADR format, and changelog best practices.
+
+**Authoritative Sources:**
+- [JSDoc Documentation](https://jsdoc.app/) - JSDoc standard tags and syntax
+- [TSDoc Specification](https://tsdoc.org/) - TypeScript documentation best practices
+- [Keep a Changelog](https://keepachangelog.com/) - Semantic changelog format
+- [Architectural Decision Records](https://adr.github.io/) - ADR template and process
+- [Google Style Guide](https://developers.google.com/style) - Technical writing standards
 
 ---
 
-## Documentation Types
+## JSDoc/TSDoc Function Documentation
 
-### By Audience
-| Type | Audience | Purpose |
-|------|----------|---------|
-| README | New users | Project overview, quick start |
-| API Docs | Developers | Endpoint reference, examples |
-| Architecture | Team | System design, decisions |
-| User Guide | End users | How to use features |
-| Contribution | Contributors | How to contribute |
+**Standard format for all functions:**
+```typescript
+/**
+ * Brief description (1 sentence).
+ *
+ * Longer explanation if needed (2-3 sentences).
+ *
+ * @param name - Description
+ * @returns What the function returns
+ * @throws {ErrorType} When this error occurs
+ *
+ * @example
+ * const result = functionName(arg);
+ * console.log(result); // expected output
+ */
+```
 
-### By Content
-| Type | When to Write |
-|------|---------------|
-| Tutorials | Learning-oriented, "how to get started" |
-| How-to Guides | Problem-oriented, "how to solve X" |
-| Reference | Information-oriented, "API specs" |
-| Explanation | Understanding-oriented, "why we do X" |
+**Key tags:** `@param`, `@returns`, `@throws`, `@example`, `@deprecated`, `@internal`
+
+**For types/interfaces:**
+```typescript
+/**
+ * Brief description of what this represents.
+ */
+interface User {
+  /** Unique identifier */
+  id: string;
+  /** User's email (must be unique) */
+  email: string;
+}
+```
 
 ---
 
 ## README Structure
 
-### Essential Sections
-```markdown
-# Project Name
+**Minimal (required):**
+1. Brief description (1-2 sentences)
+2. Installation/Quick start
+3. Basic usage example
+4. Link to docs
 
-Brief description (1-2 sentences).
-
-## Features
-- Key feature 1
-- Key feature 2
-
-## Quick Start
-\`\`\`bash
-npm install
-npm run dev
-\`\`\`
-
-## Documentation
-- [Installation Guide](docs/installation.md)
-- [API Reference](docs/api.md)
-
-## Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## License
-MIT
-```
-
-### Extended README
-```markdown
-# Project Name
-
-[![CI](badge-url)](action-url)
-[![License](badge-url)](license-url)
-
-Brief description explaining what the project does and why it exists.
-
-## Features
-- Feature with brief explanation
-- Another feature
-
-## Prerequisites
-- Node.js 20+
-- PostgreSQL 15+
-
-## Installation
-\`\`\`bash
-git clone https://github.com/org/repo
-cd repo
-npm install
-cp .env.example .env
-npm run dev
-\`\`\`
-
-## Usage
-Basic usage example with code.
-
-## Configuration
-| Variable | Description | Required |
-|----------|-------------|----------|
-| DATABASE_URL | Connection string | Yes |
-
-## Architecture
-Brief overview with diagram link.
-
-## Contributing
-1. Fork the repo
-2. Create feature branch
-3. Submit PR
-
-## License
-MIT - see [LICENSE](LICENSE)
-```
+**Extended:**
+1. Badges (CI, coverage, license)
+2. Description + why it exists
+3. Features (bulleted)
+4. Prerequisites
+5. Installation steps
+6. Usage examples
+7. Configuration (if applicable)
+8. Contributing guidelines
+9. License
 
 ---
 
-## Code Documentation
+## API Endpoint Documentation
 
-### JSDoc for Functions
-```typescript
-/**
- * Calculates the total price with tax and discounts.
- *
- * @param items - Array of cart items
- * @param options - Calculation options
- * @param options.taxRate - Tax rate as decimal (e.g., 0.08 for 8%)
- * @param options.discountCode - Optional discount code
- * @returns Total price in cents
- * @throws {ValidationError} If items array is empty
- *
- * @example
- * ```ts
- * const total = calculateTotal(
- *   [{ price: 1000, quantity: 2 }],
- *   { taxRate: 0.08 }
- * );
- * // Returns: 2160
- * ```
- */
-function calculateTotal(
-  items: CartItem[],
-  options: CalculateOptions
-): number {
-  // ...
-}
-```
+**For each endpoint:**
+- Summary + description
+- HTTP method + path
+- Authentication required (Y/N)
+- Request parameters/body (table: field | type | required | description)
+- Success response (with example JSON)
+- Error responses (status | code | description)
 
-### JSDoc for Types
-```typescript
-/**
- * Represents a user in the system.
- */
-interface User {
-  /** Unique identifier */
-  id: string;
-  /** Email address (must be unique) */
-  email: string;
-  /** Display name */
-  name: string;
-  /** Account creation timestamp */
-  createdAt: Date;
-  /** User's role for authorization */
-  role: 'admin' | 'user' | 'guest';
-}
-```
-
-### When to Comment
-```typescript
-// ✅ DO: Explain WHY, not WHAT
-// Using exponential backoff to avoid overwhelming the API
-// after temporary failures (per API guidelines section 4.2)
-const delay = Math.pow(2, attempt) * 1000;
-
-// ✅ DO: Document complex algorithms
-// Floyd's cycle detection: fast pointer moves 2x, slow 1x
-// When they meet, there's a cycle
-while (fast && fast.next) {
-  slow = slow.next;
-  fast = fast.next.next;
-  if (slow === fast) return true;
-}
-
-// ❌ DON'T: State the obvious
-// Increment counter
-counter++;
-
-// ❌ DON'T: Repeat the code
-// Set user to null
-user = null;
-```
+**Document in markdown or OpenAPI/Swagger.** Use schema references for complex types.
 
 ---
 
-## API Documentation
+## Architectural Decision Record (ADR)
 
-### OpenAPI/Swagger
-```yaml
-openapi: 3.0.3
-info:
-  title: User API
-  version: 1.0.0
-  description: API for managing users
-
-paths:
-  /users:
-    get:
-      summary: List all users
-      tags: [Users]
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 1
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 20
-            maximum: 100
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/User'
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
-
-components:
-  schemas:
-    User:
-      type: object
-      required: [id, email]
-      properties:
-        id:
-          type: string
-          format: uuid
-        email:
-          type: string
-          format: email
-        name:
-          type: string
-```
-
-### Endpoint Documentation
+**Template format:**
 ```markdown
-## Create User
-
-Creates a new user account.
-
-**Endpoint:** `POST /api/users`
-
-**Authentication:** Required (Bearer token)
-
-**Request Body:**
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| email | string | Yes | Valid email address |
-| name | string | Yes | Display name (2-100 chars) |
-| role | string | No | User role (default: "user") |
-
-**Example Request:**
-\`\`\`bash
-curl -X POST https://api.example.com/api/users \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "name": "John Doe"}'
-\`\`\`
-
-**Success Response (201):**
-\`\`\`json
-{
-  "data": {
-    "id": "123",
-    "email": "user@example.com",
-    "name": "John Doe",
-    "createdAt": "2024-01-15T10:00:00Z"
-  }
-}
-\`\`\`
-
-**Error Responses:**
-| Status | Code | Description |
-|--------|------|-------------|
-| 400 | VALIDATION_ERROR | Invalid input |
-| 409 | CONFLICT | Email already exists |
-```
-
----
-
-## Architecture Documentation
-
-### Architecture Decision Record (ADR)
-```markdown
-# ADR-001: Use PostgreSQL for Primary Database
+# ADR-[NUMBER]: [DECISION TITLE]
 
 ## Status
-Accepted
+Accepted | Superseded | Deprecated
 
 ## Context
-We need a primary database for our application. Key requirements:
-- ACID compliance for financial transactions
-- JSON support for flexible schemas
-- Good performance at expected scale (10k users)
-- Team familiarity
+[Problem/requirements that prompted this decision]
 
 ## Options Considered
-
-### 1. PostgreSQL
-- Pros: ACID, JSONB, mature ecosystem, team experience
-- Cons: Vertical scaling limits
-
-### 2. MongoDB
-- Pros: Flexible schema, horizontal scaling
-- Cons: No ACID (until 4.0), less team experience
-
-### 3. MySQL
-- Pros: Simple, widely used
-- Cons: Weaker JSON support, less advanced features
+[List 2-3 alternatives with pros/cons]
 
 ## Decision
-Use PostgreSQL 15 as the primary database.
+[What was decided and why]
 
 ## Consequences
-- Need to manage connection pooling (use PgBouncer)
-- Team needs to learn PostgreSQL-specific features
-- May need read replicas for scaling later
-
-## Date
-2024-01-15
+[Impacts: positive and negative]
 ```
 
-### System Diagram
-```markdown
-## System Architecture
+**Store in:** `.adr/` or `docs/adr/` directory. Number sequentially (ADR-001, ADR-002...).
 
-\`\`\`
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Client    │────▶│   API GW    │────▶│   Service   │
-│  (Browser)  │     │  (Nginx)    │     │  (Node.js)  │
-└─────────────┘     └─────────────┘     └──────┬──────┘
-                                               │
-                    ┌──────────────────────────┼──────────────────────────┐
-                    │                          │                          │
-                    ▼                          ▼                          ▼
-             ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
-             │  PostgreSQL │           │    Redis    │           │     S3      │
-             │  (Primary)  │           │   (Cache)   │           │  (Storage)  │
-             └─────────────┘           └─────────────┘           └─────────────┘
-\`\`\`
+---
+
+## Code Comments Best Practices
+
+**DO:**
+- Explain WHY (not WHAT)
+- Document complex algorithms
+- Cite external references or requirements
+- Use for non-obvious business logic
+
+**DON'T:**
+- State the obvious (`// increment counter`)
+- Repeat the code
+- Use for self-documenting code
+
+**Example:**
+```typescript
+// Exponential backoff per API throttling guidelines (RFC 6429)
+// to avoid overwhelming the service after transient failures
+const delay = Math.pow(2, attempt) * 1000;
 ```
 
 ---
 
-## Changelog
+## Changelog Format (Keep a Changelog)
 
-### Format (Keep a Changelog)
+**File:** `CHANGELOG.md` at project root
+
+**Sections per version:**
+- Added (new features)
+- Changed (existing functionality changes)
+- Deprecated (features to remove soon)
+- Removed (removed features)
+- Fixed (bug fixes)
+- Security (security patches)
+
+**Format:**
 ```markdown
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/).
-
-## [Unreleased]
+## [VERSION] - YYYY-MM-DD
 
 ### Added
-- New feature description
-
-### Changed
-- Changed feature description
-
-## [1.2.0] - 2024-01-15
-
-### Added
-- User profile customization (#123)
-- Dark mode support (#124)
-
-### Changed
-- Improved search performance by 50%
+- Feature description (#123)
 
 ### Fixed
-- Fixed date picker timezone bug (#125)
-
-### Security
-- Updated jsonwebtoken to fix CVE-2022-23529
-
-## [1.1.0] - 2024-01-01
-...
+- Bug description
 ```
 
-### Categories
-- **Added**: New features
-- **Changed**: Changes to existing functionality
-- **Deprecated**: Features to be removed
-- **Removed**: Removed features
-- **Fixed**: Bug fixes
-- **Security**: Security fixes
+**Semantic Versioning:** MAJOR.MINOR.PATCH
 
 ---
 
-## Writing Style
+## Inline Documentation Requirements
 
-### Guidelines
-1. **Be concise**: Respect reader's time
-2. **Use active voice**: "The function returns" not "is returned by"
-3. **Use second person**: "You can configure" not "Users can configure"
-4. **Use present tense**: "The API returns" not "will return"
-5. **Be consistent**: Same terms throughout
+**Functions:** JSDoc with @param, @returns, @example required if public
 
-### Examples
-```markdown
-# Bad
-The configuration file will be read by the system when it is started up.
-Users should ensure that they have properly configured their environment.
+**Complex logic:** Single comment explaining "why" before block
 
-# Good
-The system reads the configuration file at startup.
-Configure your environment before running the application.
-```
+**Edge cases:** Comment why handling is non-standard
 
-### Code Examples
-```markdown
-# Bad
-Here is some code that shows how to do it:
-\`\`\`js
-// do the thing
-doThing()
-\`\`\`
-
-# Good
-Create a user with the `createUser` function:
-\`\`\`typescript
-const user = await createUser({
-  email: 'user@example.com',
-  name: 'John Doe',
-});
-console.log(user.id); // "abc123"
-\`\`\`
-```
-
----
-
-## Documentation Maintenance
-
-### Review Triggers
-- [ ] Code changes affecting documented features
-- [ ] API changes
-- [ ] New features added
-- [ ] Bug fixes that affect user behavior
-- [ ] Dependency updates with breaking changes
-
-### Automation
-```yaml
-# GitHub Action to check docs on PR
-name: Docs Check
-on: [pull_request]
-jobs:
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check for doc changes
-        run: |
-          if git diff --name-only origin/main | grep -q "src/"; then
-            if ! git diff --name-only origin/main | grep -q "docs/\|README"; then
-              echo "::warning::Code changed but no docs updated"
-            fi
-          fi
-```
-
----
-
-## Tools
-
-### Documentation Generators
-- **TypeDoc**: TypeScript API docs
-- **Swagger/OpenAPI**: REST API docs
-- **Docusaurus**: Documentation sites
-- **Storybook**: Component documentation
-
-### Linters
-- **markdownlint**: Markdown style
-- **vale**: Prose style
-- **cspell**: Spell checking
+**Public APIs:** Full TSDoc with examples
 
 ---
 
 ## Resources
 
-- Write the Docs: https://www.writethedocs.org/
-- Google Developer Documentation Style Guide: https://developers.google.com/style
-- Diátaxis Framework: https://diataxis.fr/
-- Keep a Changelog: https://keepachangelog.com/
+- [JSDoc.app](https://jsdoc.app/)
+- [TSDoc.org](https://tsdoc.org/)
+- [Keep a Changelog](https://keepachangelog.com/)
+- [ADR GitHub](https://adr.github.io/)
+- [Google Developer Style Guide](https://developers.google.com/style)
