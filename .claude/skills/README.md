@@ -263,9 +263,9 @@ Quick reference guide. For detailed implementations, see `references/` directory
 
 | Pattern | Use When | Reference |
 |---------|----------|-----------|
-| **Functional Components** | All new components | [component-patterns.md](references/component-patterns.md) |
-| **Custom Hooks** | Extracting reusable logic | [custom-hooks.md](references/custom-hooks.md) |
-| **useReducer** | Complex state | [state-management.md](references/state-management.md) |
+| **Functional Components** | All new components | [component-patterns.md](react-patterns/references/component-patterns.md) |
+| **Custom Hooks** | Extracting reusable logic | [custom-hooks.md](react-patterns/references/custom-hooks.md) |
+| **useReducer** | Complex state | [state-management.md](react-patterns/references/state-management.md) |
 
 [Instructions on when/how to load each reference...]
 ```
