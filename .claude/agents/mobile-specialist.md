@@ -125,3 +125,9 @@ const ProductItem = memo(function ProductItem({ product, onPress }) {
 - Implement error boundaries
 - Support accessibility
 - Test with Detox/Maestro
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

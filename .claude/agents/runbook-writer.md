@@ -114,3 +114,9 @@ kubectl logs -n production -l app=myservice --tail=200 | grep -i error
 3. **Clear Escalation**: Know when and who to escalate to
 4. **Regular Review**: Include review dates
 5. **Rollback First**: Always document rollback
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

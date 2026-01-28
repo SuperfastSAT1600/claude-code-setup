@@ -41,3 +41,9 @@ API routes with database operations, service-to-service communication, database 
 ## Coordination
 
 Works after unit tests pass. Tests integration between new code and existing system. Reports transaction rollback issues to orchestrator.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

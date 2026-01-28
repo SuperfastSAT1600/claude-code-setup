@@ -64,3 +64,9 @@ const displayName = currentUser?.name || 'Anonymous';
 
 - React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for extracting logic)
 - React Context Template: `.claude/templates/variants/react/context.tsx.template` (for state management)
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

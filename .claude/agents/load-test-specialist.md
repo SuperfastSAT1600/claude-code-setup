@@ -118,3 +118,9 @@ export const options = {
 - [ ] Identify bottlenecks
 - [ ] Document findings
 - [ ] Retest after optimizations
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

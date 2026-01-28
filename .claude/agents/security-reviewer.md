@@ -70,3 +70,9 @@ Found X critical, Y high, Z medium, W low severity issues.
 ## Coordination
 
 Escalate to senior security team for RCE vulnerabilities, database compromise, widespread secret exposure, zero-days, or active exploitation evidence.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

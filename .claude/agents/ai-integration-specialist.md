@@ -137,3 +137,9 @@ Expert in integrating LLMs, building RAG systems, and deploying AI-powered featu
 - **LangChain**: LLM application framework
 - **Pinecone**: Vector database
 - **Zod**: Schema validation
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

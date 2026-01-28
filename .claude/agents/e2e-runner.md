@@ -47,3 +47,9 @@ Critical paths: authentication flows, checkout processes, registration, search f
 ## Coordination
 
 Runs after implementation and unit tests complete. Reports test results and failures to orchestrator with screenshots.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

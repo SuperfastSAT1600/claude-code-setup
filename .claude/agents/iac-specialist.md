@@ -76,3 +76,9 @@ resource "aws_vpc" "main" {
 ## Resources
 
 `.claude/checklists/deployment-checklist.md`, Terraform docs
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

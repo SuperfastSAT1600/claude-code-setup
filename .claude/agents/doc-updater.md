@@ -100,3 +100,9 @@ Synchronize documentation with code changes. Keep docs current and accurate.
 - README Template: `.claude/templates/readme.template.md`
 - Documentation Patterns: `.claude/skills/documentation-patterns/`
 - Project Guidelines: `.claude/skills/project-guidelines/`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

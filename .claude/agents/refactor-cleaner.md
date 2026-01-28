@@ -78,3 +78,9 @@ async function fetchUser(id: string): Promise<User> {
 - React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for modernizing to hooks)
 - React Context Template: `.claude/templates/variants/react/context.tsx.template` (for context providers)
 - React HOC Template: `.claude/templates/variants/react/hoc.tsx.template` (for higher-order components)
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

@@ -81,3 +81,9 @@ req.log.info({ method, path, query }, 'Request started');
 ## Resources
 
 `.claude/skills/backend-patterns/`, `.claude/checklists/deployment-checklist.md`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

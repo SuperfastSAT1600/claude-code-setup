@@ -47,3 +47,9 @@ Provide test file with grouped tests, coverage summary showing happy path + erro
 ## Coordination
 
 Works after code is created by main agent or specialists. Coordinates with tdd-guide for TDD workflow. Reports coverage metrics to orchestrator.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

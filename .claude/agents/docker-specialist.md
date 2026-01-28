@@ -80,3 +80,9 @@ services:
 
 - Deployment Checklist: `.claude/checklists/deployment-checklist.md`
 - Docker Patterns: `.claude/skills/docker-patterns/`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

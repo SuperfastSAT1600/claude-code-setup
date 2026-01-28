@@ -48,3 +48,9 @@ Expert database architect specializing in schema design, query optimization, and
 
 - Migration Review: `.claude/checklists/database-migration-review.md`
 - Database Patterns: `.claude/skills/database-patterns/`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)
