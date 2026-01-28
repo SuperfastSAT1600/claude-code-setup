@@ -11,6 +11,11 @@ Log of all self-healing, evolution, adaptation, and refactoring actions.
 - **Reason**: why
 -->
 
+## [2026-01-28] heal(agents): add Error Log sections to all 34 agents
+- **Type**: heal
+- **Changed**: All 34 agent files in .claude/agents/ (accessibility-auditor, ai-integration-specialist, api-designer, architect, auth-specialist, build-error-resolver, ci-cd-specialist, code-reviewer, code-simplifier, database-architect, dependency-manager, doc-updater, docker-specialist, e2e-runner, graphql-specialist, i18n-specialist, iac-specialist, integration-test-writer, load-test-specialist, migration-specialist, mobile-specialist, monitoring-architect, performance-optimizer, planner, refactor-cleaner, runbook-writer, security-reviewer, system-health, tdd-guide, tech-debt-analyzer, type-safety-enforcer, unit-test-writer, verify-app, websocket-specialist)
+- **Reason**: Enable granular error correction at the agent level. Each agent can now document its own mistakes and self-correct across sessions, matching the Error Log pattern in CLAUDE.md. Creates accountability chain: subagent documents error → main agent logs to changelog → system learns and prevents recurrence. Strengthens self-aware system with agent-specific learning loops.
+
 ## [2026-01-28] heal(skills): update documentation for new skill structure
 - **Type**: heal
 - **Changed**:
