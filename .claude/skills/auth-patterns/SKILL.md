@@ -33,6 +33,8 @@ const token = jwt.sign(payload, privateKey, { algorithm: 'RS256', issuer: 'app',
 const decoded = jwt.verify(token, publicKey, { issuer: 'app', audience: 'users' });
 ```
 
+**For comprehensive JWT guidance:** See `references/jwt-best-practices.md` for signing algorithms (RS256, ES256, HS256), token storage strategies, refresh patterns, revocation techniques, and vulnerability mitigations.
+
 ---
 
 ## Token Refresh with Rotation
@@ -68,6 +70,8 @@ Identity layer on OAuth 2.0. Adds ID Token (JWT) with user authentication info a
 
 **PKCE critical** for public clients (SPAs, mobile) - prevents authorization code interception.
 
+**For detailed OAuth implementation:** See `references/oauth-flows.md` for complete step-by-step PKCE flow, state parameter CSRF protection, redirect URI validation, scope management, client credentials flow, OpenID Connect ID token validation, and security best practices.
+
 ---
 
 ## Password Security
@@ -90,6 +94,8 @@ const valid = await bcrypt.compare(password, hash);
 - **No periodic changes** - Encourage strong passwords + MFA instead (NIST guideline)
 - **Check breach databases** - Reject passwords in haveibeenpwned.com
 
+**For in-depth password security:** See `references/owasp-auth.md` for Argon2id vs bcrypt comparison, password policy guidelines, breach database integration, session management, account lockout strategies, MFA implementation (TOTP, WebAuthn), and common authentication vulnerabilities.
+
 ---
 
 ## Multi-Factor Authentication (MFA)
@@ -104,6 +110,8 @@ const valid = await bcrypt.compare(password, hash);
 - TOTP (Time-based One-Time Password) - RFC 6238, 6-digit codes, 30s window
 - WebAuthn - Public key cryptography, hardware tokens, biometrics
 - SMS (fallback only) - Vulnerable to SIM swapping, not recommended as primary
+
+**For complete MFA implementation:** See `references/owasp-auth.md` for TOTP enrollment and verification code examples, WebAuthn/FIDO2 registration and authentication flows, recovery code generation, and MFA factor categories.
 
 ---
 
@@ -126,6 +134,8 @@ res.cookie('__Host-session', token, {
 - Redis/Memcached for distributed systems
 - Database for persistent sessions
 - Regenerate session ID after login (prevent fixation)
+
+**For detailed session security:** See `references/owasp-auth.md` for session ID generation with cryptographic randomness, session lifecycle management (creation, regeneration, validation), cookie security prefixes (`__Host-` vs `__Secure-`), and session fixation attack prevention.
 
 ---
 

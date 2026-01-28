@@ -20,7 +20,10 @@ variants/
 │   └── Dockerfile.template
 ├── react/          # React-specific templates
 │   ├── component.tsx.template
-│   └── form.tsx.template
+│   ├── form.tsx.template
+│   ├── hook.ts.template
+│   ├── context.tsx.template
+│   └── hoc.tsx.template
 ├── nextjs/         # Next.js App Router templates
 │   └── api-route.ts.template
 └── vue/            # Vue-specific templates
@@ -133,6 +136,9 @@ When adding new templates:
 |----------|---------|----------|
 | `component.tsx.template` | React component with props | React, Next.js, Remix |
 | `form.tsx.template` | Form with validation | React, Next.js, Remix |
+| `hook.ts.template` | Custom React hook | React, Next.js, Remix |
+| `context.tsx.template` | React Context provider | React, Next.js, Remix |
+| `hoc.tsx.template` | Higher-Order Component | React, Next.js, Remix |
 
 ### Next.js Templates
 

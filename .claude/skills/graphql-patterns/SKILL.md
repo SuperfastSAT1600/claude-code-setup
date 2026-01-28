@@ -42,6 +42,12 @@ input CreateUserInput {
 }
 ```
 
+**See references/schema-examples.md for:**
+- Complete schema with interfaces, unions, custom scalars
+- Mutation payload patterns
+- Directive usage (@auth, @deprecated)
+- Schema federation basics
+
 ---
 
 ## Resolver Patterns
@@ -73,6 +79,14 @@ User: {
 
 **Rule:** Keep resolvers thin—delegate business logic to services.
 
+**See references/resolver-patterns.md for:**
+- Context setup and per-request patterns
+- Parent-child resolver chains explained
+- Error handling (GraphQLError, payload patterns)
+- Async resolver patterns (sequential vs parallel)
+- Authorization patterns (context-based, directive-based, field-level)
+- Complete resolver examples
+
 ---
 
 ## DataLoader (N+1 Solution)
@@ -97,6 +111,16 @@ const userLoader = new DataLoader(async (ids: readonly string[]) => {
 ```
 
 **Critical:** Return results in same order as requested IDs.
+
+**See references/dataloader-usage.md for:**
+- N+1 problem explained with SQL execution
+- Per-request DataLoader pattern (why fresh instances matter)
+- One-to-one, one-to-many, and composite key batching
+- Caching strategies (in-memory, LRU, manual cache control)
+- Error handling in batch functions
+- Performance metrics (before/after comparisons)
+- Common pitfalls and how to avoid them
+- Testing DataLoader implementations
 
 ---
 

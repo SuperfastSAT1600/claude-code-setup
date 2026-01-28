@@ -1,38 +1,166 @@
 # Agent & Workflow Rules (Ultra-Compact)
 
-Hybrid principle: Main agent codes standard tasks, delegates specialized work. Balance efficiency with expertise.
+**Core principles**: Main agent CODES by default. Delegate specialized work only when needed. **DEFAULT TO PARALLEL** orchestration whenever possible.
+
+---
+
+## Main Agent Priority: CODE FIRST
+
+**CRITICAL RULE: Main agent is primarily a CODER, not a coordinator. Do NOT delegate tasks you can handle directly. Only delegate when specific domain expertise is required.**
+
+### Decision Tree
+```
+User requests task
+    ↓
+Is this a standard development task? (CRUD, simple feature, bug fix, refactor <5 files)
+    ↓ YES → Main agent CODES directly (no delegation)
+    ↓ NO → Requires specialized expertise?
+        ↓ YES → Delegate to specialist(s)
+        ↓ NO → Main agent CODES directly
+```
+
+### Red Flags (Main Agent Sitting Idle)
+**BAD**: User asks to "add a login form" → delegate to auth-specialist and wait
+**GOOD**: Main agent creates form component directly (standard React work)
+
+**BAD**: User asks "fix the button styling" → delegate to code-reviewer and wait
+**GOOD**: Main agent fixes CSS directly (standard development)
+
+**BAD**: User asks "add API endpoint for users" → delegate to api-designer and wait
+**GOOD**: Main agent creates endpoint directly (standard REST API work)
+
+**BAD**: Delegate everything → sit idle → report results
+**GOOD**: Code directly → delegate only specialized review/testing if needed
+
+### When Delegation IS Appropriate
+- OAuth/JWT implementation (auth-specialist)
+- Complex database schema design (database-architect)
+- Security audit of crypto/auth code (security-reviewer)
+- Performance profiling and optimization (performance-optimizer)
+- Complex CI/CD pipeline setup (ci-cd-specialist)
+- Comprehensive test strategy (tdd-guide, unit-test-writer)
+
+---
+
+## Parallel-First Orchestration
+
+**CRITICAL RULE: When delegation is necessary, ALWAYS prefer parallel over sequential. Launch multiple agents in one message with multiple Task tool calls.**
+
+**NOTE**: This section applies AFTER determining delegation is needed. Most tasks should be coded by main agent directly (see "Main Agent Priority" section).
+
+### Parallel Execution Decision Matrix (For Delegated Tasks)
+
+| Scenario | Action | Example |
+|----------|--------|---------|
+| Tasks are independent (no data dependencies) | **PARALLEL** (single message, multiple Task calls) | code-reviewer + security-reviewer analyzing same codebase |
+| Multiple exploration tasks | **PARALLEL** | Research auth patterns + DB schema + API design simultaneously |
+| Multiple review tasks on completed work | **PARALLEL** | accessibility-auditor + performance-optimizer + code-reviewer |
+| Task B needs output from Task A | **SEQUENTIAL** | planner completes → main agent implements using plan |
+| Multiple tests after implementation | **PARALLEL** | unit-test-writer + e2e-runner + integration-test-writer |
+| Documentation updates for different areas | **PARALLEL** | API docs + README + architecture docs |
+
+### How to Launch Agents in Parallel
+
+```
+CORRECT (Parallel):
+Send ONE message with multiple Task tool calls:
+- Task(subagent_type="security-reviewer", prompt="...")
+- Task(subagent_type="code-reviewer", prompt="...")
+- Task(subagent_type="accessibility-auditor", prompt="...")
+
+INCORRECT (Sequential):
+Send message with Task(security-reviewer) → wait → send Task(code-reviewer) → wait...
+```
+
+### Common Parallel Patterns (When Delegation IS Appropriate)
+
+**Post-implementation review** (optional, for large/critical changes):
+- code-reviewer + security-reviewer + accessibility-auditor (all can review same code simultaneously)
+
+**Specialized domain designs** (main agent implements afterward):
+- auth-specialist(OAuth) + database-architect(schema) + api-designer(endpoints)
+- Main agent CODES implementation using their designs
+
+**Multi-layer testing** (after main agent writes code):
+- unit-test-writer + e2e-runner + integration-test-writer (test different layers in parallel)
+
+**Multi-domain exploration** (research phase only):
+- Explore(auth patterns) + Explore(db schema) + Explore(api structure) (all read-only, independent)
+- Main agent uses findings to CODE implementation
+
+**Documentation updates** (different files, truly independent):
+- doc-updater(API) + doc-updater(README) + doc-updater(changelog)
+
+**Infrastructure work** (DevOps specialization needed):
+- docker-specialist + ci-cd-specialist (containerization and pipelines are independent)
+- Main agent can handle basic Docker/CI - only delegate complex setups
+
+**IMPORTANT**: These are exception patterns, not defaults. Most work is handled by main agent directly.
 
 ---
 
 ## Hybrid Agent Principle
 
-**Main agent is both CODER and COORDINATOR.** Handles standard development directly, delegates specialized tasks.
+**Main agent is PRIMARILY a CODER, secondarily a COORDINATOR.** Default to coding directly. Only coordinate specialists when specific expertise is required.
 
-### Main Agent Handles Directly
+### Main Agent Handles Directly (80% of tasks)
 - Standard CRUD operations
 - Simple bug fixes (< 3 files)
 - Basic refactoring
 - Documentation updates
-- Simple feature implementation (components, routes, services)
+- Simple feature implementation (components, routes, services, API endpoints)
 - Git operations (commit, push, PR)
 - Reading and analyzing code (<20 files)
 - Template usage and pattern following
+- Form components, UI components, standard React/Vue/Svelte work
+- Basic API endpoints (REST CRUD)
+- Simple database queries (SELECT, INSERT, UPDATE, DELETE)
+- CSS/styling changes
+- Configuration updates
 
-### Delegate to Specialists When
+### Delegate to Specialists When (20% of tasks)
 - **Complex architecture** needed (architect, planner)
-- **Specialized domains**: Auth (auth-specialist), DB schema (database-architect), APIs (api-designer), GraphQL (graphql-specialist), WebSockets (websocket-specialist)
-- **Security-critical** work (security-reviewer)
-- **Testing strategies** (tdd-guide, unit-test-writer, e2e-runner)
-- **Performance optimization** (performance-optimizer)
-- **Operations work**: CI/CD (ci-cd-specialist), Docker (docker-specialist), Migrations (migration-specialist)
-- **Code quality reviews** (code-reviewer, security-reviewer)
-- **Accessibility compliance** (accessibility-auditor)
-- **Large refactors** (>5 files, refactor-cleaner)
+- **Specialized domains**: OAuth/JWT/SAML (auth-specialist), Complex schemas/indexes (database-architect), OpenAPI specs (api-designer), GraphQL schemas (graphql-specialist), WebSockets (websocket-specialist)
+- **Security-critical** work requiring audit (security-reviewer)
+- **Testing strategies** for large codebases (tdd-guide, unit-test-writer, e2e-runner)
+- **Performance optimization** requiring profiling (performance-optimizer)
+- **Operations work**: CI/CD pipelines (ci-cd-specialist), Multi-stage Docker (docker-specialist), Complex migrations (migration-specialist)
+- **Code quality reviews** for large PRs (code-reviewer, security-reviewer)
+- **Accessibility compliance** WCAG audits (accessibility-auditor)
+- **Large refactors** (>5 files, architectural changes) (refactor-cleaner)
+
+### Orchestrating Specialized Subagents
+
+**Main agent can launch ANY mix of specialized subagents in parallel** - not just general agents:
+
+```
+Example 1: User wants OAuth login with user profiles
+Main agent orchestrates in PARALLEL (single message):
+- Task(subagent_type="auth-specialist", prompt="Design OAuth 2.0 flow with PKCE...")
+- Task(subagent_type="database-architect", prompt="Design user profile schema...")
+- Task(subagent_type="api-designer", prompt="Design auth endpoints...")
+Then main agent integrates the designs
+
+Example 2: User wants real-time chat with message persistence
+Main agent orchestrates in PARALLEL:
+- Task(subagent_type="websocket-specialist", prompt="Design Socket.io chat...")
+- Task(subagent_type="database-architect", prompt="Design message storage...")
+- Task(subagent_type="security-reviewer", prompt="Review message security...")
+Then main agent implements integrated solution
+
+Example 3: User wants to optimize slow dashboard
+Main agent orchestrates in PARALLEL:
+- Task(subagent_type="performance-optimizer", prompt="Profile and optimize...")
+- Task(subagent_type="database-architect", prompt="Optimize queries...")
+- Task(subagent_type="accessibility-auditor", prompt="Check WCAG compliance...")
+Then main agent applies optimizations
+```
 
 ### Delegation Guidelines
-- Small, straightforward tasks: Handle directly
-- Requires deep domain expertise: Delegate
-- Multiple agents could work in parallel: Coordinate delegation. always prefer parallel work over sequential.
+1. **Default**: Can I code this directly? (If YES, don't delegate)
+2. **If delegating multiple specialists**: Can they run in parallel? (Default: YES unless data dependencies)
+3. **Launch any mix**: Don't limit to general agents - orchestrate specific specialists needed
+4. **Single message**: Launch all parallel specialists in ONE message with multiple Task calls
 
 ### Subagent Self-Correction
 When delegating to a specialist, expect the subagent to fix `.claude/` issues it encounters during its work:
@@ -89,17 +217,70 @@ When delegating to a specialist, expect the subagent to fix `.claude/` issues it
 - **sonnet**: code-reviewer, auth-specialist, most agents (DEFAULT)
 - **opus**: security-reviewer, architect (critical decisions only)
 
+**REMINDER**: When launching multiple agents, send ONE message with multiple Task calls, not sequential messages. Model tier doesn't affect parallelization.
+
 ---
 
-## Parallel Execution
+## Parallel vs Sequential: Comprehensive Guide
 
-### Safe for Parallel (read-only)
-- security-reviewer + code-reviewer
-- accessibility-auditor + performance-optimizer
+### Default to Parallel Unless:
+1. Task B requires output/data from Task A (true data dependency)
+2. Task B modifies what Task A is analyzing (write-read conflict)
+3. User explicitly requests sequential execution
 
-### Must Be Sequential
-- planner -> main agent/specialist (needs plan if complex)
-- implementation -> unit-test-writer (needs code)
+### Parallel Patterns (Use These Frequently)
+
+**Quality gates (all read same codebase)**:
+```
+security-reviewer + code-reviewer + accessibility-auditor + performance-optimizer
+```
+
+**Multi-domain research (all read-only, different focus)**:
+```
+Explore(auth) + Explore(database) + Explore(api) + Explore(frontend)
+```
+
+**Test pyramid (different layers, independent)**:
+```
+unit-test-writer + integration-test-writer + e2e-runner
+```
+
+**Cross-cutting concerns (different aspects of same feature)**:
+```
+api-designer(endpoints) + database-architect(schema) + auth-specialist(permissions)
+```
+
+**Operations setup (infrastructure, independent services)**:
+```
+docker-specialist + ci-cd-specialist + monitoring-architect
+```
+
+**Documentation updates (different files)**:
+```
+doc-updater(API) + doc-updater(README) + doc-updater(CHANGELOG) + doc-updater(architecture)
+```
+
+### Must Be Sequential (True Dependencies)
+
+**Planning then implementation**:
+```
+planner → [wait for plan] → implementation agent
+```
+
+**Implementation then testing**:
+```
+[write code] → [wait for completion] → unit-test-writer
+```
+
+**Build then deploy**:
+```
+build-error-resolver → [wait for green build] → deployment
+```
+
+**Schema then migrations**:
+```
+database-architect(schema) → [wait for schema] → migration-specialist(script)
+```
 
 ---
 
@@ -145,43 +326,127 @@ chore: update dependencies
 
 ## Common Workflows
 
-### Simple Feature (Main Agent Handles)
+### Simple Feature (Main Agent Codes - 80% of work)
 ```
-1. Main agent: Analyze requirements
-2. Main agent: Write code + tests
-3. Main agent: Self-verify (lint, test, build)
-4. Optional: code-reviewer (if complex)
-5. Commit & PR
+User: "Add a user profile page"
+
+1. Main agent: Read existing code, analyze patterns
+2. Main agent: Create component using template
+3. Main agent: Add route, wire up data
+4. Main agent: Write tests
+5. Main agent: Verify (lint, test, build)
+6. Commit & PR
+
+NO DELEGATION NEEDED - this is standard development work
 ```
 
-### Complex Feature (Use Specialists)
+### Standard Feature with Optional Review
 ```
-1. Optional: architect/planner -> design if complex
-2. Main agent OR specialist -> implement
-3. unit-test-writer -> comprehensive tests
-4. code-reviewer + security-reviewer (parallel)
-5. doc-updater -> update docs
+User: "Add checkout form with validation"
+
+1. Main agent: Create form component (React Hook Form + Zod)
+2. Main agent: Add validation rules
+3. Main agent: Wire up to API
+4. Main agent: Write tests
+5. Optional: **PARALLEL** (single message) if complex:
+   - code-reviewer (large PR >200 lines)
+   - security-reviewer (payment handling)
 6. Commit & PR
+```
+
+### Feature Requiring Specialized Expertise
+```
+User: "Add OAuth login with user profile storage"
+
+Main agent recognizes: Auth is complex, DB schema needs design
+
+1. Main agent orchestrates **PARALLEL** (single message):
+   - Task(subagent_type="auth-specialist", prompt="OAuth 2.0 PKCE flow")
+   - Task(subagent_type="database-architect", prompt="User profile schema")
+
+2. Main agent: CODES implementation using specialist designs
+   - Implements OAuth flow
+   - Creates database tables
+   - Wires up frontend
+
+3. Main agent: Write integration tests
+
+4. Optional **PARALLEL**: security-reviewer + e2e-runner (if critical)
+
+5. Commit & PR
+
+NOTE: Main agent does the CODING. Specialists provide expertise, not implementation.
 ```
 
 ### Bug Fix (Main Agent Handles)
 ```
-1. Main agent: Identify root cause
+User: "Fix the checkout button not working"
+
+1. Main agent: Read relevant code, identify issue
 2. Main agent: Write regression test
 3. Main agent: Fix bug
 4. Main agent: Verify fix
 5. Commit
+
+NO DELEGATION NEEDED - standard debugging
 ```
 
-### Pre-Commit Quality Check
+### Complex Multi-Domain Feature
 ```
-1. Main agent implements feature
-2. Run in parallel:
-   - security-reviewer
-   - code-reviewer (optional)
-   - doc-updater (if needed)
-3. Commit
+User: "Build real-time chat with message history and file uploads"
+
+Main agent recognizes: WebSockets (specialized), Storage (specialized), DB (can handle)
+
+1. Main agent orchestrates **PARALLEL** (single message):
+   - Task(subagent_type="websocket-specialist", prompt="Socket.io chat design")
+   - Task(subagent_type="database-architect", prompt="Message + file schema")
+
+2. Main agent: CODES the implementation
+   - Implements WebSocket handlers using specialist design
+   - Creates database tables
+   - Implements file upload endpoints
+   - Builds chat UI components
+
+3. Main agent: Write tests (unit + integration)
+
+4. Optional **PARALLEL**: e2e-runner (chat flows) + security-reviewer (file uploads)
+
+5. Commit & PR
+
+NOTE: Main agent does 90% of coding. Specialists provide complex domain designs.
 ```
+
+### Large Codebase Review (Delegate Appropriate)
+```
+User: "Review this PR for security issues" (400+ lines, auth changes)
+
+Main agent orchestrates **PARALLEL** (single message):
+- Task(subagent_type="security-reviewer", prompt="Audit auth changes...")
+- Task(subagent_type="code-reviewer", prompt="Review code quality...")
+- Task(subagent_type="accessibility-auditor", prompt="Check WCAG...")
+
+Main agent: Summarize findings, suggest fixes
+
+NOTE: Review tasks benefit from specialist expertise
+```
+
+### Realistic Daily Examples
+
+**Example 1**: "Add dark mode toggle"
+- Main agent: Codes directly (CSS, state management, persistence)
+- No delegation needed
+
+**Example 2**: "Optimize the slow dashboard"
+- Main agent orchestrates **PARALLEL**: performance-optimizer + database-architect (query optimization)
+- Main agent: Implements recommended optimizations
+
+**Example 3**: "Add Google sign-in"
+- Main agent orchestrates: auth-specialist (OAuth design)
+- Main agent: CODES the implementation
+
+**Example 4**: "Fix typo in README"
+- Main agent: Edits directly
+- No delegation needed
 
 ### Post-Task Self-Improvement
 ```
@@ -198,14 +463,31 @@ chore: update dependencies
 
 ## Intent Routing
 
-| User Says | Route To |
-|-----------|----------|
-| "I want...", "Add...", "Build..." | /full-feature |
-| "Fix...", "Broken...", "Error..." | /quick-fix |
-| "Review...", "Check..." | /review-changes |
-| "Secure?", "Safe?" | /security-review |
-| "Slow...", "Optimize..." | performance-optimizer |
-| "Test...", "Coverage..." | /test-coverage |
+### Main Agent Handles Directly (Code Immediately)
+
+| User Says | Main Agent Action |
+|-----------|-------------------|
+| "Add a login form" | Create component directly (standard React/form work) |
+| "Fix the button styling" | Edit CSS directly |
+| "Add API endpoint for users" | Create endpoint directly (standard REST CRUD) |
+| "Fix this bug" | Debug and fix directly |
+| "Add a profile page" | Create page/route directly |
+| "Update the README" | Edit documentation directly |
+| "Refactor this function" | Refactor directly (<5 files) |
+
+### Route to Workflows/Specialists (Complex/Specialized)
+
+| User Says | Route To | Why |
+|-----------|----------|-----|
+| "Add OAuth login" | auth-specialist | Complex auth pattern |
+| "Review this for security" | /security-review | Security audit needed |
+| "Is this code secure?" | security-reviewer | Security expertise |
+| "Optimize the dashboard" | performance-optimizer | Profiling needed |
+| "Set up CI/CD pipeline" | ci-cd-specialist | DevOps expertise |
+| "Design GraphQL schema" | graphql-specialist | GraphQL expertise |
+| "Add WebSocket chat" | websocket-specialist | Real-time expertise |
+| "Review this large PR" | /review-changes | Comprehensive review |
+| "Plan this feature" | /plan or planner | Architecture planning |
 
 ---
 

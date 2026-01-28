@@ -10,7 +10,7 @@ Templates are boilerplate files with placeholders that can be used to quickly sc
 
 ---
 
-## Available Templates (16)
+## Available Templates (19)
 
 ### Code Templates (.template files)
 
@@ -24,6 +24,8 @@ Templates are boilerplate files with placeholders that can be used to quickly sc
 | `form.tsx.template` | React Hook Form + Zod validation | Form components |
 | `guard.ts.template` | Auth guard/route protection | Middleware/guards |
 | `hook.ts.template` | Custom React hook | Custom hooks |
+| `context.tsx.template` | React Context provider | Global state management |
+| `hoc.tsx.template` | Higher-Order Component | Component composition |
 | `service.ts.template` | Business logic service class | Service layer |
 | `middleware.ts.template` | Express/Next.js middleware | API middleware |
 | `error-handler.ts.template` | Centralized error handling | Error management |

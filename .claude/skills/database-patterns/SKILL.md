@@ -45,6 +45,8 @@ CREATE INDEX idx_posts_user_id ON posts(user_id);
 **B-tree** (default): Equality and range queries (>, <, BETWEEN, ORDER BY)
 **Hash**: Equality only, faster for exact matches
 **GIN**: Arrays, JSONB, full-text search
+**GiST**: Geometric data, range types, nearest-neighbor searches
+**BRIN**: Large tables with natural ordering (time-series, append-only)
 **Partial**: Index subset matching WHERE condition
 **Covering**: INCLUDE columns to avoid table lookups
 
@@ -54,6 +56,8 @@ CREATE INDEX idx_posts_user_id ON posts(user_id);
 -- Partial index for active records only
 CREATE INDEX idx_active_users ON users(email) WHERE deleted_at IS NULL;
 ```
+
+**See `references/indexing-strategies.md` for detailed index types, column ordering rules, maintenance strategies, and common mistakes.**
 
 ---
 
@@ -67,6 +71,8 @@ CREATE INDEX idx_active_users ON users(email) WHERE deleted_at IS NULL;
 **N+1 Prevention**: Use JOINs, batch loading (DataLoader), or eager loading (Supabase client with select/join)
 
 **Pagination**: Cursor-based for large datasets (WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC LIMIT n)
+
+**See `references/postgresql-performance.md` for EXPLAIN interpretation, VACUUM strategies, connection pooling, partitioning, materialized views, and common performance pitfalls.**
 
 ---
 
@@ -98,6 +104,8 @@ CREATE INDEX idx_active_users ON users(email) WHERE deleted_at IS NULL;
 - Drop column: May require application deployment first
 
 **Large table batching**: Process in chunks with cursor pagination to avoid long locks
+
+**See `references/migration-patterns.md` for zero-downtime techniques, changing column types safely, backfilling strategies, rollback patterns, and blue-green deployment with migrations.**
 
 ---
 

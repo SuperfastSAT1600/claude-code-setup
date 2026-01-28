@@ -71,7 +71,12 @@
       "Bash(bash:*)",
       "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" status --short)",
       "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" status)",
-      "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" log --oneline -5)"
+      "Bash(git -C \"C:/Users/Jason/Documents/claude-code-setup\" log --oneline -5)",
+      "Bash(xargs:*)",
+      "Bash(python:*)",
+      "Bash(chmod:*)",
+      "Bash(tree:*)",
+      "Bash(BROWSER=none python:*)"
     ]
   },
   "model": "sonnet",

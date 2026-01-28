@@ -5,417 +5,283 @@ description: Provides comprehensive patterns for API design, database operations
 
 # Backend Patterns
 
-API design, database patterns, caching strategies, and backend architecture.
+API design, database patterns, caching strategies, and backend architecture guidance.
 
 ---
 
-## API Design
+## Overview
 
-### RESTful API Conventions
-```
-GET    /api/users          # List users
-GET    /api/users/:id      # Get user
-POST   /api/users          # Create user
-PUT    /api/users/:id      # Update user (full)
-PATCH  /api/users/:id      # Update user (partial)
-DELETE /api/users/:id      # Delete user
-```
+This skill provides architectural guidance for building robust backend systems. For detailed implementation examples, see the `references/` directory.
 
-### Request/Response Format
-```typescript
-// Request body
-POST /api/users
-{
-  "name": "Alice",
-  "email": "alice@example.com"
-}
+**Core principles:**
+- Use proven patterns for common problems
+- Choose the right pattern for your use case
+- Optimize for maintainability and performance
+- Follow security best practices
 
-// Success response
-HTTP 201 Created
-{
-  "data": {
-    "id": "123",
-    "name": "Alice",
-    "email": "alice@example.com",
-    "createdAt": "2024-01-20T10:00:00Z"
-  }
-}
+---
 
-// Error response
-HTTP 400 Bad Request
-{
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Invalid email format",
-    "fields": {
-      "email": "Must be a valid email address"
-    }
-  }
-}
-```
+## API Design Patterns
 
-### Pagination
-```typescript
-GET /api/users?page=2&limit=20
+### When to Use REST
+- CRUD operations
+- Resource-based data models
+- Standard HTTP semantics needed
+- Client needs caching support
 
-{
-  "data": [...],
-  "pagination": {
-    "page": 2,
-    "limit": 20,
-    "total": 150,
-    "totalPages": 8
-  }
-}
-```
+### Key Conventions
+- Use plural nouns for resources (`/users`, not `/user`)
+- Use HTTP methods correctly (GET read, POST create, PATCH update, DELETE remove)
+- Return consistent response formats
+- Include pagination for lists
+- Support filtering and sorting
 
-### Filtering & Sorting
-```
-GET /api/users?status=active&sort=-createdAt&search=alice
-```
+**Detailed examples:** See `references/api-patterns.md`
 
 ---
 
 ## Database Patterns
 
 ### Repository Pattern
-```typescript
-class UserRepository {
-  constructor(private db: Database) {}
-
-  async findById(id: string): Promise<User | null> {
-    return this.db.query('SELECT * FROM users WHERE id = $1', [id]);
-  }
-
-  async findByEmail(email: string): Promise<User | null> {
-    return this.db.query('SELECT * FROM users WHERE email = $1', [email]);
-  }
-
-  async create(user: CreateUserInput): Promise<User> {
-    const result = await this.db.query(
-      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-      [user.name, user.email]
-    );
-    return result.rows[0];
-  }
-}
-```
+**Use when:**
+- You need to abstract database access
+- Testing requires easy mocking
+- Multiple data sources might be used
+- Domain logic should be separated from data access
 
 ### Unit of Work Pattern
-```typescript
-class UnitOfWork {
-  private transactions: Transaction[] = [];
-
-  async execute<T>(work: () => Promise<T>): Promise<T> {
-    const transaction = await this.db.beginTransaction();
-    try {
-      const result = await work();
-      await transaction.commit();
-      return result;
-    } catch (error) {
-      await transaction.rollback();
-      throw error;
-    }
-  }
-}
-```
+**Use when:**
+- Multiple database operations must succeed or fail together
+- You need transactional consistency
+- Complex business operations span multiple entities
 
 ### Query Builder
-```typescript
-const users = await db
-  .select('id', 'name', 'email')
-  .from('users')
-  .where('status', '=', 'active')
-  .orderBy('createdAt', 'desc')
-  .limit(20)
-  .execute();
-```
+**Use when:**
+- Dynamic query construction is needed
+- Type safety for queries is desired
+- SQL complexity should be abstracted
+
+**Detailed examples:** See `references/database-operations.md`
 
 ---
 
 ## Caching Strategies
 
 ### Cache-Aside (Lazy Loading)
-```typescript
-async function getUser(id: string): Promise<User> {
-  // Check cache first
-  const cached = await cache.get(`user:${id}`);
-  if (cached) return cached;
-
-  // Cache miss - fetch from database
-  const user = await db.users.findById(id);
-
-  // Store in cache
-  await cache.set(`user:${id}`, user, { ttl: 3600 });
-
-  return user;
-}
-```
+**Best for:**
+- Read-heavy workloads
+- Data that doesn't change frequently
+- Cache misses are acceptable
 
 ### Write-Through Cache
-```typescript
-async function updateUser(id: string, data: Partial<User>): Promise<User> {
-  // Update database
-  const user = await db.users.update(id, data);
+**Best for:**
+- Write-heavy workloads
+- Consistency is critical
+- Data must be immediately available after write
 
-  // Update cache
-  await cache.set(`user:${id}`, user, { ttl: 3600 });
+### Cache Invalidation Strategies
+- **TTL-based**: Set expiration time (simple, may serve stale data)
+- **Event-based**: Invalidate on specific events (complex, always fresh)
+- **Pattern-based**: Delete keys matching pattern (flexible, requires careful key design)
 
-  return user;
-}
-```
-
-### Cache Invalidation
-```typescript
-async function deleteUser(id: string): Promise<void> {
-  await db.users.delete(id);
-  await cache.delete(`user:${id}`);
-  await cache.delete(`user:${id}:posts`); // Related caches
-}
-```
+**Detailed examples:** See `references/caching.md`
 
 ---
 
 ## Authentication & Authorization
 
-### JWT Authentication
-```typescript
-function generateToken(user: User): string {
-  return jwt.sign(
-    { userId: user.id, email: user.email },
-    process.env.JWT_SECRET,
-    { expiresIn: '15m' }
-  );
-}
+### JWT vs Session-Based
 
-function verifyToken(token: string): TokenPayload {
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET);
-  } catch (error) {
-    throw new UnauthorizedError('Invalid token');
-  }
-}
-```
+**Use JWT when:**
+- Building stateless APIs
+- Microservices architecture
+- Mobile/SPA clients
+- Horizontal scaling needed
 
-### RBAC (Role-Based Access Control)
-```typescript
-function requirePermission(permission: string) {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user;
+**Use Session-Based when:**
+- Server-side rendering
+- Easy token revocation needed
+- Simpler implementation preferred
 
-    if (!user.permissions.includes(permission)) {
-      throw new ForbiddenError(`Missing permission: ${permission}`);
-    }
+### Authorization Patterns
 
-    next();
-  };
-}
+**RBAC (Role-Based Access Control):**
+- Users have roles (admin, user, guest)
+- Roles have permissions
+- Good for most applications
 
-// Usage
-app.delete('/api/users/:id',
-  requirePermission('users:delete'),
-  deleteUserHandler
-);
-```
+**ABAC (Attribute-Based Access Control):**
+- Access based on user/resource attributes
+- More flexible, more complex
+- Good for fine-grained access control
+
+**Detailed examples:** See `references/authentication.md`
 
 ---
 
 ## Error Handling
 
-### Custom Error Classes
-```typescript
-class AppError extends Error {
-  constructor(
-    public message: string,
-    public statusCode: number,
-    public code: string
-  ) {
-    super(message);
-  }
-}
+### Error Hierarchy
+1. **Application Errors** (expected, handled gracefully)
+   - ValidationError
+   - NotFoundError
+   - UnauthorizedError
+   - ForbiddenError
 
-class NotFoundError extends AppError {
-  constructor(resource: string) {
-    super(`${resource} not found`, 404, 'NOT_FOUND');
-  }
-}
+2. **System Errors** (unexpected, logged and monitored)
+   - DatabaseError
+   - NetworkError
+   - ThirdPartyAPIError
 
-class ValidationError extends AppError {
-  constructor(public fields: Record<string, string>) {
-    super('Validation failed', 400, 'VALIDATION_ERROR');
-  }
-}
-```
+### Best Practices
+- Use custom error classes
+- Implement global error handler
+- Log errors with context
+- Never expose internal errors to clients
+- Return consistent error format
 
-### Global Error Handler
-```typescript
-app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-  if (error instanceof AppError) {
-    return res.status(error.statusCode).json({
-      error: {
-        code: error.code,
-        message: error.message,
-        ...(error instanceof ValidationError && { fields: error.fields })
-      }
-    });
-  }
-
-  // Log unexpected errors
-  logger.error('Unexpected error', { error, req });
-
-  // Don't expose internal errors
-  res.status(500).json({
-    error: {
-      code: 'INTERNAL_ERROR',
-      message: 'An unexpected error occurred'
-    }
-  });
-});
-```
+**Detailed examples:** See `references/error-handling.md`
 
 ---
 
-## Background Jobs
+## Background Jobs & Async Processing
 
 ### Job Queue Pattern
-```typescript
-interface Job {
-  id: string;
-  type: string;
-  data: any;
-  attempts: number;
-  maxAttempts: number;
-}
+**Use when:**
+- Long-running tasks (email sending, image processing)
+- Tasks that can be retried
+- Tasks should run asynchronously
+- System resilience is important
 
-class JobQueue {
-  async enqueue(type: string, data: any): Promise<Job> {
-    const job = {
-      id: generateId(),
-      type,
-      data,
-      attempts: 0,
-      maxAttempts: 3
-    };
-
-    await redis.lpush('jobs', JSON.stringify(job));
-    return job;
-  }
-
-  async process() {
-    while (true) {
-      const jobStr = await redis.brpop('jobs', 0);
-      const job = JSON.parse(jobStr);
-
-      try {
-        await this.handlers[job.type](job.data);
-      } catch (error) {
-        job.attempts++;
-        if (job.attempts < job.maxAttempts) {
-          await redis.lpush('jobs', JSON.stringify(job));
-        }
-      }
-    }
-  }
-}
-```
-
----
-
-## Rate Limiting
-
-### Token Bucket Algorithm
-```typescript
-class RateLimiter {
-  async checkLimit(key: string, limit: number, window: number): Promise<boolean> {
-    const now = Date.now();
-    const windowStart = now - window;
-
-    // Remove old entries
-    await redis.zremrangebyscore(key, 0, windowStart);
-
-    // Count requests in window
-    const count = await redis.zcard(key);
-
-    if (count >= limit) {
-      return false;
-    }
-
-    // Add current request
-    await redis.zadd(key, now, `${now}-${Math.random()}`);
-    await redis.expire(key, Math.ceil(window / 1000));
-
-    return true;
-  }
-}
-```
-
----
-
-## Microservices Communication
+**Key features:**
+- Job persistence
+- Retry mechanism
+- Priority queues
+- Dead letter queues
 
 ### Event-Driven Architecture
-```typescript
-interface Event {
-  type: string;
-  data: any;
-  timestamp: number;
-}
+**Use when:**
+- Microservices need to communicate
+- Systems should be decoupled
+- Real-time data processing needed
+- Event sourcing is required
 
-class EventBus {
-  async publish(event: Event): Promise<void> {
-    await kafka.send({
-      topic: event.type,
-      messages: [{ value: JSON.stringify(event) }]
-    });
-  }
+**Trade-offs:**
+- **Pros**: Loose coupling, scalability, resilience
+- **Cons**: Complexity, eventual consistency, debugging difficulty
 
-  async subscribe(eventType: string, handler: (event: Event) => void): Promise<void> {
-    await kafka.subscribe({ topic: eventType });
-    await kafka.run({
-      eachMessage: async ({ message }) => {
-        const event = JSON.parse(message.value.toString());
-        await handler(event);
-      }
-    });
-  }
-}
-```
+**Detailed examples:** See `references/background-jobs.md`
 
 ---
 
-## Database Optimization
+## Performance Optimization
 
-### Indexing Strategy
-```sql
--- Single column index
-CREATE INDEX idx_users_email ON users(email);
+### Database Optimization
+1. **Indexing**: Index frequently queried columns
+2. **Query optimization**: Avoid N+1 queries, use JOINs
+3. **Connection pooling**: Reuse database connections
+4. **Read replicas**: Distribute read load
 
--- Composite index (order matters)
-CREATE INDEX idx_orders_user_date ON orders(user_id, created_at DESC);
+### Caching Layers
+1. **Application cache**: In-memory (Redis, Memcached)
+2. **CDN**: Static assets, API responses
+3. **Database query cache**: Built-in caching
 
--- Partial index
-CREATE INDEX idx_active_users ON users(email) WHERE status = 'active';
+### Monitoring
+- Track response times
+- Monitor error rates
+- Watch database query performance
+- Alert on anomalies
 
--- Covering index (includes extra columns)
-CREATE INDEX idx_users_lookup ON users(email) INCLUDE (name, created_at);
+---
+
+## Architectural Patterns
+
+### Layered Architecture
+```
+Controllers (HTTP layer)
+    ↓
+Services (Business logic)
+    ↓
+Repositories (Data access)
+    ↓
+Database
 ```
 
-### Query Optimization
-```typescript
-// ❌ N+1 Query Problem
-const users = await db.users.findAll();
-for (const user of users) {
-  user.posts = await db.posts.findByUserId(user.id);
-}
+**Best for:**
+- Traditional web applications
+- Clear separation of concerns
+- Team with different expertise levels
 
-// ✅ Use JOIN or batch query
-const users = await db.query(`
-  SELECT u.*, json_agg(p.*) as posts
-  FROM users u
-  LEFT JOIN posts p ON p.user_id = u.id
-  GROUP BY u.id
-`);
-```
+### Microservices
+**Use when:**
+- Large, complex applications
+- Independent scaling needed
+- Multiple teams
+- Different technology stacks required
+
+**Challenges:**
+- Distributed system complexity
+- Service communication overhead
+- Data consistency across services
+- Deployment complexity
+
+### Serverless
+**Use when:**
+- Unpredictable traffic patterns
+- Event-driven workloads
+- Low operational overhead desired
+- Cost optimization for low traffic
+
+**Limitations:**
+- Cold start latency
+- Execution time limits
+- Vendor lock-in
+- Limited customization
+
+---
+
+## Decision Matrix
+
+| Scenario | Pattern | Rationale |
+|----------|---------|-----------|
+| Simple CRUD API | REST + Repository | Standard, well-understood |
+| Real-time updates | WebSocket + Event Bus | Bidirectional, low latency |
+| Heavy read load | Cache-Aside + Read Replicas | Reduce DB load |
+| Complex transactions | Unit of Work | Ensure consistency |
+| Async processing | Job Queue | Decouple, retry, scale |
+| Microservices comm | Event-Driven | Loose coupling |
+| User authentication | JWT + RBAC | Stateless, scalable |
+| File uploads | Background Jobs | Async, non-blocking |
+
+---
+
+## Quick Reference
+
+### API Design
+- REST conventions → `references/api-patterns.md`
+- Rate limiting → `references/api-patterns.md`
+
+### Database
+- Repository pattern → `references/database-operations.md`
+- Query optimization → `references/database-operations.md`
+- Indexing strategy → `references/database-operations.md`
+
+### Caching
+- Cache strategies → `references/caching.md`
+- Invalidation patterns → `references/caching.md`
+
+### Security
+- Authentication → `references/authentication.md`
+- Authorization → `references/authentication.md`
+
+### Async Processing
+- Job queues → `references/background-jobs.md`
+- Event-driven → `references/background-jobs.md`
+
+### Error Handling
+- Custom errors → `references/error-handling.md`
+- Global handler → `references/error-handling.md`
 
 ---
 
@@ -424,3 +290,4 @@ const users = await db.query(`
 - REST API Design: https://restfulapi.net/
 - Database Patterns: Martin Fowler's PoEAA
 - Microservices: https://microservices.io/patterns/
+- Caching Best Practices: https://aws.amazon.com/caching/best-practices/

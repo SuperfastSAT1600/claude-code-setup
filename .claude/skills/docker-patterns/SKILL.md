@@ -9,17 +9,57 @@ Best practices for containerization, multi-stage builds, and container orchestra
 
 ---
 
-## Dockerfile Best Practices
+## Core Principles
 
-### Multi-Stage Builds
+### 1. Minimize Image Size
+- Use Alpine or slim base images (`node:20-alpine` vs `node:20`)
+- Leverage multi-stage builds to exclude build dependencies
+- Remove package manager caches after installation
+- Use `.dockerignore` to exclude unnecessary files
+
+**Impact**: Reduces image size from ~1GB to ~180MB for Node.js apps.
+
+### 2. Optimize Layer Caching
+- Order Dockerfile instructions from least to most frequently changed
+- Copy dependency files (`package.json`) before source code
+- Combine related `RUN` commands to reduce layers
+
+**Pattern**: Copy `package.json` → Install deps → Copy source → Build
+
+### 3. Security First
+- Never run containers as root (`USER` directive)
+- Use minimal base images (alpine, slim, distroless)
+- Scan images for vulnerabilities (Docker Scout, Trivy)
+- Never hardcode secrets in Dockerfiles
+- Drop unnecessary Linux capabilities
+- Enable read-only filesystems where possible
+
+### 4. Production Readiness
+- Implement health checks (`HEALTHCHECK` directive)
+- Handle signals properly (use `dumb-init`)
+- Set resource limits (CPU, memory)
+- Use structured logging to stdout/stderr
+- Pin base image versions (avoid `latest`)
+
+---
+
+## When to Use Multi-Stage Builds
+
+### Use Cases
+1. **Compiled languages** (Go, Rust): Build in one stage, run in minimal runtime
+2. **Frontend apps**: Build with dev dependencies, serve with minimal runtime
+3. **Python/Node**: Install all deps for build, copy only production deps to final image
+4. **Separating build tools from runtime**: Exclude compilers, dev tools from production
+
+### Benefits
+- Smaller final images (only runtime dependencies)
+- Faster deployments (less data to transfer)
+- Reduced attack surface (fewer packages/tools)
+- Cleaner separation of build and runtime concerns
+
+### Basic Pattern
 ```dockerfile
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Stage 2: Builder
+# Stage 1: Build
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
@@ -27,66 +67,156 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Stage 3: Runner (minimal production image)
+# Stage 2: Runtime (minimal)
 FROM node:20-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production
-
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 appuser
-
-# Copy only necessary files
-COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./
-
-USER appuser
-EXPOSE 3000
+COPY --from=builder /app/node_modules ./node_modules
 CMD ["node", "dist/index.js"]
 ```
 
-### Layer Optimization
-```dockerfile
-# Bad: Cache invalidated on any file change
-COPY . .
-RUN npm install
+**See**: `references/multi-stage-builds.md` for complete examples
 
-# Good: Dependencies cached unless package.json changes
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
+---
+
+## Security Best Practices
+
+### Non-Root User
+Always create and switch to a non-root user:
+```dockerfile
+RUN addgroup --system --gid 1001 appgroup && \
+    adduser --system --uid 1001 appuser
+USER appuser
 ```
 
-### Security Hardening
+### Signal Handling
+Use `dumb-init` for proper signal forwarding:
 ```dockerfile
-FROM node:20-alpine
-
-# Don't run as root
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup
-
-# Remove unnecessary packages
-RUN apk --no-cache add dumb-init && \
-    rm -rf /var/cache/apk/*
-
-# Use dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
 ENTRYPOINT ["dumb-init", "--"]
-
-# Set proper permissions
-WORKDIR /app
-COPY --chown=appuser:appgroup . .
-
-USER appuser
 CMD ["node", "index.js"]
 ```
 
-### .dockerignore
+### Read-Only Filesystem
+```yaml
+# docker-compose.yml
+services:
+  app:
+    read_only: true
+    tmpfs:
+      - /tmp
+```
+
+### Vulnerability Scanning
+```bash
+# Scan before deployment
+docker scout cves myapp:latest
+trivy image --severity HIGH,CRITICAL myapp:latest
+```
+
+**See**: `references/security.md` for complete hardening guide
+
+---
+
+## Docker Compose Patterns
+
+### Development vs Production
+- **Development**: Use bind mounts for hot reload, expose all ports
+- **Production**: Use built images, health checks, resource limits, logging
+
+### Key Configurations
+- `depends_on` with `condition: service_healthy` for startup ordering
+- Named volumes for data persistence
+- Health checks for all services
+- Network isolation with custom networks
+- Override files (`docker-compose.override.yml`) for local development
+
+**See**: `references/docker-compose.md` for complete configurations
+
+---
+
+## Quick Reference
+
+### Layer Optimization
+```dockerfile
+# ❌ Bad: Invalidates cache on any file change
+COPY . .
+RUN npm install
+
+# ✅ Good: Cache deps unless package.json changes
+COPY package*.json ./
+RUN npm ci
+COPY . .
+```
+
+### Size Reduction
+| Base Image | Size |
+|------------|------|
+| `node:20` | ~1GB |
+| `node:20-slim` | ~250MB |
+| `node:20-alpine` | ~180MB |
+| `distroless/nodejs20` | ~130MB |
+
+### Common Commands
+```bash
+# Build with cache
+docker build -t myapp:latest .
+
+# Build without cache
+docker build --no-cache -t myapp:latest .
+
+# Build specific stage
+docker build --target builder -t myapp:builder .
+
+# Run with docker compose
+docker compose up -d
+
+# View logs
+docker compose logs -f app
+
+# Clean up
+docker system prune -a
+```
+
+---
+
+## Health Checks
+
+### Dockerfile Health Check
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+```
+
+### Compose Health Check
+```yaml
+services:
+  app:
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+```
+
+### Health Endpoint Pattern
+Expose `/health` endpoint that checks:
+- Application is running
+- Database connection is alive
+- Required services are reachable
+- Return 200 if healthy, 503 if unhealthy
+
+**See**: `references/dockerfile-examples.md` for implementation
+
+---
+
+## .dockerignore Template
+
+Essential files to exclude:
 ```
 # Dependencies
 node_modules
-npm-debug.log
 
 # Build outputs
 dist
@@ -95,422 +225,95 @@ build
 
 # Development files
 .git
-.gitignore
 *.md
 Dockerfile*
-docker-compose*
 
-# Environment files
+# Secrets
 .env*
 !.env.example
 
-# Test files
+# Tests
 tests
-__tests__
-*.test.ts
 coverage
-
-# IDE/Editor
-.vscode
-.idea
-*.swp
 ```
 
 ---
 
-## Common Patterns
+## Debugging
 
-### Node.js Application
-```dockerfile
-FROM node:20-alpine AS base
-
-# Install dependencies only when needed
-FROM base AS deps
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-
-# Build the application
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build
-
-# Production image
-FROM base AS runner
-WORKDIR /app
-ENV NODE_ENV=production
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
-EXPOSE 3000
-ENV PORT=3000
-CMD ["node", "server.js"]
-```
-
-### Python Application
-```dockerfile
-FROM python:3.11-slim AS base
-
-# Build stage
-FROM base AS builder
-WORKDIR /app
-
-# Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create virtual environment
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Production stage
-FROM base AS runner
-WORKDIR /app
-
-# Copy virtual environment
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Create non-root user
-RUN useradd --create-home appuser
-USER appuser
-
-COPY --chown=appuser:appuser . .
-
-EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
-```
-
-### Go Application
-```dockerfile
-# Build stage
-FROM golang:1.21-alpine AS builder
-WORKDIR /app
-
-# Download dependencies
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Build
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/server
-
-# Production stage (distroless for minimal attack surface)
-FROM gcr.io/distroless/static-debian11
-COPY --from=builder /app/server /
-EXPOSE 8080
-USER nonroot:nonroot
-ENTRYPOINT ["/server"]
-```
-
----
-
-## Docker Compose
-
-### Development Setup
-```yaml
-# docker-compose.yml
-version: "3.9"
-
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    volumes:
-      - .:/app
-      - /app/node_modules  # Preserve node_modules from container
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgres://user:pass@db:5432/myapp
-    depends_on:
-      db:
-        condition: service_healthy
-
-  db:
-    image: postgres:15-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=myapp
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d myapp"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    volumes:
-      - redis_data:/data
-
-volumes:
-  postgres_data:
-  redis_data:
-```
-
-### Production Setup
-```yaml
-# docker-compose.prod.yml
-version: "3.9"
-
-services:
-  app:
-    image: myapp:${VERSION:-latest}
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-        reservations:
-          cpus: "0.25"
-          memory: 256M
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-```
-
-### Override Files
-```yaml
-# docker-compose.override.yml (for local development)
-version: "3.9"
-
-services:
-  app:
-    build:
-      context: .
-      target: development
-    volumes:
-      - .:/app:delegated
-    command: npm run dev
-```
-
----
-
-## Health Checks
-
-### Application Health Check
-```dockerfile
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
-```
-
-### Health Endpoint
-```typescript
-// Express health endpoint
-app.get('/health', async (req, res) => {
-  const healthcheck = {
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    checks: {
-      database: await checkDatabase(),
-      redis: await checkRedis(),
-    },
-  };
-
-  const isHealthy = Object.values(healthcheck.checks)
-    .every(check => check.status === 'ok');
-
-  res.status(isHealthy ? 200 : 503).json(healthcheck);
-});
-
-async function checkDatabase() {
-  try {
-    await db.$queryRaw`SELECT 1`;
-    return { status: 'ok' };
-  } catch (error) {
-    return { status: 'error', message: error.message };
-  }
-}
-```
-
----
-
-## Image Optimization
-
-### Reducing Image Size
-```dockerfile
-# Use specific slim/alpine versions
-FROM node:20-alpine  # ~180MB vs ~1GB for full
-FROM python:3.11-slim  # ~150MB vs ~1GB for full
-
-# Remove unnecessary files after installation
-RUN apt-get update && apt-get install -y \
-    package1 \
-    package2 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Clean npm cache
-RUN npm ci --only=production && npm cache clean --force
-
-# Use multi-stage builds to exclude build tools
-```
-
-### Size Comparison
-| Base Image | Size |
-|------------|------|
-| node:20 | ~1GB |
-| node:20-slim | ~250MB |
-| node:20-alpine | ~180MB |
-| distroless/nodejs20 | ~130MB |
-
----
-
-## Container Networking
-
-### Bridge Network (Default)
-```yaml
-services:
-  app:
-    networks:
-      - app-network
-
-  db:
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-```
-
-### External Network
-```yaml
-networks:
-  shared-network:
-    external: true
-
-services:
-  app:
-    networks:
-      - shared-network
-```
-
-### Network Aliases
-```yaml
-services:
-  primary-db:
-    image: postgres:15
-    networks:
-      app-network:
-        aliases:
-          - database
-          - postgres
-```
-
----
-
-## Volume Management
-
-### Named Volumes
-```yaml
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-
-services:
-  db:
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-```
-
-### Bind Mounts (Development)
-```yaml
-services:
-  app:
-    volumes:
-      # Source code (for hot reload)
-      - ./src:/app/src:delegated
-      # Exclude node_modules
-      - /app/node_modules
-```
-
-### tmpfs (In-Memory)
-```yaml
-services:
-  app:
-    tmpfs:
-      - /tmp
-      - /app/cache
-```
-
----
-
-## Security Best Practices
-
-### Run as Non-Root
-```dockerfile
-# Create user during build
-RUN addgroup --system --gid 1001 appgroup \
-    && adduser --system --uid 1001 --ingroup appgroup appuser
-
-# Switch to non-root user
-USER appuser
-```
-
-### Read-Only Filesystem
-```yaml
-services:
-  app:
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /app/logs
-```
-
-### Capabilities
-```yaml
-services:
-  app:
-    cap_drop:
-      - ALL
-    cap_add:
-      - NET_BIND_SERVICE  # Only if needed
-```
-
-### Security Scanning
+### Quick Diagnostics
 ```bash
-# Scan image for vulnerabilities
-docker scout cves myapp:latest
+# Shell into running container
+docker exec -it container_name sh
 
-# Scan with Trivy
-trivy image myapp:latest
+# View logs
+docker logs -f container_name
 
-# Scan during build
-docker build --secret id=npm,src=$HOME/.npmrc .
+# Inspect container
+docker inspect container_name
+
+# Check resource usage
+docker stats container_name
+
+# Run health check manually
+docker exec container_name wget -O- http://localhost:3000/health
+```
+
+**See**: `references/debugging.md` for complete troubleshooting guide
+
+---
+
+## Common Pitfalls
+
+### 1. Using `latest` Tag
+❌ **Bad**: Unpredictable builds, hard to rollback
+```dockerfile
+FROM node:latest
+```
+
+✅ **Good**: Pin specific versions
+```dockerfile
+FROM node:20.11.0-alpine3.19
+```
+
+### 2. Running as Root
+❌ **Bad**: Security risk
+```dockerfile
+FROM node:20-alpine
+CMD ["node", "index.js"]
+```
+
+✅ **Good**: Create non-root user
+```dockerfile
+FROM node:20-alpine
+RUN adduser -D appuser
+USER appuser
+CMD ["node", "index.js"]
+```
+
+### 3. Hardcoded Secrets
+❌ **Bad**: Secrets in image layers
+```dockerfile
+ENV API_KEY=sk-abc123
+```
+
+✅ **Good**: Use environment variables or Docker secrets
+```yaml
+services:
+  app:
+    env_file: .env
+```
+
+### 4. Missing Health Checks
+❌ **Bad**: No health monitoring
+```dockerfile
+CMD ["node", "index.js"]
+```
+
+✅ **Good**: Add health check
+```dockerfile
+HEALTHCHECK CMD wget --spider http://localhost:3000/health || exit 1
+CMD ["node", "index.js"]
 ```
 
 ---
@@ -524,64 +327,29 @@ docker build --secret id=npm,src=$HOME/.npmrc .
   with:
     context: .
     push: true
-    tags: |
-      ghcr.io/${{ github.repository }}:${{ github.sha }}
-      ghcr.io/${{ github.repository }}:latest
+    tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
     cache-from: type=gha
     cache-to: type=gha,mode=max
 ```
 
-### Build Cache
+### BuildKit Cache Mounts
 ```dockerfile
-# Use BuildKit cache mounts
+# Cache npm packages across builds
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --only=production
-
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt
 ```
 
 ---
 
-## Debugging
+## Reference Documentation
 
-### Interactive Shell
-```bash
-# Run shell in running container
-docker exec -it container_name sh
+- **Dockerfile Examples**: `references/dockerfile-examples.md` - Complete examples for Node.js, Python, Go
+- **Multi-Stage Builds**: `references/multi-stage-builds.md` - Detailed multi-stage patterns and optimization
+- **Docker Compose**: `references/docker-compose.md` - Development and production configurations
+- **Security**: `references/security.md` - Complete security hardening guide
+- **Debugging**: `references/debugging.md` - Troubleshooting commands and techniques
 
-# Run shell in new container
-docker run -it --rm myimage sh
-```
-
-### View Logs
-```bash
-# Follow logs
-docker logs -f container_name
-
-# Last 100 lines
-docker logs --tail 100 container_name
-
-# With timestamps
-docker logs -t container_name
-```
-
-### Inspect
-```bash
-# Container details
-docker inspect container_name
-
-# Image layers
-docker history myimage
-
-# Network
-docker network inspect bridge
-```
-
----
-
-## Resources
-
+### External Resources
 - Docker Best Practices: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
 - Dockerfile Reference: https://docs.docker.com/engine/reference/builder/
 - Docker Compose: https://docs.docker.com/compose/

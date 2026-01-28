@@ -59,3 +59,8 @@ const displayName = currentUser?.name || 'Anonymous';
 - Make simplifications directly
 - Run tests after changes
 - Report: files modified, what was simplified, lines removed
+
+## Resources
+
+- React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for extracting logic)
+- React Context Template: `.claude/templates/variants/react/context.tsx.template` (for state management)

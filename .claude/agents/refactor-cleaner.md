@@ -72,3 +72,9 @@ async function fetchUser(id: string): Promise<User> {
 3. **Run Tests Often**: After every change
 4. **Commit Frequently**: Working state after each refactor
 5. **No Behavior Changes**: Refactoring ≠ new features
+
+## Resources
+
+- React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for modernizing to hooks)
+- React Context Template: `.claude/templates/variants/react/context.tsx.template` (for context providers)
+- React HOC Template: `.claude/templates/variants/react/hoc.tsx.template` (for higher-order components)

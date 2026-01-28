@@ -46,9 +46,12 @@ Just describe what you want in plain English:
 
 ### Main Agent Templates
 
-When creating components, the main agent uses:
+When creating React code, the main agent uses:
 - `variants/react/component.tsx.template` - React components with TypeScript
 - `variants/react/form.tsx.template` - Form components with React Hook Form + Zod
+- `variants/react/hook.ts.template` - Custom React hooks with proper cleanup
+- `variants/react/context.tsx.template` - React Context providers with type safety
+- `variants/react/hoc.tsx.template` - Higher-Order Components with ref forwarding
 
 ---
 

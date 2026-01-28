@@ -54,3 +54,4 @@ Profile, analyze, and optimize application performance across frontend, backend,
 - Performance Audit: `.claude/checklists/performance-audit.md`
 - Frontend Patterns: `.claude/skills/frontend-patterns.md`
 - Backend Patterns: `.claude/skills/backend-patterns.md`
+- React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for performance hooks like useMemo, useCallback)

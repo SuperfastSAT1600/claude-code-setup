@@ -72,6 +72,10 @@ export const defaultLocale: Locale = 'en';
 }
 ```
 
+## Resources
+
+- React Context Template: `.claude/templates/variants/react/context.tsx.template` (for i18n context provider)
+
 ## Usage in Components
 
 ```typescript

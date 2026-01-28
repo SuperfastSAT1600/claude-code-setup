@@ -5,549 +5,174 @@ description: Comprehensive guide to React best practices including component pat
 
 # React Patterns
 
-Comprehensive guide to React best practices, hooks, and component patterns.
+Quick reference guide to React best practices, hooks, and component patterns. For detailed implementations, see the `references/` directory.
 
 ---
 
-## Component Patterns
+## When to Use Each Pattern
 
-### Functional Components
-```tsx
-// ✅ Modern functional component
-interface UserCardProps {
-  user: User;
-  onSelect?: (user: User) => void;
-}
+| Pattern | Use When | Reference |
+|---------|----------|-----------|
+| **Functional Components** | All new components (default choice) | [component-patterns.md](references/component-patterns.md) |
+| **Compound Components** | Building reusable UI kits (Tabs, Accordion, Select) | [component-patterns.md](references/component-patterns.md) |
+| **Render Props** | Sharing stateful logic across components (rare, prefer hooks) | [component-patterns.md](references/component-patterns.md) |
+| **Custom Hooks** | Extracting reusable logic, side effects, or state | [custom-hooks.md](references/custom-hooks.md) |
+| **useState** | Simple, independent state values | [state-management.md](references/state-management.md) |
+| **useReducer** | Complex state with multiple related actions | [state-management.md](references/state-management.md) |
+| **Context** | Global state (auth, theme, language) | [state-management.md](references/state-management.md) |
+| **React.memo** | Prevent re-renders of expensive components | [performance.md](references/performance.md) |
+| **useMemo** | Cache expensive calculations | [performance.md](references/performance.md) |
+| **useCallback** | Stabilize callback references for memoized children | [performance.md](references/performance.md) |
+| **Lazy/Suspense** | Code splitting heavy components or routes | [performance.md](references/performance.md) |
+| **Virtual Lists** | Rendering 1000+ list items | [performance.md](references/performance.md) |
+| **Error Boundaries** | Catching rendering errors in component trees | [error-handling.md](references/error-handling.md) |
+| **React Hook Form** | Complex forms with validation | [form-handling.md](references/form-handling.md) |
 
-export function UserCard({ user, onSelect }: UserCardProps) {
-  const handleClick = () => onSelect?.(user);
+---
 
-  return (
-    <div className="user-card" onClick={handleClick}>
-      <Avatar src={user.avatar} alt={user.name} />
-      <h3>{user.name}</h3>
-      <p>{user.email}</p>
-    </div>
-  );
-}
-```
+## Component Patterns Overview
+
+### Functional Components (Default)
+- Modern React standard
+- Use TypeScript interfaces for props
+- Return JSX directly
+- See: [component-patterns.md](references/component-patterns.md)
 
 ### Compound Components
-```tsx
-// Parent manages state, children receive via context
-const TabsContext = createContext<TabsContextValue | null>(null);
+- For reusable UI component libraries (Tabs, Accordion, Menu)
+- Parent manages shared state via Context
+- Children access context via custom hook
+- Attach children to parent: `Parent.Child = Child`
+- See: [component-patterns.md](references/component-patterns.md)
 
-function Tabs({ children, defaultValue }: TabsProps) {
-  const [activeTab, setActiveTab] = useState(defaultValue);
-
-  return (
-    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
-      <div className="tabs">{children}</div>
-    </TabsContext.Provider>
-  );
-}
-
-function TabList({ children }: { children: ReactNode }) {
-  return <div className="tab-list">{children}</div>;
-}
-
-function Tab({ value, children }: TabProps) {
-  const { activeTab, setActiveTab } = useTabsContext();
-
-  return (
-    <button
-      className={activeTab === value ? 'active' : ''}
-      onClick={() => setActiveTab(value)}
-    >
-      {children}
-    </button>
-  );
-}
-
-function TabPanel({ value, children }: TabPanelProps) {
-  const { activeTab } = useTabsContext();
-  if (activeTab !== value) return null;
-  return <div className="tab-panel">{children}</div>;
-}
-
-// Attach sub-components
-Tabs.List = TabList;
-Tabs.Tab = Tab;
-Tabs.Panel = TabPanel;
-
-// Usage
-<Tabs defaultValue="profile">
-  <Tabs.List>
-    <Tabs.Tab value="profile">Profile</Tabs.Tab>
-    <Tabs.Tab value="settings">Settings</Tabs.Tab>
-  </Tabs.List>
-  <Tabs.Panel value="profile">Profile content</Tabs.Panel>
-  <Tabs.Panel value="settings">Settings content</Tabs.Panel>
-</Tabs>
-```
-
-### Render Props
-```tsx
-interface MouseTrackerProps {
-  children: (position: { x: number; y: number }) => ReactNode;
-}
-
-function MouseTracker({ children }: MouseTrackerProps) {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
-  }, []);
-
-  return <>{children(position)}</>;
-}
-
-// Usage
-<MouseTracker>
-  {({ x, y }) => <div>Mouse at: {x}, {y}</div>}
-</MouseTracker>
-```
+### Render Props (Legacy)
+- Sharing stateful logic by passing function as child
+- Mostly replaced by custom hooks
+- Use hooks instead unless integrating with class components
+- See: [component-patterns.md](references/component-patterns.md)
 
 ---
 
-## Hooks Patterns
+## Custom Hooks Quick Reference
 
-### Custom Hooks
-```tsx
-// useLocalStorage - Persist state to localStorage
-function useLocalStorage<T>(key: string, initialValue: T) {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch {
-      return initialValue;
-    }
-  });
+| Hook | Purpose | Reference |
+|------|---------|-----------|
+| `useLocalStorage` | Persist state to localStorage | [custom-hooks.md](references/custom-hooks.md) |
+| `useDebounce` | Debounce rapidly changing values (search input) | [custom-hooks.md](references/custom-hooks.md) |
+| `useFetch` | Data fetching with loading/error states | [custom-hooks.md](references/custom-hooks.md) |
+| `useOnClickOutside` | Detect clicks outside element (dropdowns, modals) | [custom-hooks.md](references/custom-hooks.md) |
 
-  const setValue = (value: T | ((val: T) => T)) => {
-    try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
-      setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error('useLocalStorage error:', error);
-    }
-  };
+**When to create a custom hook:**
+- Logic used in 2+ components
+- Complex useEffect with cleanup
+- Combining multiple built-in hooks
+- Abstracting third-party library integration
 
-  return [storedValue, setValue] as const;
-}
-
-// Usage
-const [theme, setTheme] = useLocalStorage('theme', 'light');
-```
-
-```tsx
-// useDebounce - Debounce rapidly changing values
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
-// Usage
-const [searchTerm, setSearchTerm] = useState('');
-const debouncedSearch = useDebounce(searchTerm, 300);
-
-useEffect(() => {
-  if (debouncedSearch) {
-    searchAPI(debouncedSearch);
-  }
-}, [debouncedSearch]);
-```
-
-```tsx
-// useFetch - Data fetching with loading/error states
-function useFetch<T>(url: string) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) throw new Error('Network response was not ok');
-        const json = await response.json();
-        setData(json);
-        setError(null);
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          setError(err as Error);
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-    return () => controller.abort();
-  }, [url]);
-
-  return { data, loading, error };
-}
-```
-
-```tsx
-// useOnClickOutside - Detect clicks outside element
-function useOnClickOutside(
-  ref: RefObject<HTMLElement>,
-  handler: (event: MouseEvent | TouchEvent) => void
-) {
-  useEffect(() => {
-    const listener = (event: MouseEvent | TouchEvent) => {
-      if (!ref.current || ref.current.contains(event.target as Node)) {
-        return;
-      }
-      handler(event);
-    };
-
-    document.addEventListener('mousedown', listener);
-    document.addEventListener('touchstart', listener);
-
-    return () => {
-      document.removeEventListener('mousedown', listener);
-      document.removeEventListener('touchstart', listener);
-    };
-  }, [ref, handler]);
-}
-
-// Usage
-const dropdownRef = useRef<HTMLDivElement>(null);
-useOnClickOutside(dropdownRef, () => setIsOpen(false));
-```
+See: [custom-hooks.md](references/custom-hooks.md)
 
 ---
 
-## State Management
+## State Management Decision Tree
 
-### useState vs useReducer
-```tsx
-// useState - Simple state
-const [count, setCount] = useState(0);
-const [user, setUser] = useState<User | null>(null);
+```
+Is state local to one component?
+  YES → useState
 
-// useReducer - Complex state with multiple actions
-interface State {
-  status: 'idle' | 'loading' | 'success' | 'error';
-  data: User | null;
-  error: Error | null;
-}
+Is state complex with multiple related actions?
+  YES → useReducer
 
-type Action =
-  | { type: 'FETCH_START' }
-  | { type: 'FETCH_SUCCESS'; payload: User }
-  | { type: 'FETCH_ERROR'; payload: Error };
-
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case 'FETCH_START':
-      return { ...state, status: 'loading', error: null };
-    case 'FETCH_SUCCESS':
-      return { status: 'success', data: action.payload, error: null };
-    case 'FETCH_ERROR':
-      return { status: 'error', data: null, error: action.payload };
-    default:
-      return state;
-  }
-}
-
-const [state, dispatch] = useReducer(reducer, {
-  status: 'idle',
-  data: null,
-  error: null,
-});
+Is state needed across many components?
+  YES → Context + useContext
+  (Consider React Query for server state)
 ```
 
-### Context for Global State
-```tsx
-// AuthContext example
-interface AuthContextValue {
-  user: User | null;
-  login: (credentials: Credentials) => Promise<void>;
-  logout: () => void;
-  isLoading: boolean;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Check for existing session
-    checkAuth().then(setUser).finally(() => setIsLoading(false));
-  }, []);
-
-  const login = async (credentials: Credentials) => {
-    const user = await authAPI.login(credentials);
-    setUser(user);
-  };
-
-  const logout = () => {
-    authAPI.logout();
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
-}
-```
+See: [state-management.md](references/state-management.md)
 
 ---
 
-## Performance Optimization
+## Performance Optimization Decision Tree
 
-### Memoization
-```tsx
-// React.memo - Prevent unnecessary re-renders
-const ExpensiveList = memo(function ExpensiveList({ items }: { items: Item[] }) {
-  return (
-    <ul>
-      {items.map(item => (
-        <li key={item.id}>{item.name}</li>
-      ))}
-    </ul>
-  );
-});
+```
+Component re-renders unnecessarily?
+  → Wrap with React.memo
 
-// useMemo - Memoize expensive calculations
-function DataTable({ data, filter }: DataTableProps) {
-  const filteredData = useMemo(() => {
-    return data.filter(item => item.name.includes(filter));
-  }, [data, filter]);
+Expensive calculation on every render?
+  → useMemo
 
-  return <Table data={filteredData} />;
-}
+Callback causing child re-renders?
+  → useCallback
 
-// useCallback - Memoize callbacks
-function ParentComponent() {
-  const [count, setCount] = useState(0);
+Large component bundle?
+  → lazy + Suspense
 
-  const handleClick = useCallback(() => {
-    setCount(c => c + 1);
-  }, []);
-
-  return <ChildComponent onClick={handleClick} />;
-}
+Long list (100+ items)?
+  → Virtual list (react-window)
 ```
 
-### Code Splitting
-```tsx
-// Lazy loading components
-const HeavyComponent = lazy(() => import('./HeavyComponent'));
-
-function App() {
-  return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <HeavyComponent />
-    </Suspense>
-  );
-}
-
-// Route-based splitting
-const routes = [
-  {
-    path: '/dashboard',
-    element: lazy(() => import('./pages/Dashboard')),
-  },
-  {
-    path: '/settings',
-    element: lazy(() => import('./pages/Settings')),
-  },
-];
-```
-
-### Virtual Lists
-```tsx
-// Using react-window for large lists
-import { FixedSizeList } from 'react-window';
-
-function VirtualizedList({ items }: { items: Item[] }) {
-  const Row = ({ index, style }: { index: number; style: CSSProperties }) => (
-    <div style={style}>{items[index].name}</div>
-  );
-
-  return (
-    <FixedSizeList
-      height={400}
-      width="100%"
-      itemCount={items.length}
-      itemSize={35}
-    >
-      {Row}
-    </FixedSizeList>
-  );
-}
-```
+See: [performance.md](references/performance.md)
 
 ---
 
 ## Error Handling
 
-### Error Boundaries
-```tsx
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
-
-class ErrorBoundary extends Component<
-  { children: ReactNode; fallback?: ReactNode },
-  ErrorBoundaryState
-> {
-  state: ErrorBoundaryState = { hasError: false, error: null };
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('Error caught:', error, info);
-    // Log to error tracking service
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return this.props.fallback ?? <DefaultErrorFallback error={this.state.error} />;
-    }
-    return this.props.children;
-  }
-}
-
-// Usage
-<ErrorBoundary fallback={<ErrorPage />}>
-  <RiskyComponent />
-</ErrorBoundary>
-```
+- **Error Boundaries**: Catch rendering errors in component trees
+- Must be class components (no hook equivalent yet)
+- Place at strategic points: page level, feature boundaries
+- Provide fallback UI
+- See: [error-handling.md](references/error-handling.md)
 
 ---
 
 ## Form Handling
 
-### Controlled Forms with React Hook Form
-```tsx
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-const schema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-});
-
-type FormData = z.infer<typeof schema>;
-
-function LoginForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit = async (data: FormData) => {
-    await loginUser(data);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        {...register('email')}
-        placeholder="Email"
-      />
-      {errors.email && <span>{errors.email.message}</span>}
-
-      <input
-        {...register('password')}
-        type="password"
-        placeholder="Password"
-      />
-      {errors.password && <span>{errors.password.message}</span>}
-
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Logging in...' : 'Login'}
-      </button>
-    </form>
-  );
-}
-```
+- **Simple forms**: Controlled components with useState
+- **Complex forms**: React Hook Form + Zod validation
+- **Validation**: Schema-first with Zod (type-safe)
+- **Submission**: Handle loading/error states
+- See: [form-handling.md](references/form-handling.md)
 
 ---
 
 ## Testing Patterns
 
-### Component Testing
-```tsx
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-
-describe('LoginForm', () => {
-  it('shows validation errors for invalid input', async () => {
-    render(<LoginForm />);
-
-    await userEvent.click(screen.getByRole('button', { name: /login/i }));
-
-    expect(await screen.findByText(/invalid email/i)).toBeInTheDocument();
-  });
-
-  it('submits form with valid data', async () => {
-    const onSubmit = jest.fn();
-    render(<LoginForm onSubmit={onSubmit} />);
-
-    await userEvent.type(screen.getByPlaceholderText(/email/i), 'test@example.com');
-    await userEvent.type(screen.getByPlaceholderText(/password/i), 'password123');
-    await userEvent.click(screen.getByRole('button', { name: /login/i }));
-
-    await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-      });
-    });
-  });
-});
-```
+- **Testing Library**: Test behavior, not implementation
+- **User interactions**: Use `userEvent` over `fireEvent`
+- **Async**: Use `waitFor`, `findBy*` queries
+- **AAA pattern**: Arrange, Act, Assert
+- See: [testing.md](references/testing.md)
 
 ---
 
 ## Best Practices Summary
 
 1. **Prefer functional components** with hooks
-2. **Extract custom hooks** for reusable logic
-3. **Use TypeScript** for props interfaces
-4. **Memoize** expensive calculations and callbacks
-5. **Lazy load** heavy components
-6. **Handle errors** with Error Boundaries
-7. **Use form libraries** for complex forms
-8. **Test behavior**, not implementation
+2. **Extract custom hooks** for reusable logic (2+ uses)
+3. **Use TypeScript** for all props interfaces
+4. **Memoize selectively** - only when profiling shows benefit
+5. **Lazy load** route-level components
+6. **Wrap risky components** in Error Boundaries
+7. **Use form libraries** for complex forms (React Hook Form + Zod)
+8. **Test user behavior**, not implementation details
+9. **Clean up effects** - cancel requests, remove listeners
+10. **Use Context sparingly** - prefer composition or React Query for server state
+
+---
+
+## Quick Decision Guide
+
+| I need to... | Use... |
+|--------------|--------|
+| Build a component | Functional component + TypeScript |
+| Share logic between components | Custom hook |
+| Build a reusable UI kit | Compound components |
+| Manage form state | React Hook Form + Zod |
+| Handle global state | Context (or React Query for server state) |
+| Optimize performance | Profile first, then memo/useMemo/useCallback |
+| Split code | lazy() + Suspense |
+| Render long lists | react-window |
+| Handle errors | Error Boundary |
+| Test components | Testing Library + userEvent |
+
+---
+
+For detailed implementations and code examples, see the `references/` directory.

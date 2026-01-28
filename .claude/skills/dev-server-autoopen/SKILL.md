@@ -65,6 +65,65 @@ Modern development servers can automatically open applications in the default br
 **File**: `webpack.config.js`
 - Set `devServer.open: true`
 
+## Script Usage
+
+### Python Browser Opener (Included)
+
+This skill includes a cross-platform Python script for opening browsers automatically.
+
+**Location**: `scripts/open_browser.py`
+
+**Usage**:
+```bash
+python scripts/open_browser.py              # Opens http://localhost:3000
+python scripts/open_browser.py 5173         # Opens http://localhost:5173
+python scripts/open_browser.py 8080 /admin  # Opens http://localhost:8080/admin
+```
+
+**Features**:
+- Cross-platform (Windows, macOS, Linux)
+- Waits for server to be ready before opening
+- Respects `BROWSER=none` and `CI=true` environment variables
+- Python 3.6+ compatible, no dependencies
+- Handles common dev server ports
+
+**Integration Examples**:
+
+```json
+{
+  "scripts": {
+    "dev": "vite & python .claude/skills/dev-server-autoopen/scripts/open_browser.py 5173",
+    "dev:next": "next dev & python .claude/skills/dev-server-autoopen/scripts/open_browser.py 3000",
+    "dev:custom": "node server.js & python .claude/skills/dev-server-autoopen/scripts/open_browser.py 8080 /dashboard"
+  }
+}
+```
+
+**Concurrent Mode** (recommended for better reliability):
+```json
+{
+  "scripts": {
+    "dev": "concurrently \"vite\" \"python .claude/skills/dev-server-autoopen/scripts/open_browser.py 5173\"",
+    "dev:next": "concurrently \"next dev\" \"python .claude/skills/dev-server-autoopen/scripts/open_browser.py 3000\""
+  }
+}
+```
+
+**Direct Shell Usage**:
+```bash
+# Windows
+start /B npm run dev & python .claude/skills/dev-server-autoopen/scripts/open_browser.py 3000
+
+# macOS/Linux
+npm run dev & python .claude/skills/dev-server-autoopen/scripts/open_browser.py 3000
+```
+
+**Disable Opening**:
+```bash
+BROWSER=none npm run dev
+CI=true npm run dev
+```
+
 ## Custom Solutions
 
 ### Using 'open' Package

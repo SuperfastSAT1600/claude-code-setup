@@ -5,599 +5,244 @@ description: Provides best practices for Node.js backend development including l
 
 # Node.js Patterns
 
-Best practices for Node.js backend development.
+Best practices for Node.js backend development. This guide provides high-level patterns and procedural guidance. See `references/` for detailed implementation examples.
 
 ---
 
-## Project Structure
+## Quick Reference
 
-### Layered Architecture
-```
-src/
-├── config/                    # Configuration
-│   ├── database.ts
-│   ├── env.ts
-│   └── index.ts
-├── controllers/               # Request handlers
-│   ├── userController.ts
-│   └── orderController.ts
-├── services/                  # Business logic
-│   ├── userService.ts
-│   └── orderService.ts
-├── repositories/              # Data access
-│   ├── userRepository.ts
-│   └── orderRepository.ts
-├── middleware/                # Express middleware
-│   ├── auth.ts
-│   ├── errorHandler.ts
-│   └── validation.ts
-├── routes/                    # Route definitions
-│   ├── userRoutes.ts
-│   └── index.ts
-├── models/                    # Data models/types
-│   └── user.ts
-├── utils/                     # Utility functions
-│   ├── logger.ts
-│   └── helpers.ts
-├── app.ts                     # Express app setup
-└── server.ts                  # Server entry point
-```
+| Pattern | Use For | Reference |
+|---------|---------|-----------|
+| Layered Architecture | Project structure, separation of concerns | `references/layered-architecture.md` |
+| Configuration | Environment variables, type-safe config | `references/configuration.md` |
+| Error Handling | Custom errors, middleware, typed errors | `references/error-handling.md` |
+| Supabase Integration | Database operations, auth, storage | `references/supabase-integration.md` |
+| Logging | Structured logging, request tracing | `references/logging.md` |
+
+---
+
+## Layered Architecture
+
+### Pattern Overview
+Separate your application into distinct layers with clear responsibilities:
+
+- **Controllers**: Handle HTTP requests/responses, validate input, call services
+- **Services**: Contain business logic, orchestrate operations
+- **Repositories**: Data access layer, database queries
+- **Middleware**: Cross-cutting concerns (auth, logging, validation)
+- **Routes**: Define API endpoints, apply middleware
+
+### When to Use
+- Building REST APIs
+- Applications with complex business logic
+- Multi-developer projects requiring clear boundaries
+
+### How to Implement
+1. Create layer-specific directories (`controllers/`, `services/`, `repositories/`)
+2. Keep controllers thin (request/response only)
+3. Put business logic in services
+4. Isolate data access in repositories
+5. Use dependency injection for testability
+
+See `references/layered-architecture.md` for complete implementation examples.
 
 ---
 
 ## Configuration Management
 
-### Environment Variables
-```typescript
-// src/config/env.ts
-import { z } from 'zod';
-import dotenv from 'dotenv';
+### Pattern Overview
+Validate environment variables at startup using Zod for type safety. Export a structured config object throughout the app.
 
-dotenv.config();
+### When to Use
+- Any production Node.js application
+- When type safety for config is needed
+- To fail fast on misconfiguration
 
-const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  PORT: z.string().transform(Number).pipe(z.number().min(1).max(65535)).default('3000'),
-  DATABASE_URL: z.string().url(),
-  JWT_SECRET: z.string().min(32),
-  JWT_EXPIRES_IN: z.string().default('15m'),
-  REDIS_URL: z.string().url().optional(),
-  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-});
+### How to Implement
+1. Create `config/env.ts` with Zod schema
+2. Validate `process.env` on startup
+3. Exit with error if validation fails
+4. Export typed config object from `config/index.ts`
+5. Import config throughout app instead of using `process.env` directly
 
-const parsed = envSchema.safeParse(process.env);
-
-if (!parsed.success) {
-  console.error('❌ Invalid environment variables:');
-  console.error(parsed.error.flatten().fieldErrors);
-  process.exit(1);
-}
-
-export const env = parsed.data;
-export type Env = z.infer<typeof envSchema>;
-```
-
-### Configuration Object
-```typescript
-// src/config/index.ts
-import { env } from './env';
-
-export const config = {
-  server: {
-    port: env.PORT,
-    env: env.NODE_ENV,
-    isProduction: env.NODE_ENV === 'production',
-  },
-  database: {
-    url: env.DATABASE_URL,
-  },
-  auth: {
-    jwtSecret: env.JWT_SECRET,
-    jwtExpiresIn: env.JWT_EXPIRES_IN,
-  },
-  logging: {
-    level: env.LOG_LEVEL,
-  },
-} as const;
-```
-
----
-
-## Express Application Setup
-
-### Application Factory
-```typescript
-// src/app.ts
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import compression from 'compression';
-import { pinoHttp } from 'pino-http';
-import { errorHandler } from './middleware/errorHandler';
-import { notFoundHandler } from './middleware/notFound';
-import routes from './routes';
-import { logger } from './utils/logger';
-
-export function createApp() {
-  const app = express();
-
-  // Security middleware
-  app.use(helmet());
-  app.use(cors({
-    origin: config.server.isProduction
-      ? ['https://example.com']
-      : ['http://localhost:3000'],
-    credentials: true,
-  }));
-
-  // Request parsing
-  app.use(express.json({ limit: '10kb' }));
-  app.use(express.urlencoded({ extended: true }));
-
-  // Compression
-  app.use(compression());
-
-  // Request logging
-  app.use(pinoHttp({ logger }));
-
-  // Request ID
-  app.use((req, res, next) => {
-    req.id = req.headers['x-request-id']?.toString() || crypto.randomUUID();
-    res.setHeader('x-request-id', req.id);
-    next();
-  });
-
-  // Health check
-  app.get('/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  });
-
-  // API routes
-  app.use('/api', routes);
-
-  // Error handling
-  app.use(notFoundHandler);
-  app.use(errorHandler);
-
-  return app;
-}
-```
-
-### Server Entry Point
-```typescript
-// src/server.ts
-import { createApp } from './app';
-import { config } from './config';
-import { logger } from './utils/logger';
-import { supabase } from './lib/supabase';
-
-async function main() {
-  const app = createApp();
-
-  // Graceful shutdown
-  const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
-  signals.forEach(signal => {
-    process.on(signal, async () => {
-      logger.info(`Received ${signal}, shutting down gracefully`);
-      // Supabase client cleanup if needed
-      process.exit(0);
-    });
-  });
-
-  // Start server
-  app.listen(config.server.port, () => {
-    logger.info(`Server running on port ${config.server.port}`);
-  });
-}
-
-main().catch(err => {
-  logger.error('Failed to start server:', err);
-  process.exit(1);
-});
-```
+See `references/configuration.md` for complete validation schemas.
 
 ---
 
 ## Error Handling
 
-### Custom Error Classes
-```typescript
-// src/utils/errors.ts
-export class AppError extends Error {
-  constructor(
-    public message: string,
-    public code: string,
-    public statusCode: number = 500,
-    public details?: unknown
-  ) {
-    super(message);
-    this.name = this.constructor.name;
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
+### Pattern Overview
+Use custom error classes with proper status codes. Handle all errors in central middleware. Log full details server-side, return safe messages to clients.
 
-export class ValidationError extends AppError {
-  constructor(message: string, details?: unknown) {
-    super(message, 'VALIDATION_ERROR', 400, details);
-  }
-}
+### When to Use
+- All production applications
+- APIs that need consistent error responses
+- When you need typed error handling
 
-export class NotFoundError extends AppError {
-  constructor(resource: string, id?: string) {
-    const message = id ? `${resource} ${id} not found` : `${resource} not found`;
-    super(message, 'NOT_FOUND', 404);
-  }
-}
+### How to Implement
+1. Create custom error classes extending `AppError`
+2. Throw specific errors in services (`NotFoundError`, `ValidationError`)
+3. Use async handler wrapper for route handlers
+4. Implement central error handler middleware
+5. Log errors with request context
+6. Return consistent error format to clients
 
-export class UnauthorizedError extends AppError {
-  constructor(message = 'Unauthorized') {
-    super(message, 'UNAUTHORIZED', 401);
-  }
-}
-
-export class ForbiddenError extends AppError {
-  constructor(message = 'Forbidden') {
-    super(message, 'FORBIDDEN', 403);
-  }
-}
-```
-
-### Error Handler Middleware
-```typescript
-// src/middleware/errorHandler.ts
-import { ErrorRequestHandler } from 'express';
-import { ZodError } from 'zod';
-import { AppError } from '../utils/errors';
-import { logger } from '../utils/logger';
-
-export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  // Log error
-  logger.error({
-    err,
-    requestId: req.id,
-    method: req.method,
-    path: req.path,
-  });
-
-  // Handle known errors
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      error: {
-        code: err.code,
-        message: err.message,
-        details: err.details,
-        requestId: req.id,
-      },
-    });
-  }
-
-  // Handle Zod validation errors
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      error: {
-        code: 'VALIDATION_ERROR',
-        message: 'Invalid input',
-        details: err.errors,
-        requestId: req.id,
-      },
-    });
-  }
-
-  // Handle unknown errors
-  res.status(500).json({
-    error: {
-      code: 'INTERNAL_ERROR',
-      message: 'An unexpected error occurred',
-      requestId: req.id,
-    },
-  });
-};
-```
+See `references/error-handling.md` for complete error class hierarchy and middleware.
 
 ---
 
-## Async Handler Wrapper
+## Supabase Integration
 
-```typescript
-// src/utils/asyncHandler.ts
-import { RequestHandler, Request, Response, NextFunction } from 'express';
+### Pattern Overview
+Use service role key for admin operations (bypasses RLS). Use anon key + user token for user-scoped operations (respects RLS).
 
-type AsyncRequestHandler = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => Promise<void>;
+### When to Use
+- When using Supabase as your backend
+- For applications with Row Level Security policies
+- When you need both admin and user-scoped operations
 
-export const asyncHandler = (fn: AsyncRequestHandler): RequestHandler => {
-  return (req, res, next) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-};
+### How to Implement
+1. Create server-side client with service role key
+2. Create function to generate user-scoped clients
+3. Use service role client for admin operations
+4. Use user-scoped client for user operations
+5. Handle Supabase-specific errors
+6. Use database functions for transactions
 
-// Usage
-router.get('/users', asyncHandler(async (req, res) => {
-  const users = await userService.findAll();
-  res.json({ data: users });
-}));
-```
-
----
-
-## Validation Middleware
-
-```typescript
-// src/middleware/validation.ts
-import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
-
-export const validate = (schema: AnyZodObject) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await schema.parseAsync({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
-      next();
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return res.status(400).json({
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: 'Invalid input',
-            details: error.errors,
-          },
-        });
-      }
-      next(error);
-    }
-  };
-};
-
-// Usage
-import { z } from 'zod';
-
-const createUserSchema = z.object({
-  body: z.object({
-    email: z.string().email(),
-    name: z.string().min(2),
-    password: z.string().min(8),
-  }),
-});
-
-router.post('/users', validate(createUserSchema), createUserHandler);
-```
+See `references/supabase-integration.md` for client setup and common patterns.
 
 ---
 
 ## Logging
 
-```typescript
-// src/utils/logger.ts
-import pino from 'pino';
-import { config } from '../config';
+### Pattern Overview
+Use structured logging with Pino. Add context to all log entries. Redact sensitive data automatically. Use appropriate log levels.
 
-export const logger = pino({
-  level: config.logging.level,
-  transport: config.server.isProduction
-    ? undefined
-    : {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:standard',
-        },
-      },
-  base: {
-    env: config.server.env,
-  },
-  redact: ['req.headers.authorization', 'password', 'token'],
-});
+### When to Use
+- All production applications
+- When you need request tracing
+- For debugging and monitoring
 
-// Child logger with context
-export function createLogger(context: string) {
-  return logger.child({ context });
-}
+### How to Implement
+1. Configure Pino with proper log level and redaction
+2. Create child loggers with service context
+3. Log structured data (objects, not strings)
+4. Add request IDs for tracing
+5. Use appropriate log levels (debug/info/warn/error)
+6. Never log passwords, tokens, or PII
 
-// Usage
-const log = createLogger('UserService');
-log.info({ userId: user.id }, 'User created');
-log.error({ err, userId }, 'Failed to create user');
-```
-
----
-
-## Database Connection
-
-### Supabase Setup
-```typescript
-// src/lib/supabase.ts
-import { createClient } from '@supabase/supabase-js';
-import { logger } from '../utils/logger';
-
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase environment variables');
-}
-
-// Server-side client with service role key (bypasses RLS)
-export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-  },
-});
-
-// For client-specific requests with RLS
-export const createUserClient = (accessToken: string) => {
-  return createClient(supabaseUrl, process.env.SUPABASE_ANON_KEY!, {
-    global: {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    },
-  });
-};
-```
-
----
-
-## Rate Limiting
-
-```typescript
-// src/middleware/rateLimit.ts
-import rateLimit from 'express-rate-limit';
-import RedisStore from 'rate-limit-redis';
-import { redis } from '../lib/redis';
-
-export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: {
-    error: {
-      code: 'RATE_LIMITED',
-      message: 'Too many requests, please try again later',
-    },
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  store: new RedisStore({
-    sendCommand: (...args: string[]) => redis.sendCommand(args),
-  }),
-});
-
-export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  message: {
-    error: {
-      code: 'RATE_LIMITED',
-      message: 'Too many login attempts',
-    },
-  },
-});
-
-// Usage
-app.use('/api', apiLimiter);
-router.post('/auth/login', authLimiter, loginHandler);
-```
-
----
-
-## Service Layer Pattern
-
-```typescript
-// src/services/userService.ts
-import { supabase } from '../lib/supabase';
-import { NotFoundError, ConflictError } from '../utils/errors';
-import { hashPassword } from '../utils/password';
-import { CreateUserInput, UpdateUserInput } from '../models/user';
-
-export class UserService {
-  async findAll(options?: { page?: number; perPage?: number }) {
-    const page = options?.page || 1;
-    const perPage = options?.perPage || 20;
-    const from = (page - 1) * perPage;
-    const to = from + perPage - 1;
-
-    const [{ data: users, error: usersError }, { count, error: countError }] = await Promise.all([
-      supabase
-        .from('users')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .range(from, to),
-      supabase
-        .from('users')
-        .select('*', { count: 'exact', head: true }),
-    ]);
-
-    if (usersError) throw usersError;
-    if (countError) throw countError;
-
-    return { users: users || [], total: count || 0, page, perPage };
-  }
-
-  async findById(id: string) {
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error || !user) {
-      throw new NotFoundError('User', id);
-    }
-    return user;
-  }
-
-  async create(data: CreateUserInput) {
-    const { data: existing } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', data.email)
-      .single();
-
-    if (existing) {
-      throw new ConflictError('Email already registered');
-    }
-
-    const hashedPassword = await hashPassword(data.password);
-
-    const { data: user, error } = await supabase
-      .from('users')
-      .insert({
-        ...data,
-        password: hashedPassword,
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return user;
-  }
-
-  async update(id: string, data: UpdateUserInput) {
-    await this.findById(id); // Ensure exists
-
-    const { data: user, error } = await supabase
-      .from('users')
-      .update(data)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return user;
-  }
-
-  async delete(id: string) {
-    await this.findById(id);
-
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
-  }
-}
-
-export const userService = new UserService();
-```
+See `references/logging.md` for complete logger configuration and usage patterns.
 
 ---
 
 ## Best Practices Summary
 
-1. **Validate all input** with Zod at API boundaries
-2. **Use typed errors** with proper status codes
-3. **Log structured data** with appropriate levels
-4. **Handle async errors** with wrapper or try-catch
-5. **Separate concerns** (controllers, services, repositories)
-6. **Validate environment** variables at startup
-7. **Implement graceful shutdown** for clean resource cleanup
-8. **Use rate limiting** on public endpoints
-9. **Add request IDs** for tracing
-10. **Health check endpoint** for monitoring
+### Application Structure
+- Use layered architecture for separation of concerns
+- Keep files under 300 lines
+- One class/service per file
+- Group related functionality in feature modules
+
+### Security
+- Validate all input at API boundaries with Zod
+- Use parameterized queries (Supabase handles this)
+- Never expose service role key to clients
+- Implement rate limiting on public endpoints
+- Use helmet for security headers
+- Enable CORS properly
+
+### Error Handling
+- Use typed custom errors
+- Handle async errors with wrapper or try-catch
+- Log full errors server-side
+- Return safe error messages to clients
+- Include request IDs for tracing
+
+### Configuration
+- Validate environment variables at startup
+- Use type-safe config object
+- Never commit secrets to version control
+- Document required env vars in `.env.example`
+
+### Logging
+- Use structured logging (objects, not strings)
+- Add context to all log entries
+- Redact sensitive data automatically
+- Use appropriate log levels
+- Include request IDs for distributed tracing
+
+### Testing
+- Test services independently with mocked repositories
+- Test controllers with mocked services
+- Mock Supabase client in tests
+- Aim for 80%+ coverage on business logic
+
+### Performance
+- Use pagination for large datasets
+- Implement caching where appropriate
+- Use connection pooling
+- Monitor with health check endpoints
+- Implement graceful shutdown
+
+---
+
+## Common Patterns
+
+### Creating a New Resource
+1. Define Zod schema for validation
+2. Create service with CRUD methods
+3. Create controller handlers with validation
+4. Define routes with middleware
+5. Write unit tests for service
+6. Write integration tests for API
+
+### Adding Authentication
+1. Use Supabase Auth or implement JWT
+2. Create auth middleware to verify tokens
+3. Extract user from token and attach to request
+4. Protect routes by adding auth middleware
+5. Implement rate limiting on auth endpoints
+
+### Adding Authorization
+1. Define permission checks in middleware
+2. Check user roles/permissions
+3. Throw `ForbiddenError` if unauthorized
+4. Use RLS policies in Supabase for data access control
+
+### Background Jobs
+1. Use service role client (admin access)
+2. Implement job runner (node-cron, Bull)
+3. Add proper error handling
+4. Log job execution
+5. Monitor job failures
+
+### File Uploads
+1. Use Supabase Storage API
+2. Validate file types and sizes
+3. Generate unique file names
+4. Store file paths in database
+5. Implement cleanup for orphaned files
+
+---
+
+## Anti-Patterns to Avoid
+
+1. **Fat Controllers**: Keep business logic in services, not controllers
+2. **No Validation**: Always validate input at API boundaries
+3. **Exposing Errors**: Never return stack traces or internal details to clients
+4. **Hardcoded Config**: Use environment variables, not hardcoded values
+5. **String Logging**: Use structured objects, not string interpolation
+6. **No Request IDs**: Always include request IDs for tracing
+7. **Ignoring Async Errors**: Always handle promise rejections
+8. **Service Role Everywhere**: Use user-scoped clients for user operations
+9. **No Rate Limiting**: Protect public endpoints from abuse
+10. **Missing Graceful Shutdown**: Handle SIGTERM/SIGINT properly
+
+---
+
+For detailed implementation examples, see:
+- `references/layered-architecture.md` - Complete Express app setup
+- `references/configuration.md` - Environment variable validation
+- `references/error-handling.md` - Error classes and middleware
+- `references/supabase-integration.md` - Database operations
+- `references/logging.md` - Structured logging setup

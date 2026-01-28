@@ -62,6 +62,8 @@ Authoritative guide for designing RESTful APIs based on IETF RFCs, OpenAPI stand
 
 Cursor pagination avoids data inconsistency issues (skipped/duplicate results) and performs better at scale. Include `nextCursor`, `hasMore` in meta.
 
+**Detailed Guide:** See `references/pagination-patterns.md` for offset vs cursor vs keyset comparison, performance benchmarks, and complete implementation examples with database indexes.
+
 ---
 
 ## Versioning Strategies
@@ -71,6 +73,8 @@ Cursor pagination avoids data inconsistency issues (skipped/duplicate results) a
 **Query Parameter:** `?version=1` - Rarely used
 
 **Best Practice:** Use semantic versioning (Major.Minor.Patch), maintain backward compatibility, document deprecation timelines.
+
+**Detailed Guide:** See `references/versioning-strategies.md` for breaking vs non-breaking changes, deprecation strategies with Sunset headers, and migration guide templates.
 
 ---
 
@@ -93,12 +97,25 @@ GET /users?fields=id,name,email             # Sparse fieldsets
 
 ---
 
+## OpenAPI Specification
+
+Document your API with OpenAPI 3.1 for client generation, validation, and documentation.
+
+**Complete Example:** See `references/openapi-examples.md` for full OpenAPI spec with paths, schemas, security schemes (Bearer, OAuth2), reusable components, pagination responses, and error schemas.
+
+---
+
 ## Resources
 
+**Reference Guides:**
+- `references/openapi-examples.md` - Complete OpenAPI 3.1 specification example
+- `references/versioning-strategies.md` - API versioning, deprecation, and migration strategies
+- `references/pagination-patterns.md` - Offset, cursor, and keyset pagination with benchmarks
+
+**External Standards:**
 - [RFC 9110 - HTTP Semantics](https://datatracker.ietf.org/doc/html/rfc9110)
 - [OpenAPI Specification 3.1+](https://spec.openapis.org/oas/v3.1.0.html)
 - [JSON:API v1.1](https://jsonapi.org/format/)
 - [Roy Fielding's REST Dissertation](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)
-- [REST API Tutorial](https://restfulapi.net/)
-- [Cursor Pagination Guide](https://www.merge.dev/blog/cursor-pagination)
-- [API Versioning Best Practices](https://www.getambassador.io/blog/api-versioning-best-practices)
+- [RFC 8288 - Web Linking](https://www.rfc-editor.org/rfc/rfc8288.html)
+- [RFC 8594 - Sunset Header](https://www.rfc-editor.org/rfc/rfc8594.html)
