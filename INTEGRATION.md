@@ -1,534 +1,276 @@
 # Integration Guide
 
-How to integrate this Claude Code template into an **existing codebase**.
+How to add Claude Code to your **existing codebase**.
 
 ---
 
 ## Overview
 
-This guide is for projects that **already have code** and want to add Claude Code workflow automation. You'll selectively copy template files without disrupting your existing setup.
+You have an existing project and want to add Claude Code workflow automation.
+
+**Example scenario**: You have a project at `/home/user/my-app` and want to add Claude Code.
+
+**What you'll end up with**:
+```
+my-app/                    (your existing project)
+├── .claude/              ← NEW (workflow system)
+├── CLAUDE.md             ← NEW (your tech stack config)
+├── setup.cjs             ← NEW (optional setup wizard)
+├── lib/                  ← NEW (wizard modules)
+├── src/                  (your existing code - unchanged)
+├── package.json          (your existing code - unchanged)
+└── ... (rest of your code - unchanged)
+```
 
 **Estimated Time**: 20-40 minutes
 
 ---
 
-## Before You Start
+## Prerequisites
 
-### Prerequisites
+- [x] Existing codebase with code in it
+- [x] Git initialized
+- [x] Claude Code CLI installed: `npm install -g @anthropic-ai/claude-code`
 
-- [x] Existing codebase with git initialized
-- [x] Claude Code CLI installed (`npm install -g @anthropic-ai/claude-code`)
-- [x] Basic understanding of your project's tech stack
+---
 
-### Backup First
+## Step 1: Download Claude Code Setup
+
+First, get the `claude-code-setup` files. Two options:
+
+### Option A: Clone Next to Your Project (Recommended)
 
 ```bash
-# Create a feature branch for integration
-git checkout -b feature/claude-code-setup
+# Where you are now: /home/user/my-app (your project)
 
-# Or create a backup
-git stash
+# Go up one level
+cd ..
+
+# Clone claude-code-setup next to your project
+git clone https://github.com/YOUR-ORG/claude-code-setup.git
+
+# Now you have:
+# /home/user/my-app/              (your project)
+# /home/user/claude-code-setup/   (the template)
+```
+
+### Option B: Clone to Temp Directory
+
+```bash
+# Clone to /tmp (will be deleted later)
+git clone https://github.com/YOUR-ORG/claude-code-setup.git /tmp/claude-code-setup
 ```
 
 ---
 
-## Integration Steps
+## Step 2: Copy Files Into Your Project
 
-### Step 1: Copy Core Files
-
-First, download/clone the template repository, then copy files to your project:
+Now copy the Claude Code files into your project:
 
 ```bash
-# Download the template (if you haven't already)
-git clone https://github.com/YOUR-ORG/claude-code-template.git /tmp/claude-template
-# OR: Download and extract ZIP to /tmp/claude-template
+# Go to your project directory
+cd /home/user/my-app
 
-# Navigate to your existing project
-cd /path/to/your/project/
+# Copy workflow system
+cp -r ../claude-code-setup/.claude/ .
 
-# Copy .claude/ directory (agents, commands, workflows, etc.)
-cp -r /tmp/claude-template/.claude/ ./
+# Copy tech stack config (REQUIRED!)
+cp ../claude-code-setup/CLAUDE.md .
 
-# Copy CLAUDE.md (ESSENTIAL - Claude reads this for your tech stack)
-cp /tmp/claude-template/CLAUDE.md ./
+# Copy setup wizard (OPTIONAL but recommended)
+cp ../claude-code-setup/setup.cjs .
+cp -r ../claude-code-setup/lib/ .
 
-# Copy setup files (OPTIONAL - for setup wizard)
-cp /tmp/claude-template/setup.cjs ./
-cp -r /tmp/claude-template/lib/ ./
-
-# Copy MCP template (OPTIONAL - for MCP servers)
-cp /tmp/claude-template/.mcp.template.json ./
-
-# Cleanup (optional)
-rm -rf /tmp/claude-template
+# Copy MCP template (OPTIONAL)
+cp ../claude-code-setup/.mcp.template.json .
 ```
 
-**What you get**:
-- `.claude/` - Full agent/command/workflow infrastructure (33 agents, 20 commands, 13 checklists)
-- `CLAUDE.md` - **REQUIRED** tech stack configuration
-- `setup.cjs` + `lib/` - Setup wizard with auto-detection (optional)
-- `.mcp.template.json` - MCP server template (optional)
+**If you used /tmp in Option B**, replace `../claude-code-setup/` with `/tmp/claude-code-setup/`:
+```bash
+cp -r /tmp/claude-code-setup/.claude/ .
+cp /tmp/claude-code-setup/CLAUDE.md .
+# etc...
+```
 
-**Result**: Your project now has the complete Claude Code workflow system.
+**After this step, your project has**:
+```
+my-app/
+├── .claude/       ← NEW (33 agents, 20 commands, 13 checklists)
+├── CLAUDE.md      ← NEW (tech stack config)
+├── setup.cjs      ← NEW (wizard)
+├── lib/           ← NEW (wizard modules)
+├── src/           (your existing code)
+└── ...
+```
 
 ---
 
-### Step 2: Detect Your Tech Stack
+## Step 3: Customize CLAUDE.md
 
-Let Claude analyze your existing codebase to understand your stack:
+Open `CLAUDE.md` in your project and replace the placeholders:
+
+```bash
+# Open CLAUDE.md in your editor
+code CLAUDE.md   # or vim, nano, etc.
+```
+
+**Find and replace**:
+- `{{FRONTEND_STACK}}` → `Next.js 14, React 18, TypeScript` (or whatever you use)
+- `{{BACKEND_STACK}}` → `Supabase, PostgreSQL` (or whatever you use)
+- `{{TESTING_STACK}}` → `Vitest, Playwright` (or whatever you use)
+- `{{PROJECT_STRUCTURE}}` → Your actual directory structure
+
+**Or use the wizard** (easier):
+```bash
+# Wizard will detect your stack and update CLAUDE.md automatically
+node setup.cjs
+```
+
+---
+
+## Step 4: Add Framework-Specific Templates (If Needed)
+
+Claude Code includes generic templates (test, migration, PR description) that work out of the box.
+
+If you use React/Next.js, copy those templates:
+
+```bash
+# Using React?
+cp .claude/templates/variants/react/*.template .claude/templates/
+
+# Using Next.js?
+cp .claude/templates/variants/nextjs/*.template .claude/templates/
+```
+
+---
+
+## Step 5: Test It Works
 
 ```bash
 # Start Claude Code
 claude
-
-# Ask Claude to analyze
-"Analyze this codebase and tell me:
-1. What framework is used (React, Vue, Svelte, etc.)
-2. What backend technology (Node.js, Python, Go, etc.)
-3. What database and ORM
-4. What testing framework
-5. Project structure and key directories"
 ```
 
-Claude will scan your codebase and identify:
-- Package.json / requirements.txt / go.mod
-- Config files (next.config.js, vite.config.ts, etc.)
-- Directory structure
-
-**Take notes** - you'll use this in Step 3.
-
----
-
-### Step 3: Customize CLAUDE.md
-
-**IMPORTANT**: `CLAUDE.md` was already copied in Step 1. Now edit it with your actual stack.
-
-Edit `CLAUDE.md` using info from Step 2:
-
-```markdown
-## Tech Stack
-
-**Frontend**: [YOUR DETECTED FRONTEND]
-**Backend**: [YOUR DETECTED BACKEND]
-**Testing**: [YOUR DETECTED TESTING]
-**DevOps**: [YOUR DETECTED DEVOPS]
-
-## Project Structure
-
-\```
-[YOUR ACTUAL DIRECTORY STRUCTURE]
-\```
-
-## Dependencies
-
-**Approved**: [YOUR COMMONLY USED DEPS]
-**Forbidden**: [YOUR BANNED DEPS]
-```
-
----
-
-### Step 4: Selective Skill & Template Copy
-
-Only copy skills/templates that match your stack.
-
-#### Detect Framework & Copy Skills
-
-**Using React?**
-```bash
-cp /path/to/template/.claude/skills/react-patterns.md .claude/skills/
-```
-
-**Using Next.js?**
-```bash
-cp /path/to/template/.claude/skills/nextjs-patterns.md .claude/skills/
-```
-
-**Using Node.js backend?**
-```bash
-cp /path/to/template/.claude/skills/nodejs-patterns.md .claude/skills/
-```
-
-**Using Vue/Svelte/Angular?**
-- Skip React/Next.js skills
-- Create custom `vue-patterns.md` or `svelte-patterns.md` if desired
-
-#### Copy Relevant Templates
-
-```bash
-# Using React components?
-cp /path/to/template/.claude/templates/component.tsx.template .claude/templates/
-
-# Using Next.js API routes?
-cp /path/to/template/.claude/templates/api-route.ts.template .claude/templates/
-
-# Using forms?
-cp /path/to/template/.claude/templates/form.tsx.template .claude/templates/
-```
-
-#### Always Copy (Framework-Agnostic)
-
-```bash
-# Universal patterns
-cp /path/to/template/.claude/skills/coding-standards.md .claude/skills/
-cp /path/to/template/.claude/skills/tdd-workflow.md .claude/skills/
-cp /path/to/template/.claude/skills/backend-patterns.md .claude/skills/
-cp /path/to/template/.claude/skills/rest-api-design.md .claude/skills/
-cp /path/to/template/.claude/skills/database-patterns.md .claude/skills/
-
-# Universal templates
-cp /path/to/template/.claude/templates/test.spec.ts.template .claude/templates/
-cp /path/to/template/.claude/templates/pr-description.md.template .claude/templates/
-cp /path/to/template/.claude/templates/migration.sql.template .claude/templates/
-```
-
----
-
-### Step 5: Configure MCP Servers (Optional)
-
-MCP servers provide external integrations (GitHub, Supabase, etc.).
-
-**Note**: If you copied `setup.cjs` and `lib/` in Step 1, you already have the wizard.
-
-#### Option A: Use Setup Wizard (Recommended)
-
-```bash
-# Run wizard (already copied in Step 1)
-node setup.cjs
-```
-
-The wizard will:
-- Auto-detect your tech stack
-- Offer to update CLAUDE.md
-- Configure MCP servers interactively
-- Create `.mcp.json` with your API keys
-
-#### Option B: Manual Setup
-
-```bash
-# Copy and rename MCP template (if not done in Step 1)
-cp .mcp.template.json .mcp.json
-
-# Edit with your API keys
-# vim .mcp.json or code .mcp.json
-
-# Add to .gitignore
-echo ".mcp.json" >> .gitignore
-```
-
-Example `.mcp.json` (minimal):
-
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_YOUR_TOKEN_HERE"
-      }
-    }
-  }
-}
-```
-
----
-
-### Step 6: Update .gitignore
-
-Ensure sensitive files are ignored:
-
-```bash
-# Add to .gitignore
-cat >> .gitignore <<EOF
-
-# Claude Code
-.mcp.json
-.claude/settings.local.json
-.claude/health/
-EOF
-```
-
----
-
-### Step 7: Test Integration
-
-#### Test 1: Tech Stack Recognition
-
-```bash
-claude
-```
-
-Ask Claude:
+In Claude, ask:
 ```
 What's our tech stack?
 ```
 
-Claude should describe YOUR stack (from `CLAUDE.md`), not template defaults.
-
-#### Test 2: Command Execution
-
-```
-/review-changes
-```
-
-Claude should analyze your codebase using your tech stack patterns.
-
-#### Test 3: Agent Delegation
-
-```
-"Review this codebase for security issues"
-```
-
-Claude should delegate to `security-reviewer` agent.
+Claude should describe YOUR stack (from `CLAUDE.md`), not the template defaults.
 
 ---
 
-## Common Integration Scenarios
+## Complete Example Walkthrough
 
-### Scenario 1: Existing Next.js + Supabase Project
+Let's say you have a Next.js + Supabase project at `/Users/john/projects/my-saas-app`:
 
 ```bash
-# 1. Copy core files
-cp -r template/.claude/ ./
-cp template/CLAUDE.md ./
-cp template/setup.cjs ./
-cp -r template/lib/ ./
-cp template/.mcp.template.json ./
+# 1. Download claude-code-setup
+cd /Users/john/projects
+git clone https://github.com/YOUR-ORG/claude-code-setup.git
 
-# 2. Update CLAUDE.md
-# Edit CLAUDE.md and replace placeholders:
-# - {{FRONTEND_STACK}} → Next.js 14, React 18, TypeScript, Tailwind
-# - {{BACKEND_STACK}} → Supabase (PostgreSQL, Auth, Storage)
-# - {{TESTING_STACK}} → Jest, Playwright
+# 2. Go to your project
+cd my-saas-app
 
-# 3. Copy Next.js/React skills (already in .claude/skills/)
-# No action needed - skills are already there
+# 3. Copy files
+cp -r ../claude-code-setup/.claude/ .
+cp ../claude-code-setup/CLAUDE.md .
+cp ../claude-code-setup/setup.cjs .
+cp -r ../claude-code-setup/lib/ .
 
-# 4. Copy relevant templates to root (Claude looks here)
-cp .claude/templates/variants/react/*.template .claude/templates/
+# 4. Run setup wizard (detects Next.js + Supabase automatically)
+node setup.cjs
+
+# The wizard will:
+# - Detect: Next.js 14, Supabase, Vitest
+# - Offer to update CLAUDE.md with detected stack
+# - Configure MCP servers
+# - Done!
+
+# 5. Copy Next.js templates
 cp .claude/templates/variants/nextjs/*.template .claude/templates/
+cp .claude/templates/variants/react/*.template .claude/templates/
 
-# 5. Run setup wizard (auto-detects your stack)
-node setup.cjs
+# 6. Add to git
+git add .claude/ CLAUDE.md setup.cjs lib/
+git commit -m "Add Claude Code workflow automation"
 
-# 6. Done!
+# 7. Start using it
 claude
 ```
 
-### Scenario 2: Existing Vue + FastAPI Project
+Your project now has Claude Code! 🎉
+
+---
+
+## What If I Don't Want setup.cjs?
+
+You can skip copying `setup.cjs` and `lib/`:
 
 ```bash
-# 1. Copy core files
-cp -r template/.claude/ ./
-cp template/CLAUDE.md ./
-cp template/setup.cjs ./
-cp -r template/lib/ ./
+# Minimal integration (just copy these 2)
+cp -r ../claude-code-setup/.claude/ .
+cp ../claude-code-setup/CLAUDE.md .
 
-# 2. Update CLAUDE.md
-# Edit CLAUDE.md and replace placeholders:
-# - {{FRONTEND_STACK}} → Vue 3, Vite, TypeScript, Pinia
-# - {{BACKEND_STACK}} → Python 3.11, FastAPI, PostgreSQL
-# - {{TESTING_STACK}} → Pytest, Vitest
+# Edit CLAUDE.md manually
+code CLAUDE.md
+# Replace {{...}} placeholders with your stack
 
-# 3. Skills are already there (all are framework-agnostic except React/Next.js)
-# No action needed
-
-# 4. Remove React/Next.js framework-specific skills (optional cleanup)
-rm .claude/skills/react-patterns.md
-rm .claude/skills/nextjs-patterns.md
-
-# 5. Generic templates already copied, delete React/Next.js variants
-rm -rf .claude/templates/variants/react/
-rm -rf .claude/templates/variants/nextjs/
-
-# 6. Run setup wizard (auto-detects Vue + Python)
-node setup.cjs
-
-# 7. Done!
+# Done!
 claude
 ```
 
-### Scenario 3: Existing Python/Django Monolith
+---
+
+## Cleanup (Optional)
+
+After copying everything, you can delete the cloned template:
 
 ```bash
-# 1. Copy core files
-cp -r template/.claude/ ./
-cp template/CLAUDE.md ./
-cp template/setup.cjs ./
-cp -r template/lib/ ./
+# If you cloned next to your project:
+rm -rf ../claude-code-setup
 
-# 2. Update CLAUDE.md
-# Edit CLAUDE.md and replace placeholders:
-# - {{FRONTEND_STACK}} → Django Templates, HTMX, Alpine.js
-# - {{BACKEND_STACK}} → Python 3.10, Django 4.2, PostgreSQL
-# - {{TESTING_STACK}} → Pytest, Playwright
-
-# 3. Remove frontend framework skills (optional cleanup)
-rm .claude/skills/react-patterns.md
-rm .claude/skills/nextjs-patterns.md
-rm .claude/skills/nodejs-patterns.md
-
-# 4. Generic templates already there, remove framework-specific variants
-rm -rf .claude/templates/variants/react/
-rm -rf .claude/templates/variants/nextjs/
-
-# 5. Run setup wizard (auto-detects Python + Django)
-node setup.cjs
-
-# 6. Done!
-claude
-```
-
----
-
-## Post-Integration Checklist
-
-After integration, verify these work:
-
-- [ ] `claude` command starts successfully
-- [ ] `/full-feature` command uses your tech stack
-- [ ] Claude correctly identifies your framework
-- [ ] `/review-changes` analyzes your existing code
-- [ ] Agents delegate correctly (e.g., `security-reviewer`)
-- [ ] MCP servers connect (if configured)
-
----
-
-## Customization After Integration
-
-### Add Project-Specific Rules
-
-Edit `CLAUDE.md` to add project conventions:
-
-```markdown
-## Project-Specific Rules
-
-- **API Versioning**: All APIs must include `/v1/` in path
-- **Component Naming**: Use PascalCase for components, kebab-case for files
-- **Testing**: All features require E2E tests in `tests/e2e/`
-- **Environment**: Never commit to `.env`, always use `.env.example`
-```
-
-### Create Custom Skills
-
-Create `.claude/skills/our-patterns.md` for company-specific patterns:
-
-```markdown
-# Our Company Patterns
-
-## API Response Format
-
-\```json
-{
-  "success": true,
-  "data": {...},
-  "meta": {
-    "requestId": "...",
-    "timestamp": "..."
-  }
-}
-\```
-
-## Error Codes
-
-- `AUTH_001`: Expired token
-- `AUTH_002`: Invalid credentials
-...
-```
-
-### Create Custom Commands
-
-Create `.claude/commands/our-deploy.md`:
-
-```markdown
----
-command: our-deploy
-description: Deploy to our staging environment
----
-
-# Our Deploy Command
-
-1. Run all tests
-2. Build production bundle
-3. Deploy to Kubernetes staging
-4. Run smoke tests
-5. Notify team in Slack
+# If you cloned to /tmp:
+rm -rf /tmp/claude-code-setup
 ```
 
 ---
 
 ## Troubleshooting
 
-### "Claude uses wrong framework patterns"
+### "I don't see .claude/ folder after copying"
 
-**Cause**: `CLAUDE.md` not customized or wrong skills copied
+**Cause**: You might be in the wrong directory
 
-**Fix**:
-1. Check `CLAUDE.md` - ensure it describes YOUR stack
-2. Remove `.claude/skills/react-patterns.md` if not using React
-3. Restart Claude
-
-### "Commands fail with 'module not found'"
-
-**Cause**: Template references tools you don't have
-
-**Fix**: Edit `.claude/settings.json` hooks, replace with your tools
-
-### "Agents suggest wrong database patterns"
-
-**Cause**: `database-patterns.md` mentions Prisma/Supabase but you use different ORM
-
-**Fix**: Edit `.claude/skills/database-patterns.md`, replace examples with YOUR ORM
-
-### "MCP servers don't work"
-
-**Cause**: `.mcp.json` not configured or wrong API keys
-
-**Fix**:
-1. Ensure `.mcp.json` exists (not `.mcp.template.json`)
-2. Check API keys are valid
-3. Restart Claude
-
----
-
-## Rollback (If Something Goes Wrong)
-
-If integration causes issues:
-
+**Fix**: Check where you are:
 ```bash
-# Remove everything
-rm -rf .claude/
-rm CLAUDE.md
-rm setup.cjs
-rm .mcp.json
-
-# Restore from git
-git checkout .
-
-# Or restore from stash
-git stash pop
+pwd  # Should show /home/user/my-app (your project)
+ls -la  # Should show .claude/ folder
 ```
+
+### "Claude doesn't know my tech stack"
+
+**Cause**: `CLAUDE.md` still has `{{...}}` placeholders
+
+**Fix**: Edit `CLAUDE.md` and replace all placeholders, OR run `node setup.cjs`
+
+### "setup.cjs not found"
+
+**Cause**: You didn't copy `setup.cjs` and `lib/`
+
+**Fix**: Either copy them, or skip the wizard and edit `CLAUDE.md` manually
 
 ---
 
 ## Next Steps
 
-1. **Test thoroughly** - Try all commands (`/full-feature`, `/review-changes`, etc.)
-2. **Train your team** - Share `CLAUDE.md` and `WORKFLOW.md`
-3. **Iterate** - Add project-specific rules as you discover patterns
-4. **Commit** - Once stable, commit `.claude/` and `CLAUDE.md` to git
-
-```bash
-git add .claude/ CLAUDE.md
-git commit -m "Add Claude Code workflow automation"
-git push origin feature/claude-code-setup
-```
+1. Read [WORKFLOW.md](WORKFLOW.md) - Complete workflow guide
+2. Try `/full-feature` - Build your first feature with Claude
+3. Commit changes: `git add .claude/ CLAUDE.md && git commit -m "Add Claude Code"`
 
 ---
 
-## Getting Help
-
-- **Template Setup**: [TEMPLATE-SETUP.md](TEMPLATE-SETUP.md)
-- **Complete Workflow**: [WORKFLOW.md](WORKFLOW.md)
-- **Quick Reference**: [QUICKSTART.md](QUICKSTART.md)
-- **Issues**: https://github.com/anthropics/claude-code/issues
+**Need Help?**
+- Template setup: [TEMPLATE-SETUP.md](TEMPLATE-SETUP.md)
+- Main README: [README.md](README.md)
+- Issues: https://github.com/YOUR-ORG/claude-code-setup/issues
