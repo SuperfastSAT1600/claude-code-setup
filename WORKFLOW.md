@@ -85,7 +85,7 @@ Keep context under 80k tokens. Disable unused MCPs, delegate heavy tasks to agen
 **Commands** - User-triggered workflows
 - Slash commands like `/full-feature`, `/commit-push-pr`, `/lint-fix`, `/type-check`
 - Execute complete workflows in one command
-- **21 commands available** covering workflow orchestration, development, quality, and maintenance
+- **20 commands available** covering workflow orchestration, development, quality, and maintenance
 
 **Agents** - Specialized autonomous workers (33 total)
 - Main agent codes directly for standard tasks
@@ -98,7 +98,7 @@ Keep context under 80k tokens. Disable unused MCPs, delegate heavy tasks to agen
 - Workflow rules: `agent-workflow.md` (hybrid model delegation principles)
 - Automatically enforced on every interaction
 
-**Skills** - Reusable knowledge patterns (22 total)
+**Skills** - Reusable knowledge patterns (20 total)
 - Referenced by main agent and specialist agents
 - Reduce repetition, ensure consistency
 - Categories: Framework patterns (React, Next.js, Node.js), API design (REST, GraphQL, WebSocket), Development practices (TDD, auth, database, documentation), Project management (guidelines, user intent, prompt engineering)
