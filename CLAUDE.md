@@ -44,6 +44,12 @@ Just describe what you want in plain English:
 | "Is this code secure?" | Delegates to security-reviewer |
 | "Make the page faster" | Delegates to performance-optimizer |
 
+### Main Agent Templates
+
+When creating components, the main agent uses:
+- `variants/react/component.tsx.template` - React components with TypeScript
+- `variants/react/form.tsx.template` - Form components with React Hook Form + Zod
+
 ---
 
 ## Tech Stack

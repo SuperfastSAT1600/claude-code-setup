@@ -8,6 +8,9 @@ skills:
   - frontend-patterns
   - backend-patterns
   - rest-api-design
+templates:
+  - variants/react/component.tsx.template
+  - variants/react/form.tsx.template
 ---
 
 # Mobile Specialist Agent

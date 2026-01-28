@@ -79,5 +79,4 @@ services:
 ## Resources
 
 - Deployment Checklist: `.claude/checklists/deployment-checklist.md`
-- Dockerfile Template: `.claude/templates/Dockerfile.template`
 - Docker Patterns: `.claude/skills/docker-patterns.md`
