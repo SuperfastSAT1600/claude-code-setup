@@ -29,35 +29,69 @@ variants/
 
 ---
 
+## How Templates Work
+
+**IMPORTANT**: Claude looks for templates in `.claude/templates/*.template`, NOT in subdirectories.
+
+The `variants/` directory is for **organization only**. Templates must be in the root `.claude/templates/` directory to be used by Claude.
+
+### Structure
+
+```
+.claude/templates/
+├── *.template              # Working templates (Claude uses these)
+└── variants/               # Organized source templates
+    ├── generic/            # Copy these to root (always)
+    ├── react/              # Copy these to root (if using React)
+    ├── nextjs/             # Copy these to root (if using Next.js)
+    └── vue/                # Copy these to root (if using Vue)
+```
+
 ## Usage
 
-### For Template Users
+### Default Setup (Generic Templates Only)
 
-When setting up the template:
+By default, all generic templates are already copied to `.claude/templates/` and ready to use:
+- ✅ `test.spec.ts.template`
+- ✅ `migration.sql.template`
+- ✅ `pr-description.md.template`
+- ✅ `error-handler.ts.template`
+- ✅ `guard.ts.template`
+- ✅ `middleware.ts.template`
+- ✅ `service.ts.template`
+- ✅ `hook.ts.template`
 
-1. **Copy generic templates** (always needed):
+**No action needed** - these work out of the box.
+
+### Adding Framework-Specific Templates
+
+If you're using React, Next.js, or Vue, copy those templates to the root:
+
+```bash
+# Using React?
+cp .claude/templates/variants/react/*.template .claude/templates/
+
+# Using Next.js?
+cp .claude/templates/variants/nextjs/*.template .claude/templates/
+
+# Using Vue?
+cp .claude/templates/variants/vue/*.template .claude/templates/
+```
+
+### Removing Unused Templates
+
+If you're NOT using certain frameworks, you can:
+
+1. **Delete from root templates** (Claude won't see them):
    ```bash
-   cp .claude/templates/variants/generic/* .claude/templates/
+   # Not using React?
+   rm .claude/templates/component.tsx.template
+   rm .claude/templates/form.tsx.template
    ```
 
-2. **Copy framework-specific templates** (only if you use that framework):
+2. **Delete variant directories** (optional cleanup):
    ```bash
-   # Using React?
-   cp .claude/templates/variants/react/* .claude/templates/
-
-   # Using Next.js?
-   cp .claude/templates/variants/nextjs/* .claude/templates/
-
-   # Using Vue?
-   cp .claude/templates/variants/vue/* .claude/templates/
-   ```
-
-3. **Delete unused variant directories**:
-   ```bash
-   # Not using React? Delete it
    rm -rf .claude/templates/variants/react/
-
-   # Not using Next.js? Delete it
    rm -rf .claude/templates/variants/nextjs/
    ```
 

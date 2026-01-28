@@ -34,24 +34,35 @@ git stash
 
 ## Integration Steps
 
-### Step 1: Copy Core Configuration
+### Step 1: Copy Core Files
 
-Start with the essential `.claude/` directory structure:
+Copy the essential files and directories:
 
 ```bash
-# From template directory
-cp -r .claude/ /path/to/your/project/
+# Navigate to your project
+cd /path/to/your/project/
 
-# This copies:
-# - .claude/agents/        (33 specialized agents)
-# - .claude/commands/      (20 workflow commands)
-# - .claude/workflows/     (5 orchestrated workflows)
-# - .claude/checklists/    (13 review checklists)
-# - .claude/rules/         (Core rules)
-# - .claude/settings.json  (Team settings)
+# Copy .claude/ directory (agents, commands, workflows, etc.)
+cp -r /path/to/template/.claude/ ./
+
+# Copy CLAUDE.md (ESSENTIAL - Claude reads this for your tech stack)
+cp /path/to/template/CLAUDE.md ./
+
+# Copy setup files (OPTIONAL - for setup wizard)
+cp /path/to/template/setup.cjs ./
+cp -r /path/to/template/lib/ ./
+
+# Copy MCP template (OPTIONAL - for MCP servers)
+cp /path/to/template/.mcp.template.json ./
 ```
 
-**Result**: Your project now has the full agent/command/workflow infrastructure.
+**What you get**:
+- `.claude/` - Full agent/command/workflow infrastructure (33 agents, 20 commands, 13 checklists)
+- `CLAUDE.md` - **REQUIRED** tech stack configuration
+- `setup.cjs` + `lib/` - Setup wizard with auto-detection (optional)
+- `.mcp.template.json` - MCP server template (optional)
+
+**Result**: Your project now has the complete Claude Code workflow system.
 
 ---
 
@@ -83,13 +94,9 @@ Claude will scan your codebase and identify:
 
 ### Step 3: Customize CLAUDE.md
 
-Copy the template and fill in your actual stack:
+**IMPORTANT**: `CLAUDE.md` was already copied in Step 1. Now edit it with your actual stack.
 
-```bash
-cp /path/to/template/CLAUDE.md ./CLAUDE.md
-```
-
-Edit `CLAUDE.md` with info from Step 2:
+Edit `CLAUDE.md` using info from Step 2:
 
 ```markdown
 ## Tech Stack
@@ -173,23 +180,26 @@ cp /path/to/template/.claude/templates/migration.sql.template .claude/templates/
 
 MCP servers provide external integrations (GitHub, Supabase, etc.).
 
-#### Option A: Use Setup Wizard
+**Note**: If you copied `setup.cjs` and `lib/` in Step 1, you already have the wizard.
+
+#### Option A: Use Setup Wizard (Recommended)
 
 ```bash
-# Copy setup script to your project
-cp /path/to/template/setup.cjs ./
-cp /path/to/template/.mcp.template.json ./
-cp -r /path/to/template/lib/ ./
-
-# Run wizard
+# Run wizard (already copied in Step 1)
 node setup.cjs
 ```
+
+The wizard will:
+- Auto-detect your tech stack
+- Offer to update CLAUDE.md
+- Configure MCP servers interactively
+- Create `.mcp.json` with your API keys
 
 #### Option B: Manual Setup
 
 ```bash
-# Copy MCP template
-cp /path/to/template/.mcp.template.json ./.mcp.json
+# Copy and rename MCP template (if not done in Step 1)
+cp .mcp.template.json .mcp.json
 
 # Edit with your API keys
 # vim .mcp.json or code .mcp.json
@@ -271,26 +281,27 @@ Claude should delegate to `security-reviewer` agent.
 ### Scenario 1: Existing Next.js + Supabase Project
 
 ```bash
-# 1. Copy full .claude/ structure
+# 1. Copy core files
 cp -r template/.claude/ ./
+cp template/CLAUDE.md ./
+cp template/setup.cjs ./
+cp -r template/lib/ ./
+cp template/.mcp.template.json ./
 
-# 2. Create CLAUDE.md
-echo "## Tech Stack
-**Frontend**: Next.js 14, React 18, TypeScript, Tailwind
-**Backend**: Supabase (PostgreSQL, Auth, Storage)
-**Testing**: Jest, Playwright
-" > CLAUDE.md
+# 2. Update CLAUDE.md
+# Edit CLAUDE.md and replace placeholders:
+# - {{FRONTEND_STACK}} → Next.js 14, React 18, TypeScript, Tailwind
+# - {{BACKEND_STACK}} → Supabase (PostgreSQL, Auth, Storage)
+# - {{TESTING_STACK}} → Jest, Playwright
 
-# 3. Copy Next.js skills
-cp template/.claude/skills/nextjs-patterns.md .claude/skills/
-cp template/.claude/skills/react-patterns.md .claude/skills/
+# 3. Copy Next.js/React skills (already in .claude/skills/)
+# No action needed - skills are already there
 
-# 4. Copy relevant templates
-cp template/.claude/templates/component.tsx.template .claude/templates/
-cp template/.claude/templates/api-route.ts.template .claude/templates/
-cp template/.claude/templates/form.tsx.template .claude/templates/
+# 4. Copy relevant templates to root (Claude looks here)
+cp .claude/templates/variants/react/*.template .claude/templates/
+cp .claude/templates/variants/nextjs/*.template .claude/templates/
 
-# 5. Run setup
+# 5. Run setup wizard (auto-detects your stack)
 node setup.cjs
 
 # 6. Done!
@@ -300,59 +311,62 @@ claude
 ### Scenario 2: Existing Vue + FastAPI Project
 
 ```bash
-# 1. Copy .claude/ structure
+# 1. Copy core files
 cp -r template/.claude/ ./
+cp template/CLAUDE.md ./
+cp template/setup.cjs ./
+cp -r template/lib/ ./
 
-# 2. Create CLAUDE.md
-cat > CLAUDE.md <<EOF
-## Tech Stack
-**Frontend**: Vue 3, Vite, TypeScript, Pinia
-**Backend**: Python 3.11, FastAPI, PostgreSQL
-**Testing**: Pytest, Vitest
-EOF
+# 2. Update CLAUDE.md
+# Edit CLAUDE.md and replace placeholders:
+# - {{FRONTEND_STACK}} → Vue 3, Vite, TypeScript, Pinia
+# - {{BACKEND_STACK}} → Python 3.11, FastAPI, PostgreSQL
+# - {{TESTING_STACK}} → Pytest, Vitest
 
-# 3. Skip React/Next.js skills (don't copy them)
+# 3. Skills are already there (all are framework-agnostic except React/Next.js)
+# No action needed
 
-# 4. Copy universal skills
-cp template/.claude/skills/coding-standards.md .claude/skills/
-cp template/.claude/skills/tdd-workflow.md .claude/skills/
-cp template/.claude/skills/backend-patterns.md .claude/skills/
-cp template/.claude/skills/rest-api-design.md .claude/skills/
+# 4. Remove React/Next.js framework-specific skills (optional cleanup)
+rm .claude/skills/react-patterns.md
+rm .claude/skills/nextjs-patterns.md
 
-# 5. Copy universal templates
-cp template/.claude/templates/test.spec.ts.template .claude/templates/
-cp template/.claude/templates/pr-description.md.template .claude/templates/
+# 5. Generic templates already copied, delete React/Next.js variants
+rm -rf .claude/templates/variants/react/
+rm -rf .claude/templates/variants/nextjs/
 
-# 6. Done!
+# 6. Run setup wizard (auto-detects Vue + Python)
+node setup.cjs
+
+# 7. Done!
 claude
 ```
 
 ### Scenario 3: Existing Python/Django Monolith
 
 ```bash
-# 1. Copy .claude/ structure
+# 1. Copy core files
 cp -r template/.claude/ ./
+cp template/CLAUDE.md ./
+cp template/setup.cjs ./
+cp -r template/lib/ ./
 
-# 2. Create CLAUDE.md
-cat > CLAUDE.md <<EOF
-## Tech Stack
-**Frontend**: Django Templates, HTMX, Alpine.js
-**Backend**: Python 3.10, Django 4.2, PostgreSQL
-**Testing**: Pytest, Playwright
-EOF
+# 2. Update CLAUDE.md
+# Edit CLAUDE.md and replace placeholders:
+# - {{FRONTEND_STACK}} → Django Templates, HTMX, Alpine.js
+# - {{BACKEND_STACK}} → Python 3.10, Django 4.2, PostgreSQL
+# - {{TESTING_STACK}} → Pytest, Playwright
 
-# 3. Skip all frontend framework skills
+# 3. Remove frontend framework skills (optional cleanup)
+rm .claude/skills/react-patterns.md
+rm .claude/skills/nextjs-patterns.md
+rm .claude/skills/nodejs-patterns.md
 
-# 4. Copy backend skills
-cp template/.claude/skills/backend-patterns.md .claude/skills/
-cp template/.claude/skills/coding-standards.md .claude/skills/
-cp template/.claude/skills/tdd-workflow.md .claude/skills/
-cp template/.claude/skills/rest-api-design.md .claude/skills/
+# 4. Generic templates already there, remove framework-specific variants
+rm -rf .claude/templates/variants/react/
+rm -rf .claude/templates/variants/nextjs/
 
-# 5. Copy templates (mostly generic)
-cp template/.claude/templates/test.spec.ts.template .claude/templates/
-cp template/.claude/templates/migration.sql.template .claude/templates/
-cp template/.claude/templates/pr-description.md.template .claude/templates/
+# 5. Run setup wizard (auto-detects Python + Django)
+node setup.cjs
 
 # 6. Done!
 claude
