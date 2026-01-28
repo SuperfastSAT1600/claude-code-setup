@@ -1,3 +1,8 @@
+---
+name: backend-patterns
+description: Provides comprehensive patterns for API design, database operations, caching strategies, and backend architecture best practices.
+---
+
 # Backend Patterns
 
 API design, database patterns, caching strategies, and backend architecture.

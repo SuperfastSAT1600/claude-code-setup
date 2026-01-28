@@ -1,3 +1,8 @@
+---
+name: project-guidelines
+description: Template for creating project-specific development guidelines including architecture decisions, domain patterns, team conventions, and technology-specific rules.
+---
+
 # Project Guidelines Template
 
 Template for creating project-specific development guidelines. Copy and customize for each project.

@@ -1,3 +1,8 @@
+---
+name: dev-server-autoopen
+description: Provides quick reference for configuring automatic localhost opening across modern development frameworks and build tools.
+---
+
 # Dev Server Auto-Open Patterns
 
 Quick reference for configuring automatic localhost opening across frameworks.

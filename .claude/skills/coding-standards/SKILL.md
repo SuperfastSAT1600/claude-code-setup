@@ -1,3 +1,8 @@
+---
+name: coding-standards
+description: Provides language-agnostic best practices and language-specific coding patterns for writing clean, maintainable code.
+---
+
 # Coding Standards
 
 Language-agnostic best practices and language-specific patterns.

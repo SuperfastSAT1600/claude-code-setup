@@ -1,3 +1,8 @@
+---
+name: graphql-patterns
+description: Provides essential patterns for GraphQL APIs including schema design, resolvers, DataLoader for N+1 prevention, authorization, and pagination.
+---
+
 # GraphQL Patterns
 
 Essential patterns for GraphQL APIs: schema design, resolvers, DataLoader, authorization, and pagination.

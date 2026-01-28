@@ -1,3 +1,8 @@
+---
+name: database-patterns
+description: Provides essential database design patterns for relational databases based on SQL standards, PostgreSQL documentation, and industry best practices.
+---
+
 # Database Patterns
 
 Essential database design patterns for relational databases. Based on SQL standards, PostgreSQL documentation, and industry best practices.

@@ -1,3 +1,8 @@
+---
+name: prompt-engineering
+description: Evidence-based techniques for designing effective LLM prompts including few-shot learning, chain-of-thought reasoning, and prompt injection prevention.
+---
+
 # Prompt Engineering
 
 Evidence-based techniques for designing effective LLM prompts from leading AI research and documentation.

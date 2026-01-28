@@ -1,3 +1,8 @@
+---
+name: docker-patterns
+description: Provides best practices for containerization, multi-stage builds, container orchestration, and Docker security hardening.
+---
+
 # Docker Patterns
 
 Best practices for containerization, multi-stage builds, and container orchestration.

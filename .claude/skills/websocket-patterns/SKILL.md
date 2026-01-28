@@ -1,3 +1,8 @@
+---
+name: websocket-patterns
+description: Production-ready patterns for real-time bidirectional communication based on RFC 6455 and Socket.io best practices.
+---
+
 # WebSocket Patterns
 
 Production-ready patterns for real-time bidirectional communication. Based on RFC 6455 (WebSocket Protocol), Socket.io v4 docs, and MDN WebSocket API.

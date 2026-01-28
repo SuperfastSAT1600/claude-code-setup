@@ -1,3 +1,8 @@
+---
+name: documentation-patterns
+description: Provides essential documentation standards for code, APIs, and projects including JSDoc/TSDoc, README structure, ADR format, and changelog best practices.
+---
+
 # Documentation Patterns
 
 Essential documentation standards for code, APIs, and projects. Covers JSDoc/TSDoc, README structure, ADR format, and changelog best practices.

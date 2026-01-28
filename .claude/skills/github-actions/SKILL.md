@@ -1,3 +1,8 @@
+---
+name: github-actions
+description: Provides patterns for building fast, reliable CI/CD workflows with GitHub-hosted runners including workflow syntax, caching, secrets, and reusable workflows.
+---
+
 # GitHub Actions
 
 Fast, reliable CI/CD workflows with GitHub-hosted runners. Core patterns for building production pipelines.

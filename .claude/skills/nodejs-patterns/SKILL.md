@@ -1,3 +1,8 @@
+---
+name: nodejs-patterns
+description: Provides best practices for Node.js backend development including layered architecture, configuration management, error handling, and service patterns with Supabase integration.
+---
+
 # Node.js Patterns
 
 Best practices for Node.js backend development.

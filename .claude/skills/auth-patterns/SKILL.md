@@ -1,3 +1,8 @@
+---
+name: auth-patterns
+description: Provides authoritative security patterns for implementing authentication and authorization systems based on OWASP, RFC standards, and industry best practices.
+---
+
 # Authentication Patterns
 
 Authoritative security patterns for implementing authentication and authorization systems. Based on OWASP, RFC standards, and industry best practices.

@@ -1,3 +1,8 @@
+---
+name: nextjs-patterns
+description: Provides comprehensive Next.js App Router patterns including server/client components, data fetching, routing, layouts, metadata, and performance optimization.
+---
+
 # Next.js Patterns
 
 Comprehensive guide to Next.js App Router patterns and best practices.

@@ -1,3 +1,8 @@
+---
+name: user-intent-patterns
+description: Pattern matching for natural language user requests to appropriate workflows, agents, and commands for seamless task routing.
+---
+
 # User Intent Patterns
 
 Pattern matching for natural language user requests to appropriate workflows, agents, and commands.

@@ -1,3 +1,8 @@
+---
+name: rest-api-design
+description: Authoritative guide for designing RESTful APIs based on IETF RFCs, OpenAPI standards, and industry specifications.
+---
+
 # REST API Design
 
 Authoritative guide for designing RESTful APIs based on IETF RFCs, OpenAPI standards, and industry specifications.

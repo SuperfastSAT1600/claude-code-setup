@@ -1,3 +1,8 @@
+---
+name: frontend-patterns
+description: Provides React patterns, component design, state management, and UI best practices for building modern frontend applications.
+---
+
 # Frontend Patterns
 
 React, component design, state management, and UI best practices.

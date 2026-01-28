@@ -1,3 +1,8 @@
+---
+name: rag-patterns
+description: Retrieval-Augmented Generation patterns combining vector search and LLMs for knowledge-intensive tasks including chunking strategies, hybrid search, and reranking.
+---
+
 # RAG Patterns
 
 Retrieval-Augmented Generation combines parametric (LLM) and non-parametric (vector database) memory for knowledge-intensive tasks. Originally proposed by Lewis et al. (2020), RAG retrieves relevant documents and uses them as context for LLM generation.

@@ -1,3 +1,8 @@
+---
+name: react-patterns
+description: Comprehensive guide to React best practices including component patterns, custom hooks, state management, performance optimization, and testing strategies.
+---
+
 # React Patterns
 
 Comprehensive guide to React best practices, hooks, and component patterns.
