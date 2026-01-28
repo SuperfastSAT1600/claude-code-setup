@@ -42,8 +42,14 @@ Critical paths: authentication flows, checkout processes, registration, search f
 
 - E2E Testing Checklist: `.claude/checklists/e2e-testing-checklist.md`
 - Playwright Config Template: `.claude/templates/playwright.config.ts`
-- TDD Workflow: `.claude/skills/tdd-workflow.md`
+- TDD Workflow: `.claude/skills/tdd-workflow/`
 
 ## Coordination
 
 Runs after implementation and unit tests complete. Reports test results and failures to orchestrator with screenshots.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

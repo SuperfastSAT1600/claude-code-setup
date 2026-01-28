@@ -5,7 +5,6 @@ model: sonnet
 tools: Read, Write, Grep, Glob, Bash
 skills:
   - database-patterns
-  - prisma-patterns
   - backend-patterns
   - coding-standards
 ---
@@ -58,3 +57,9 @@ Plan, design, and execute database schema migrations and data transformations wi
 - Migration Review: `.claude/checklists/database-migration-review.md`
 - Hotfix Checklist: `.claude/checklists/hotfix-checklist.md`
 - Migration Template: `.claude/templates/migration.sql.template`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

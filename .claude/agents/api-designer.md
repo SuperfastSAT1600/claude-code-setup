@@ -50,8 +50,14 @@ Senior API architect handling complete API lifecycle: design scalable REST/Graph
 
 ## Resources
 
-- REST Patterns: `.claude/skills/rest-api-design.md`
-- GraphQL Patterns: `.claude/skills/graphql-patterns.md`
-- Backend Patterns: `.claude/skills/backend-patterns.md`
+- REST Patterns: `.claude/skills/rest-api-design/`
+- GraphQL Patterns: `.claude/skills/graphql-patterns/`
+- Backend Patterns: `.claude/skills/backend-patterns/`
 - API Route Template: `.claude/templates/api-route.ts.template`
 - API Documentation Template: `.claude/templates/api-documentation.md`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

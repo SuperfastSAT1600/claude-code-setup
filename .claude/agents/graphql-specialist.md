@@ -7,7 +7,6 @@ skills:
   - graphql-patterns
   - backend-patterns
   - database-patterns
-  - prisma-patterns
 ---
 
 # GraphQL Specialist
@@ -130,3 +129,9 @@ const userLoader = new DataLoader(async (ids: string[]) => {
 - Real-time data requirements
 - Complex data relationships
 - Over-fetching/under-fetching problems
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

@@ -118,3 +118,9 @@ function handleResult(result: Result) {
 - [ ] Implement type guards
 - [ ] Add exhaustive checks
 - [ ] Mark immutable data as `readonly`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

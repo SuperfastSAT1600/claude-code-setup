@@ -72,6 +72,10 @@ export const defaultLocale: Locale = 'en';
 }
 ```
 
+## Resources
+
+- React Context Template: `.claude/templates/variants/react/context.tsx.template` (for i18n context provider)
+
 ## Usage in Components
 
 ```typescript
@@ -158,3 +162,9 @@ function LocaleSwitcher() {
 - Assume word order is same across languages
 - Use flags to represent languages
 - Store translations in database (use files)
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

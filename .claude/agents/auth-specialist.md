@@ -48,7 +48,16 @@ Security-focused expert in authentication and authorization systems. Design and 
 ## Resources
 
 - Security Audit: `.claude/checklists/security-audit.md`
-- Backend Patterns: `.claude/skills/backend-patterns.md`
+- Backend Patterns: `.claude/skills/backend-patterns/`
 - Guard Template: `.claude/templates/guard.ts.template`
 - Middleware Template: `.claude/templates/middleware.ts.template`
 - Service Template: `.claude/templates/service.ts.template`
+- Auth Context Template: `.claude/templates/variants/react/context.tsx.template` (for AuthProvider)
+- Auth Hook Template: `.claude/templates/variants/react/hook.ts.template` (for useAuth, useSession)
+- Auth HOC Template: `.claude/templates/variants/react/hoc.tsx.template` (for withAuth, withRole)
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

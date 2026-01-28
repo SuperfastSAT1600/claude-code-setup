@@ -74,3 +74,9 @@ Start simple (MVP first), consider testing alongside code, identify risks early,
 ## Coordination
 
 Plan is a roadmap, not rigid script. Implementation may reveal better approaches. Goal is clarity and direction while remaining flexible.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

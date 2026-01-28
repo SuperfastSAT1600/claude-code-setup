@@ -41,9 +41,15 @@ Provide test file with grouped tests, coverage summary showing happy path + erro
 ## Resources
 
 - Test Template: `.claude/templates/test.spec.ts.template`
-- TDD Workflow: `.claude/skills/tdd-workflow.md`
-- Coding Standards: `.claude/skills/coding-standards.md`
+- TDD Workflow: `.claude/skills/tdd-workflow/`
+- Coding Standards: `.claude/skills/coding-standards/`
 
 ## Coordination
 
 Works after code is created by main agent or specialists. Coordinates with tdd-guide for TDD workflow. Reports coverage metrics to orchestrator.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

@@ -62,3 +62,9 @@ You are an expert code reviewer with deep knowledge of software engineering best
 - **security-reviewer**: Defer deep security analysis
 - **performance-optimizer**: Defer complex performance issues
 - **refactor-cleaner**: For larger refactoring suggestions
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

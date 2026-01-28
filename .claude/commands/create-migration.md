@@ -421,12 +421,12 @@ Ready to apply to staging? (y/n)
 
 ## Integration
 
-### With ORMs
+### With Supabase
 
-**Prisma:**
+**Supabase CLI:**
 ```bash
-# Generate Prisma migration
-npx prisma migrate dev --name add_user_preferences
+# Create new migration
+supabase migration new add_user_preferences
 
 # Claude can enhance generated migration with:
 # - Better error handling

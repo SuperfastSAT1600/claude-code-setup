@@ -57,4 +57,10 @@ Audit web applications for accessibility issues and implement fixes to achieve W
 ## Resources
 
 - Accessibility Audit: `.claude/checklists/accessibility-audit.md`
-- React Patterns: `.claude/skills/react-patterns.md`
+- React Patterns: `.claude/skills/react-patterns/`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

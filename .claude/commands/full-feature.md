@@ -116,9 +116,9 @@ I'll delegate to the planner agent to create an implementation plan.
    - PATCH /api/profile - Update profile
    - POST /api/profile/avatar - Upload avatar
 
-4. **Database** (`prisma/schema.prisma`)
-   - Add avatarUrl to User model
-   - Create migration
+4. **Database** (`supabase/migrations/`)
+   - Add avatarUrl to users table
+   - Create migration file
 
 **Dependencies**: AWS S3 SDK, react-dropzone
 **Estimated Effort**: 4-6 hours

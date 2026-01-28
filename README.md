@@ -228,15 +228,17 @@ See [WORKFLOW.md](WORKFLOW.md) Section 7 for the complete customization roadmap.
 │   │   ├── security-audit.md
 │   │   ├── build-errors-checklist.md
 │   │   └── ... (10 more)
-│   ├── templates/            # 16 code templates
-│   │   ├── component.tsx.template
-│   │   ├── api-route.ts.template
-│   │   ├── Dockerfile.template
-│   │   └── ... (13 more)
+│   ├── templates/            # Code templates (Claude looks here)
+│   │   ├── *.template        # Working templates (8 generic templates)
+│   │   └── variants/         # Organized source templates
+│   │       ├── generic/      # Framework-agnostic (8 templates)
+│   │       ├── react/        # React-specific (2 templates)
+│   │       ├── nextjs/       # Next.js-specific (1 template)
+│   │       └── vue/          # Vue-specific (add your own)
 │   ├── rules/                # Core guidelines
 │   │   ├── essential-rules.md
 │   │   ├── agent-workflow.md (hybrid model)
-│   │   └── ...
+│   │   └── self-aware-system.md
 │   ├── skills/               # 20 reference knowledge files
 │   │   ├── react-patterns.md
 │   │   ├── auth-patterns.md
@@ -244,12 +246,18 @@ See [WORKFLOW.md](WORKFLOW.md) Section 7 for the complete customization roadmap.
 │   │   └── ... (17 more)
 │   ├── settings.json         # Shared settings (hooks, pre-approved ops)
 │   └── settings.local.json   # Local overrides (gitignored)
+├── lib/                      # Setup wizard modules
+│   ├── techstack.cjs         # Auto-detect framework/backend/database
+│   ├── claude-md.cjs         # Generate CLAUDE.md from detected stack
+│   └── ... (other modules)
 ├── .mcp.template.json        # MCP template (27 servers, committed)
 ├── .mcp.json                 # MCP config with keys (gitignored, generated)
 ├── .env.example              # Environment template
 ├── .env                      # Your secrets (gitignored, generated)
 ├── setup.cjs                 # Cross-platform setup wizard
 ├── CLAUDE.md                 # Team guidelines ⚠️ CUSTOMIZE
+├── TEMPLATE-SETUP.md         # Setup guide for new projects
+├── INTEGRATION.md            # Integration guide for existing codebases
 ├── WORKFLOW.md               # Complete 1500+ line guide
 ├── QUICKSTART.md             # Quick reference
 └── README.md                 # This file

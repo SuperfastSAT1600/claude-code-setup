@@ -41,9 +41,15 @@ Guide developers through Test-Driven Development using Red-Green-Refactor discip
 ## Resources
 
 - Test Template: `.claude/templates/test.spec.ts.template`
-- TDD Workflow: `.claude/skills/tdd-workflow.md`
-- Coding Standards: `.claude/skills/coding-standards.md`
+- TDD Workflow: `.claude/skills/tdd-workflow/`
+- Coding Standards: `.claude/skills/coding-standards/`
 
 ## Coordination
 
 Works with unit-test-writer for test patterns. Reports to orchestrator after each cycle completion.
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

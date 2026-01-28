@@ -95,3 +95,9 @@ npm test
 ## Resources
 
 `.claude/checklists/dependency-audit.md`, `.claude/checklists/security-audit.md`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

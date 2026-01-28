@@ -203,11 +203,11 @@
     },
     {
       "tool": "Bash",
-      "prompt": "run prisma commands"
+      "prompt": "run supabase commands"
     },
     {
       "tool": "Bash",
-      "prompt": "generate prisma client"
+      "prompt": "generate supabase types"
     },
     {
       "tool": "Bash",

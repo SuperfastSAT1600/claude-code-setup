@@ -166,3 +166,9 @@ io.adapter(createAdapter(pubClient, subClient));
 - **Collaborative Editing**: Document rooms, cursor positions
 - **Live Dashboard**: Subscribe to data feeds, push updates
 - **Notifications**: User-specific rooms, priority levels
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

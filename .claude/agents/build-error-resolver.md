@@ -61,5 +61,11 @@ Verification: Build success, tests passing
 
 ## Resources
 
-- Coding Standards: `.claude/skills/coding-standards.md`
+- Coding Standards: `.claude/skills/coding-standards/`
 - Build Errors Checklist: `.claude/checklists/build-errors-checklist.md`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)

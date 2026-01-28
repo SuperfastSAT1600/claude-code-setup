@@ -79,5 +79,10 @@ services:
 ## Resources
 
 - Deployment Checklist: `.claude/checklists/deployment-checklist.md`
-- Dockerfile Template: `.claude/templates/Dockerfile.template`
-- Docker Patterns: `.claude/skills/docker-patterns.md`
+- Docker Patterns: `.claude/skills/docker-patterns/`
+
+## Error Log
+
+Agent: append here when you make a mistake so it never repeats.
+
+(empty list - no errors yet)
