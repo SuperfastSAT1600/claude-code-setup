@@ -46,6 +46,6 @@ Expert in continuous integration and deployment pipelines. Design fast, reliable
 
 ## Resources
 
-- GitHub Actions Skill: `.claude/skills/github-actions.md`
+- GitHub Actions Skill: `.claude/skills/github-actions/`
 - Deployment Checklist: `.claude/checklists/deployment-checklist.md`
 - GitHub Workflow Template: `.claude/templates/github-workflow.yml`

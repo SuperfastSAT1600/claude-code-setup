@@ -42,7 +42,7 @@ Critical paths: authentication flows, checkout processes, registration, search f
 
 - E2E Testing Checklist: `.claude/checklists/e2e-testing-checklist.md`
 - Playwright Config Template: `.claude/templates/playwright.config.ts`
-- TDD Workflow: `.claude/skills/tdd-workflow.md`
+- TDD Workflow: `.claude/skills/tdd-workflow/`
 
 ## Coordination
 

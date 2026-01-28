@@ -80,4 +80,4 @@ req.log.info({ method, path, query }, 'Request started');
 
 ## Resources
 
-`.claude/skills/backend-patterns.md`, `.claude/checklists/deployment-checklist.md`
+`.claude/skills/backend-patterns/`, `.claude/checklists/deployment-checklist.md`

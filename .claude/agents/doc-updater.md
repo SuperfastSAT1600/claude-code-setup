@@ -98,5 +98,5 @@ Synchronize documentation with code changes. Keep docs current and accurate.
 - PR Description Template: `.claude/templates/pr-description.md.template`
 - API Documentation Template: `.claude/templates/api-documentation.md`
 - README Template: `.claude/templates/readme.template.md`
-- Documentation Patterns: `.claude/skills/documentation-patterns.md`
-- Project Guidelines: `.claude/skills/project-guidelines.md`
+- Documentation Patterns: `.claude/skills/documentation-patterns/`
+- Project Guidelines: `.claude/skills/project-guidelines/`

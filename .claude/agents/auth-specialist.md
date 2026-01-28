@@ -48,7 +48,7 @@ Security-focused expert in authentication and authorization systems. Design and 
 ## Resources
 
 - Security Audit: `.claude/checklists/security-audit.md`
-- Backend Patterns: `.claude/skills/backend-patterns.md`
+- Backend Patterns: `.claude/skills/backend-patterns/`
 - Guard Template: `.claude/templates/guard.ts.template`
 - Middleware Template: `.claude/templates/middleware.ts.template`
 - Service Template: `.claude/templates/service.ts.template`

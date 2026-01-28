@@ -41,8 +41,8 @@ Provide test file with grouped tests, coverage summary showing happy path + erro
 ## Resources
 
 - Test Template: `.claude/templates/test.spec.ts.template`
-- TDD Workflow: `.claude/skills/tdd-workflow.md`
-- Coding Standards: `.claude/skills/coding-standards.md`
+- TDD Workflow: `.claude/skills/tdd-workflow/`
+- Coding Standards: `.claude/skills/coding-standards/`
 
 ## Coordination
 
