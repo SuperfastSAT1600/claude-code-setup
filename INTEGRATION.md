@@ -36,24 +36,31 @@ git stash
 
 ### Step 1: Copy Core Files
 
-Copy the essential files and directories:
+First, download/clone the template repository, then copy files to your project:
 
 ```bash
-# Navigate to your project
+# Download the template (if you haven't already)
+git clone https://github.com/YOUR-ORG/claude-code-template.git /tmp/claude-template
+# OR: Download and extract ZIP to /tmp/claude-template
+
+# Navigate to your existing project
 cd /path/to/your/project/
 
 # Copy .claude/ directory (agents, commands, workflows, etc.)
-cp -r /path/to/template/.claude/ ./
+cp -r /tmp/claude-template/.claude/ ./
 
 # Copy CLAUDE.md (ESSENTIAL - Claude reads this for your tech stack)
-cp /path/to/template/CLAUDE.md ./
+cp /tmp/claude-template/CLAUDE.md ./
 
 # Copy setup files (OPTIONAL - for setup wizard)
-cp /path/to/template/setup.cjs ./
-cp -r /path/to/template/lib/ ./
+cp /tmp/claude-template/setup.cjs ./
+cp -r /tmp/claude-template/lib/ ./
 
 # Copy MCP template (OPTIONAL - for MCP servers)
-cp /path/to/template/.mcp.template.json ./
+cp /tmp/claude-template/.mcp.template.json ./
+
+# Cleanup (optional)
+rm -rf /tmp/claude-template
 ```
 
 **What you get**:
