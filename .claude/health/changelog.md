@@ -11,6 +11,16 @@ Log of all self-healing, evolution, adaptation, and refactoring actions.
 - **Reason**: why
 -->
 
+## [2026-01-28] heal(skills): fix broken skill references after directory restructuring
+- **Type**: heal
+- **Changed**:
+  - .claude/commands/open-localhost.md
+  - .claude/commands/refactor-clean.md
+  - .claude/commands/tdd.md
+  - .claude/skills/README.md
+  - .claude/skills/skill-creator/scripts/package_skill.py
+- **Reason**: Fixed broken skill path references after skills were restructured into directories. Commands were referencing `.claude/skills/skill-name.md` (old format) instead of `.claude/skills/skill-name/SKILL.md` (new format). README.md had broken internal references to react-patterns references. package_skill.py had bare import that would fail - added sys.path manipulation to fix ModuleNotFoundError.
+
 ## [2026-01-28] heal(agents): add Error Log sections to all 34 agents
 - **Type**: heal
 - **Changed**: All 34 agent files in .claude/agents/ (accessibility-auditor, ai-integration-specialist, api-designer, architect, auth-specialist, build-error-resolver, ci-cd-specialist, code-reviewer, code-simplifier, database-architect, dependency-manager, doc-updater, docker-specialist, e2e-runner, graphql-specialist, i18n-specialist, iac-specialist, integration-test-writer, load-test-specialist, migration-specialist, mobile-specialist, monitoring-architect, performance-optimizer, planner, refactor-cleaner, runbook-writer, security-reviewer, system-health, tdd-guide, tech-debt-analyzer, type-safety-enforcer, unit-test-writer, verify-app, websocket-specialist)
