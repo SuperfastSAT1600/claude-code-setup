@@ -48,7 +48,7 @@ Reference skills based on task type:
 - React components: `react-patterns.md`
 - Next.js features: `nextjs-patterns.md`
 - API routes: `rest-api-design.md`, `backend-patterns.md`
-- Database: `prisma-patterns.md`
+- Database: `database-patterns.md`
 - State management: `frontend-patterns.md`
 
 ## Code Quality Standards

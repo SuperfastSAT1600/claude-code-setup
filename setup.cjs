@@ -35,6 +35,7 @@ const { setupEnvironmentFiles } = require('./lib/env.cjs');
 const { createDirectories, createConfigFiles, updateGitignore } = require('./lib/files.cjs');
 const { setupPackageJson, installDependencies } = require('./lib/dependencies.cjs');
 const { showSummary } = require('./lib/summary.cjs');
+const { setupClaudeMd } = require('./lib/claude-md.cjs');
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -85,19 +86,22 @@ async function attemptAutoInstall(rl, prereqs, platformInfo) {
 }
 
 async function continueSetup(rl, platformInfo, prereqs, results) {
-  // Step 1: GitHub Setup (REQUIRED)
+  // Step 1: Tech Stack Detection & CLAUDE.md Setup
+  results.claudeMd = await setupClaudeMd(rl);
+
+  // Step 2: GitHub Setup (REQUIRED)
   results.github = await setupGitHub(rl, platformInfo);
 
-  // Step 2: Supabase Setup (REQUIRED)
+  // Step 3: Supabase Setup (REQUIRED)
   results.supabase = await setupSupabase(rl, platformInfo);
 
-  // Step 3: Claude Code Installation
+  // Step 4: Claude Code Installation
   results.claudeCode = await setupClaudeCode(rl, platformInfo);
 
-  // Step 4: Auto-open localhost configuration
+  // Step 5: Auto-open localhost configuration
   results.localhost = await configureAutoOpenLocalhost(rl);
 
-  // Step 5: MCP Configuration
+  // Step 6: MCP Configuration
   results.mcp = await configureMcpServers(
     rl,
     platformInfo,
@@ -106,7 +110,7 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
     null  // No Vercel token - it can be configured in MCP step if needed
   );
 
-  // Step 6: Environment Files
+  // Step 7: Environment Files
   const collectedEnvVars = {};
   if (results.github?.token) {
     collectedEnvVars.GITHUB_PERSONAL_ACCESS_TOKEN = results.github.token;
@@ -120,19 +124,19 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
 
   results.env = await setupEnvironmentFiles(rl, collectedEnvVars);
 
-  // Step 7: Create Directories
+  // Step 8: Create Directories
   results.directories = createDirectories();
 
-  // Step 8: Create Config Files
+  // Step 9: Create Config Files
   results.configFiles = createConfigFiles();
 
-  // Step 9: Update .gitignore
+  // Step 10: Update .gitignore
   results.gitignore = updateGitignore();
 
-  // Step 10: Package.json Setup
+  // Step 11: Package.json Setup
   results.packageJson = await setupPackageJson(rl);
 
-  // Step 11: Install Dependencies
+  // Step 12: Install Dependencies
   if (results.packageJson?.created) {
     results.dependencies = await installDependencies(rl, prereqs.packageManagers);
   }

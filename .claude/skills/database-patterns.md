@@ -59,7 +59,7 @@ CREATE INDEX idx_active_users ON users(email) WHERE deleted_at IS NULL;
 - High cost estimates = update statistics (ANALYZE table)
 - Nested Loop on large datasets = consider JOIN algorithm change
 
-**N+1 Prevention**: Use JOINs, batch loading (DataLoader), or eager loading (Prisma include)
+**N+1 Prevention**: Use JOINs, batch loading (DataLoader), or eager loading (Supabase client with select/join)
 
 **Pagination**: Cursor-based for large datasets (WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC LIMIT n)
 
@@ -102,4 +102,4 @@ CREATE INDEX idx_active_users ON users(email) WHERE deleted_at IS NULL;
 - ISO/IEC 9075 SQL Standard: https://www.iso.org/standard/76583.html
 - Use The Index, Luke (Indexing Guide): https://use-the-index-luke.com/
 - Database Normalization Theory: https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf
-- Prisma Performance Optimization: https://www.prisma.io/docs/guides/performance-and-optimization
+- Supabase Performance Guide: https://supabase.com/docs/guides/database/postgres/performance

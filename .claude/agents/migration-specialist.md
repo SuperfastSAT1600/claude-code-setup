@@ -5,7 +5,6 @@ model: sonnet
 tools: Read, Write, Grep, Glob, Bash
 skills:
   - database-patterns
-  - prisma-patterns
   - backend-patterns
   - coding-standards
 ---

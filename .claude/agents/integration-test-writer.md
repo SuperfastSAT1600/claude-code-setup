@@ -8,7 +8,6 @@ skills:
   - backend-patterns
   - rest-api-design
   - database-patterns
-  - prisma-patterns
 ---
 
 # Integration Test Writer Agent
@@ -23,7 +22,7 @@ Write integration tests that verify how components work together. Test real inte
 - External API mocking (MSW, nock for third-party services)
 - Test database setup/teardown and transaction rollbacks
 - Test isolation with clean state per test
-- Framework expertise: Supertest, Prisma testing, Testcontainers
+- Framework expertise: Supertest, Supabase client testing, Testcontainers
 
 ## Approach
 

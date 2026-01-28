@@ -48,36 +48,56 @@ Just describe what you want in plain English:
 
 ## Tech Stack
 
-**Frontend**: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS, React Query, Zod
+> ⚠️ **CUSTOMIZE THIS SECTION** - Replace with your project's actual tech stack
 
-**Backend**: Node.js 20+, Supabase (includes PostgreSQL, Auth, Storage, Real-time, Broadcast), Supabase Edge Functions, Redis. Use Supabase client + generated types instead of Prisma.
+**Frontend**: {{FRONTEND_STACK}}
+<!-- Example: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS -->
+<!-- Example: Vue 3, Nuxt 3, TypeScript, UnoCSS -->
+<!-- Example: Svelte 4, SvelteKit, TypeScript -->
 
-**Testing**: Vitest, Playwright, React Testing Library
+**Backend**: {{BACKEND_STACK}}
+<!-- Example: Node.js 20+, Supabase (PostgreSQL, Auth, Storage, Real-time) -->
+<!-- Example: Node.js 20+, Express, PostgreSQL, Prisma -->
+<!-- Example: Python 3.11+, FastAPI, SQLAlchemy -->
 
-**DevOps**: Docker, GitHub Actions
+**Testing**: {{TESTING_STACK}}
+<!-- Example: Vitest, Playwright, React Testing Library -->
+<!-- Example: Jest, Cypress, Testing Library -->
+
+**DevOps**: {{DEVOPS_STACK}}
+<!-- Example: Docker, GitHub Actions, Vercel -->
+<!-- Example: Docker, GitLab CI, AWS -->
 
 ---
 
 ## Project Structure
 
+> ⚠️ **CUSTOMIZE THIS SECTION** - Update to match your project's actual structure
+
 ```
-src/
-├── app/           # Next.js pages
-├── components/    # UI components
-├── features/      # Feature modules
-├── lib/           # Third-party integrations
-├── hooks/         # Custom hooks
-├── utils/         # Utilities
-└── types/         # TypeScript types
+{{PROJECT_STRUCTURE}}
+# Example for Next.js:
+# src/
+# ├── app/           # Next.js pages
+# ├── components/    # UI components
+# ├── features/      # Feature modules
+# ├── lib/           # Third-party integrations
+# ├── hooks/         # Custom hooks
+# ├── utils/         # Utilities
+# └── types/         # TypeScript types
 ```
 
 ---
 
 ## Dependencies
 
-**Approved**: date-fns, zod, react-hook-form, @reduxjs/toolkit, vitest
+> ⚠️ **CUSTOMIZE THIS SECTION** - List approved and forbidden dependencies for your project
 
-**Forbidden**: moment.js, full lodash
+**Approved**: {{APPROVED_DEPS}}
+<!-- Example: date-fns, zod, react-hook-form, @tanstack/react-query -->
+
+**Forbidden**: {{FORBIDDEN_DEPS}}
+<!-- Example: moment.js, full lodash (use lodash-es with specific imports) -->
 
 ---
 

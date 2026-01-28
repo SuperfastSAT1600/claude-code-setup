@@ -164,7 +164,7 @@ export function createApp() {
 import { createApp } from './app';
 import { config } from './config';
 import { logger } from './utils/logger';
-import { prisma } from './lib/prisma';
+import { supabase } from './lib/supabase';
 
 async function main() {
   const app = createApp();
@@ -174,7 +174,7 @@ async function main() {
   signals.forEach(signal => {
     process.on(signal, async () => {
       logger.info(`Received ${signal}, shutting down gracefully`);
-      await prisma.$disconnect();
+      // Supabase client cleanup if needed
       process.exit(0);
     });
   });
@@ -404,40 +404,37 @@ log.error({ err, userId }, 'Failed to create user');
 
 ## Database Connection
 
-### Prisma Setup
+### Supabase Setup
 ```typescript
-// src/lib/prisma.ts
-import { PrismaClient } from '@prisma/client';
+// src/lib/supabase.ts
+import { createClient } from '@supabase/supabase-js';
 import { logger } from '../utils/logger';
 
-const prismaClientSingleton = () => {
-  return new PrismaClient({
-    log: [
-      { emit: 'event', level: 'query' },
-      { emit: 'event', level: 'error' },
-      { emit: 'event', level: 'warn' },
-    ],
+const supabaseUrl = process.env.SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+// Server-side client with service role key (bypasses RLS)
+export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+});
+
+// For client-specific requests with RLS
+export const createUserClient = (accessToken: string) => {
+  return createClient(supabaseUrl, process.env.SUPABASE_ANON_KEY!, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
   });
 };
-
-declare global {
-  var prisma: ReturnType<typeof prismaClientSingleton> | undefined;
-}
-
-export const prisma = globalThis.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.prisma = prisma;
-}
-
-// Log queries in development
-prisma.$on('query', (e) => {
-  logger.debug({ query: e.query, duration: e.duration }, 'Database query');
-});
-
-prisma.$on('error', (e) => {
-  logger.error({ message: e.message }, 'Database error');
-});
 ```
 
 ---
@@ -488,7 +485,7 @@ router.post('/auth/login', authLimiter, loginHandler);
 
 ```typescript
 // src/services/userService.ts
-import { prisma } from '../lib/prisma';
+import { supabase } from '../lib/supabase';
 import { NotFoundError, ConflictError } from '../utils/errors';
 import { hashPassword } from '../utils/password';
 import { CreateUserInput, UpdateUserInput } from '../models/user';
@@ -497,57 +494,88 @@ export class UserService {
   async findAll(options?: { page?: number; perPage?: number }) {
     const page = options?.page || 1;
     const perPage = options?.perPage || 20;
+    const from = (page - 1) * perPage;
+    const to = from + perPage - 1;
 
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        skip: (page - 1) * perPage,
-        take: perPage,
-        orderBy: { createdAt: 'desc' },
-      }),
-      prisma.user.count(),
+    const [{ data: users, error: usersError }, { count, error: countError }] = await Promise.all([
+      supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(from, to),
+      supabase
+        .from('users')
+        .select('*', { count: 'exact', head: true }),
     ]);
 
-    return { users, total, page, perPage };
+    if (usersError) throw usersError;
+    if (countError) throw countError;
+
+    return { users: users || [], total: count || 0, page, perPage };
   }
 
   async findById(id: string) {
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) {
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !user) {
       throw new NotFoundError('User', id);
     }
     return user;
   }
 
   async create(data: CreateUserInput) {
-    const existing = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
+    const { data: existing } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', data.email)
+      .single();
+
     if (existing) {
       throw new ConflictError('Email already registered');
     }
 
     const hashedPassword = await hashPassword(data.password);
 
-    return prisma.user.create({
-      data: {
+    const { data: user, error } = await supabase
+      .from('users')
+      .insert({
         ...data,
         password: hashedPassword,
-      },
-    });
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return user;
   }
 
   async update(id: string, data: UpdateUserInput) {
     await this.findById(id); // Ensure exists
 
-    return prisma.user.update({
-      where: { id },
-      data,
-    });
+    const { data: user, error } = await supabase
+      .from('users')
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return user;
   }
 
   async delete(id: string) {
     await this.findById(id);
-    await prisma.user.delete({ where: { id } });
+
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
   }
 }
 

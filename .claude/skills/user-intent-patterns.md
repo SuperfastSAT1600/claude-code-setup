@@ -118,7 +118,7 @@ Users describe what they want in plain English. Classify intent, select appropri
 ### By File Context
 - `.tsx`, `.jsx` files → Frontend work
 - `/api` routes → Backend work
-- `.sql`, `.prisma` → Database work
+- `.sql`, `supabase/migrations/` → Database work
 - `.yml` in `.github` → CI/CD work
 - `.test.ts` → Testing work
 

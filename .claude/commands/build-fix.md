@@ -164,9 +164,9 @@ The following errors require human decision:
    Suggestion: Add null check or use optional chaining
 
 3. **database.ts:34**
-   Error: Module not found '@prisma/client'
+   Error: Module not found '@supabase/supabase-js'
    Context: Missing dependency
-   Suggestion: Run 'npm install @prisma/client'
+   Suggestion: Run 'npm install @supabase/supabase-js'
 
 ---
 

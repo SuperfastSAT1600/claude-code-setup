@@ -590,7 +590,7 @@ Caching is good. Use Redis.
 - [React Patterns](react-patterns.md)
 - [Next.js Patterns](nextjs-patterns.md)
 - [Node.js Patterns](nodejs-patterns.md)
-- [Prisma Patterns](prisma-patterns.md)
+- [Database Patterns](database-patterns.md)
 - [GitHub Actions](github-actions.md)
 
 ### API & Real-time Skills

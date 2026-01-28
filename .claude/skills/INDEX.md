@@ -20,8 +20,7 @@ Nine skills are now sourced from authoritative references (OpenAPI Spec, OWASP, 
 | **backend-patterns.md** | Server architecture, API design, error handling | Backend development |
 | **nodejs-patterns.md** | Node.js best practices, async patterns | Node.js work |
 | **rest-api-design.md** | REST API design standards (sourced from OpenAPI Spec, RFC 9110, JSON:API) | REST API design |
-| **database-patterns.md** | Database design, normalization, and optimization (sourced from PostgreSQL docs, SQL standards) | Database work |
-| **prisma-patterns.md** | Prisma schema, queries, migrations | Prisma ORM usage |
+| **database-patterns.md** | Database design, normalization, and optimization (sourced from PostgreSQL docs, SQL standards, Supabase best practices) | Database work |
 
 ## Frontend
 
@@ -62,9 +61,9 @@ Instead of loading all 22 skill files (~40k tokens), reference this index to ide
 
 **Example**:
 ```
-Task: "Build REST API with Prisma"
-→ Identify needs: API design + ORM patterns
-→ Load skills: rest-api-design.md, prisma-patterns.md
+Task: "Build REST API with Supabase"
+→ Identify needs: API design + database patterns
+→ Load skills: rest-api-design.md, database-patterns.md
 → Skip irrelevant: frontend-patterns.md, docker-patterns.md, etc.
 → Context saved: ~30k tokens
 ```
@@ -79,7 +78,7 @@ Task: "Build REST API with Prisma"
 | **Next.js Page** | nextjs-patterns, react-patterns, frontend-patterns |
 | **Authentication** | auth-patterns, backend-patterns, database-patterns |
 | **Real-time Feature** | websocket-patterns, backend-patterns |
-| **Database Work** | database-patterns, prisma-patterns |
+| **Database Work** | database-patterns |
 | **CI/CD Setup** | github-actions, docker-patterns |
 | **AI/LLM Integration** | prompt-engineering, rag-patterns |
 

@@ -7,7 +7,6 @@ skills:
   - graphql-patterns
   - backend-patterns
   - database-patterns
-  - prisma-patterns
 ---
 
 # GraphQL Specialist
