@@ -107,23 +107,30 @@ my-app/
 
 ## Step 3: Customize CLAUDE.md
 
-Open `CLAUDE.md` in your project and replace the placeholders:
+Run the setup wizard to automatically detect your tech stack and update CLAUDE.md:
 
 ```bash
-# Open CLAUDE.md in your editor
-code CLAUDE.md   # or vim, nano, etc.
+# The wizard will:
+# - Auto-detect your framework, backend, database, and testing tools
+# - Update CLAUDE.md with your actual stack (no manual editing needed!)
+# - Configure MCP servers
+# - Set up environment files
+node setup.cjs
 ```
 
-**Find and replace**:
-- `{{FRONTEND_STACK}}` → `Next.js 14, React 18, TypeScript` (or whatever you use)
-- `{{BACKEND_STACK}}` → `Supabase, PostgreSQL` (or whatever you use)
-- `{{TESTING_STACK}}` → `Vitest, Playwright` (or whatever you use)
-- `{{PROJECT_STRUCTURE}}` → Your actual directory structure
+**What gets detected**:
+- Frontend: Next.js, React, Vue, Svelte, Angular, etc.
+- Backend: Node.js (Express, Fastify, NestJS), Supabase, Python (FastAPI, Django), Go, etc.
+- Database: PostgreSQL, MySQL, MongoDB, SQLite, Supabase, Prisma
+- Testing: Vitest, Jest, Playwright, Cypress, etc.
 
-**Or use the wizard** (easier):
+The wizard will prompt you to confirm or adjust detected values before updating CLAUDE.md.
+
+**Manual editing** (if you prefer):
 ```bash
-# Wizard will detect your stack and update CLAUDE.md automatically
-node setup.cjs
+# Open CLAUDE.md and replace placeholders manually
+code CLAUDE.md
+# Replace: {{FRONTEND_STACK}}, {{BACKEND_STACK}}, {{TESTING_STACK}}, etc.
 ```
 
 ---
@@ -178,14 +185,14 @@ cp ../claude-code-setup/CLAUDE.md .
 cp ../claude-code-setup/setup.cjs .
 cp -r ../claude-code-setup/lib/ .
 
-# 4. Run setup wizard (detects Next.js + Supabase automatically)
+# 4. Run setup wizard (auto-detects your stack and updates CLAUDE.md)
 node setup.cjs
 
 # The wizard will:
-# - Detect: Next.js 14, Supabase, Vitest
-# - Offer to update CLAUDE.md with detected stack
-# - Configure MCP servers
-# - Done!
+# - Auto-detect: Next.js 14, Supabase, Vitest
+# - Update CLAUDE.md with your actual stack (no manual editing!)
+# - Configure MCP servers and environment files
+# - You just confirm the detected values and you're done!
 
 # 5. Copy Next.js templates
 cp .claude/templates/variants/nextjs/*.template .claude/templates/
@@ -205,20 +212,24 @@ Your project now has Claude Code! 🎉
 
 ## What If I Don't Want setup.cjs?
 
-You can skip copying `setup.cjs` and `lib/`:
+**Not recommended** - you'll miss automatic tech stack detection and CLAUDE.md updates.
+
+But if you prefer manual setup:
 
 ```bash
 # Minimal integration (just copy these 2)
 cp -r ../claude-code-setup/.claude/ .
 cp ../claude-code-setup/CLAUDE.md .
 
-# Edit CLAUDE.md manually
+# Manually edit CLAUDE.md and replace all {{...}} placeholders
 code CLAUDE.md
-# Replace {{...}} placeholders with your stack
+# Replace: {{FRONTEND_STACK}}, {{BACKEND_STACK}}, {{TESTING_STACK}}, etc.
 
 # Done!
 claude
 ```
+
+**Note**: You'll need to manually update CLAUDE.md whenever your stack changes.
 
 ---
 
@@ -252,7 +263,7 @@ ls -la  # Should show .claude/ folder
 
 **Cause**: `CLAUDE.md` still has `{{...}}` placeholders
 
-**Fix**: Edit `CLAUDE.md` and replace all placeholders, OR run `node setup.cjs`
+**Fix**: Run `node setup.cjs` to auto-detect and update your stack, OR manually edit `CLAUDE.md` and replace all placeholders
 
 ### "setup.cjs not found"
 
