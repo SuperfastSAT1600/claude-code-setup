@@ -14,6 +14,8 @@ Use this command when you've completed a feature or fix and want to create a PR 
 
 You are about to commit changes, push to remote, and create a pull request. Follow these steps:
 
+**IMPORTANT**: After creating the PR or pushing to an existing PR, you MUST send a notification to the Slack channel "개발" with the PR details. Use the Slack MCP to post the message.
+
 1. **Check Current Status**
    - Run `git status` to see what files have changed
    - Run `git branch` to confirm current branch name
@@ -46,6 +48,31 @@ You are about to commit changes, push to remote, and create a pull request. Foll
      - **Test plan**: Checklist of how to test/verify the changes
      - Footer: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
    - Use heredoc for PR body to ensure proper formatting
+
+6. **Send Slack Notification** (REQUIRED)
+   After PR creation or pushing to remote:
+   - Use the Slack MCP to post a message to the "개발" channel
+   - Message format:
+     ```
+     🔀 새로운 PR 생성됨 #{PR_NUMBER}
+
+     {PR_TITLE}
+
+     📝 Branch: {branch}
+     👤 Author: {author}
+
+     ━━━━━━━━━━━━━━━━━━━━
+
+     {PR_BODY - the full description}
+
+     ━━━━━━━━━━━━━━━━━━━━
+
+     🔗 {PR_URL}
+
+     🤖 Generated with Claude Code
+     ```
+   - For pushes to existing PR, use "⬆️ 코드 푸시됨 PR #{PR_NUMBER}" instead
+   - Include the FULL PR description/body in the Slack message so team members can see all details without opening GitHub
 
 ## Example
 

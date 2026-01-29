@@ -333,6 +333,24 @@
         ]
       },
       {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git push\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/notify-slack-pr.sh\" ]; then\n  ./.claude/scripts/notify-slack-pr.sh push 2>&1 || true\nfi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"gh pr create\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/notify-slack-pr.sh\" ]; then\n  ./.claude/scripts/notify-slack-pr.sh pr_created 2>&1 || true\nfi"
+          }
+        ]
+      },
+      {
         "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
         "hooks": [
           {

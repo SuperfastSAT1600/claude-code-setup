@@ -10,6 +10,7 @@
  * - Platform detection (Windows/macOS/Linux)
  * - GitHub setup (REQUIRED): git identity, GitHub CLI, authentication, PAT
  * - Supabase setup (REQUIRED): CLI, authentication, project linking, API credentials
+ * - Slack MCP setup (REQUIRED): Bot token, Team ID for PR notifications
  * - Vercel setup (OPTIONAL): CLI, authentication, project linking, API token
  * - Claude Code CLI installation
  * - MCP server configuration with correct commands
