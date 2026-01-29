@@ -52,27 +52,37 @@ You are about to commit changes, push to remote, and create a pull request. Foll
 6. **Send Slack Notification** (REQUIRED)
    After PR creation or pushing to remote:
    - Use the Slack MCP to post a message to the "개발" channel
-   - Message format:
+   - **IMPORTANT**: Translate all technical content to natural, professional Korean
+   - Messages should be easily understandable by non-technical team members
+   - Message format (in natural Korean):
      ```
-     🔀 새로운 PR 생성됨 #{PR_NUMBER}
+     ✨ 새로운 코드 리뷰 요청 #{PR_NUMBER}
 
-     {PR_TITLE}
+     {PR_TITLE in Korean}
 
-     📝 Branch: {branch}
-     👤 Author: {author}
+     👤 작성자: {author}
 
      ━━━━━━━━━━━━━━━━━━━━
 
-     {PR_BODY - the full description}
+     ## 요약
+     {Summary in natural Korean - what changed and why}
+
+     ## 테스트 방법
+     {Test plan in natural Korean - how to verify it works}
 
      ━━━━━━━━━━━━━━━━━━━━
 
-     🔗 {PR_URL}
+     🔗 자세히 보기: {PR_URL}
 
-     🤖 Generated with Claude Code
+     🤖 Claude Code로 자동 생성됨
      ```
-   - For pushes to existing PR, use "⬆️ 코드 푸시됨 PR #{PR_NUMBER}" instead
-   - Include the FULL PR description/body in the Slack message so team members can see all details without opening GitHub
+   - For pushes to existing PR, use "📤 코드 업데이트 #{PR_NUMBER}" instead
+   - Translate technical terms:
+     - "Summary" → "요약"
+     - "Test plan" → "테스트 방법"
+     - "Branch" → remove (not needed for vibe coders)
+     - "Author" → "작성자"
+   - Use friendly language that explains what changed in simple terms
 
 ## Example
 
