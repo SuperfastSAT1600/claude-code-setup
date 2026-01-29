@@ -71,7 +71,7 @@ cp .env.example .env
 ### ⚡ Custom Commands (20)
 - `/full-feature` - Complete feature cycle (plan → test → PR)
 - `/quick-fix` - Fast bug fix workflow
-- `/commit-push-pr` - Commit, push, and create PR workflow
+- `/commit-push-pr` - Commit, push, and create PR workflow (auto-notifies 개발 channel in natural Korean)
 - `/review-changes` - Comprehensive code review
 - `/test-and-build` - Run tests and build with auto-fix
 - `/test-coverage` - Analyze and improve test coverage

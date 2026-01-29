@@ -990,10 +990,13 @@ Use for:
 → Auto-notify 개발 channel on code push
 → Full PR title, description, and link included in notifications
 → Team members see all details without opening GitHub
+→ Messages in natural, professional Korean for non-technical team members
 → Team communication and notifications
 
 Important: This template auto-sends Slack messages with full PR descriptions
 to the 개발 channel when using the `/commit-push-pr` command.
+All messages are translated to natural Korean that's easily understandable
+by vibe coders and non-technical team members.
 ```
 
 **Search Integration**:
