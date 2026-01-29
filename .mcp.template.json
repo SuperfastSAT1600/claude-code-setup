@@ -42,15 +42,6 @@
       "disabled": true,
       "description": "⭐ RECOMMENDED: Slack workspace integration for team communication"
     },
-    "vercel": {
-      "type": "http",
-      "url": "https://mcp.vercel.com",
-      "env": {
-        "VERCEL_API_TOKEN": "YOUR_VERCEL_TOKEN_HERE"
-      },
-      "disabled": true,
-      "description": "Vercel deployment management and logs"
-    },
     "render": {
       "type": "http",
       "url": "https://mcp.render.com/mcp",
@@ -59,15 +50,6 @@
       },
       "disabled": true,
       "description": "Render deployment and infrastructure management"
-    },
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_API_KEY_HERE"
-      },
-      "disabled": true,
-      "description": "⭐ RECOMMENDED: Web scraping and content extraction"
     },
     "cloudflare-docs": {
       "type": "http",
@@ -116,13 +98,6 @@
       "env": {},
       "disabled": true,
       "description": "Magic UI components library"
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp"],
-      "env": {},
-      "disabled": true,
-      "description": "Browser automation for testing"
     }
   }
 }

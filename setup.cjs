@@ -137,7 +137,8 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
   results.packageJson = await setupPackageJson(rl);
 
   // Step 12: Install Dependencies
-  if (results.packageJson?.created) {
+  // Always offer to install, whether package.json was created, updated, or existed
+  if (results.packageJson?.created || results.packageJson?.updated || results.packageJson?.exists) {
     results.dependencies = await installDependencies(rl, prereqs.packageManagers);
   }
 

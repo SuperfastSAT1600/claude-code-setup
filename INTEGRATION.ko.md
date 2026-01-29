@@ -30,7 +30,7 @@ my-app/                    (기존 프로젝트)
 
 - [x] 코드가 있는 기존 코드베이스
 - [x] Git 초기화됨
-- [x] Claude Code CLI 설치됨: `npm install -g @anthropic-ai/claude-code`
+- [x] Node.js 설치됨 (v18 이상 권장)
 
 ---
 
@@ -83,6 +83,12 @@ cp -r ../claude-code-setup/lib/ .
 
 # MCP 템플릿 복사 (선택 사항)
 cp ../claude-code-setup/.mcp.template.json .
+
+# 온보딩 문서들 복사
+cp ../claude-code-setup/INTEGRATION.ko.md .
+cp ../claude-code-setup/TEMPLATE-SETUP.ko.md .
+cp ../claude-code-setup/README.ko.md .
+cp ../claude-code-setup/WORKFLOW.ko.md .
 ```
 
 **옵션 B를 사용한 경우**, `../claude-code-setup/`를 `/tmp/claude-code-setup/`로 바꾸세요:
@@ -99,31 +105,46 @@ my-app/
 ├── CLAUDE.md      ← 새로 추가 (기술 스택 구성)
 ├── setup.cjs      ← 새로 추가 (마법사)
 ├── lib/           ← 새로 추가 (마법사 모듈)
+├── INTEGRATION.ko.md ← 새로 추가 (온보딩 문서)
+├── TEMPLATE-SETUP.ko.md ← 새로 추가 (온보딩 문서)
+├── README.ko.md ← 새로 추가 (온보딩 문서)
+├── WORKFLOW.ko.md ← 새로 추가 (온보딩 문서)
 ├── src/           (기존 코드)
 └── ...
 ```
+
+여기부터는 VScode에서 프로젝트를 열고 INTEGRATION.ko.md를 열어서 아래 진행해주세요.
 
 ---
 
 ## 3단계: CLAUDE.md 커스터마이즈
 
-프로젝트의 `CLAUDE.md`를 열고 플레이스홀더를 바꾸세요:
+설정 마법사를 실행하여 기술 스택을 자동으로 감지하고 CLAUDE.md를 업데이트하세요:
 
 ```bash
-# 에디터에서 CLAUDE.md 열기
-code CLAUDE.md   # 또는 vim, nano 등
+# 마법사는:
+# - 필요한 경우 Claude Code CLI를 확인하고 설치합니다
+# - 프레임워크, 백엔드, 데이터베이스, 테스팅 도구를 자동 감지합니다
+# - 실제 스택으로 CLAUDE.md를 업데이트합니다 (수동 편집 불필요!)
+# - MCP 서버를 구성합니다
+# - 환경 파일을 설정합니다
+# - 프로젝트 종속성 설치를 제안합니다 (npm/pnpm/yarn/bun)
+node setup.cjs
 ```
 
-**찾아서 바꾸기**:
-- `{{FRONTEND_STACK}}` → `Next.js 14, React 18, TypeScript` (또는 사용하는 것)
-- `{{BACKEND_STACK}}` → `Supabase, PostgreSQL` (또는 사용하는 것)
-- `{{TESTING_STACK}}` → `Vitest, Playwright` (또는 사용하는 것)
-- `{{PROJECT_STRUCTURE}}` → 실제 디렉토리 구조
+**감지되는 항목**:
+- 프론트엔드: Next.js, React, Vue, Svelte, Angular 등
+- 백엔드: Node.js (Express, Fastify, NestJS), Supabase, Python (FastAPI, Django), Go 등
+- 데이터베이스: PostgreSQL, MySQL, MongoDB, SQLite, Supabase, Prisma
+- 테스팅: Vitest, Jest, Playwright, Cypress 등
 
-**또는 마법사 사용** (더 쉬움):
+마법사는 CLAUDE.md를 업데이트하기 전에 감지된 값을 확인하거나 조정하도록 안내합니다.
+
+**수동 편집** (원하는 경우):
 ```bash
-# 마법사가 스택을 감지하고 CLAUDE.md를 자동으로 업데이트합니다
-node setup.cjs
+# CLAUDE.md를 열고 플레이스홀더를 수동으로 바꾸기
+code CLAUDE.md
+# 바꾸기: {{FRONTEND_STACK}}, {{BACKEND_STACK}}, {{TESTING_STACK}} 등
 ```
 
 ---
@@ -178,14 +199,16 @@ cp ../claude-code-setup/CLAUDE.md .
 cp ../claude-code-setup/setup.cjs .
 cp -r ../claude-code-setup/lib/ .
 
-# 4. 설정 마법사 실행 (Next.js + Supabase 자동 감지)
+# 4. 설정 마법사 실행 (스택을 자동 감지하고 CLAUDE.md 업데이트)
 node setup.cjs
 
 # 마법사는:
-# - 감지: Next.js 14, Supabase, Vitest
-# - 감지된 스택으로 CLAUDE.md 업데이트 제안
-# - MCP 서버 구성
-# - 완료!
+# - 아직 설치되지 않은 경우 Claude Code CLI 설치
+# - 자동 감지: Next.js 14, Supabase, Vitest
+# - 실제 스택으로 CLAUDE.md 업데이트 (수동 편집 불필요!)
+# - MCP 서버 및 환경 파일 구성
+# - 프로젝트 종속성을 자동으로 설치
+# - 감지된 값을 확인하면 완료!
 
 # 5. Next.js 템플릿 복사
 cp .claude/templates/variants/nextjs/*.template .claude/templates/
@@ -205,20 +228,24 @@ claude
 
 ## setup.cjs를 원하지 않는다면?
 
-`setup.cjs`와 `lib/` 복사를 건너뛸 수 있습니다:
+**권장하지 않음** - 자동 기술 스택 감지 및 CLAUDE.md 업데이트를 놓치게 됩니다.
+
+하지만 수동 설정을 선호한다면:
 
 ```bash
 # 최소 통합 (이 2개만 복사)
 cp -r ../claude-code-setup/.claude/ .
 cp ../claude-code-setup/CLAUDE.md .
 
-# CLAUDE.md를 수동으로 편집
+# CLAUDE.md를 수동으로 편집하고 모든 {{...}} 플레이스홀더 바꾸기
 code CLAUDE.md
-# {{...}} 플레이스홀더를 스택으로 바꾸기
+# 바꾸기: {{FRONTEND_STACK}}, {{BACKEND_STACK}}, {{TESTING_STACK}} 등
 
 # 완료!
 claude
 ```
+
+**참고**: 스택이 변경될 때마다 CLAUDE.md를 수동으로 업데이트해야 합니다.
 
 ---
 
@@ -252,13 +279,29 @@ ls -la  # .claude/ 폴더를 표시해야 함
 
 **원인**: `CLAUDE.md`에 여전히 `{{...}}` 플레이스홀더가 있음
 
-**해결책**: `CLAUDE.md`를 편집하고 모든 플레이스홀더를 바꾸거나 `node setup.cjs` 실행
+**해결책**: `node setup.cjs`를 실행하여 스택을 자동 감지하고 업데이트하거나, `CLAUDE.md`를 수동으로 편집하고 모든 플레이스홀더 바꾸기
 
 ### "setup.cjs를 찾을 수 없습니다"
 
 **원인**: `setup.cjs`와 `lib/`를 복사하지 않음
 
 **해결책**: 복사하거나 마법사를 건너뛰고 `CLAUDE.md`를 수동으로 편집
+
+### "설정 중 Claude Code CLI 설치 실패"
+
+**원인**: 권한 문제 또는 npm이 PATH에 없음
+
+**해결책**: 수동으로 설치하고 설정을 다시 실행:
+```bash
+# macOS/Linux
+sudo npm install -g @anthropic-ai/claude-code
+
+# Windows (관리자 권한으로 실행)
+npm install -g @anthropic-ai/claude-code
+
+# 그런 다음 설정을 다시 실행
+node setup.cjs
+```
 
 ---
 
