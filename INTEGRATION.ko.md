@@ -30,7 +30,7 @@ my-app/                    (기존 프로젝트)
 
 - [x] 코드가 있는 기존 코드베이스
 - [x] Git 초기화됨
-- [x] Claude Code CLI 설치됨: `npm install -g @anthropic-ai/claude-code`
+- [x] Node.js 설치됨 (v18 이상 권장)
 
 ---
 
@@ -123,10 +123,12 @@ my-app/
 
 ```bash
 # 마법사는:
+# - 필요한 경우 Claude Code CLI를 확인하고 설치합니다
 # - 프레임워크, 백엔드, 데이터베이스, 테스팅 도구를 자동 감지합니다
 # - 실제 스택으로 CLAUDE.md를 업데이트합니다 (수동 편집 불필요!)
 # - MCP 서버를 구성합니다
 # - 환경 파일을 설정합니다
+# - 프로젝트 종속성 설치를 제안합니다 (npm/pnpm/yarn/bun)
 node setup.cjs
 ```
 
@@ -201,9 +203,11 @@ cp -r ../claude-code-setup/lib/ .
 node setup.cjs
 
 # 마법사는:
+# - 아직 설치되지 않은 경우 Claude Code CLI 설치
 # - 자동 감지: Next.js 14, Supabase, Vitest
 # - 실제 스택으로 CLAUDE.md 업데이트 (수동 편집 불필요!)
 # - MCP 서버 및 환경 파일 구성
+# - 프로젝트 종속성을 자동으로 설치
 # - 감지된 값을 확인하면 완료!
 
 # 5. Next.js 템플릿 복사
@@ -282,6 +286,22 @@ ls -la  # .claude/ 폴더를 표시해야 함
 **원인**: `setup.cjs`와 `lib/`를 복사하지 않음
 
 **해결책**: 복사하거나 마법사를 건너뛰고 `CLAUDE.md`를 수동으로 편집
+
+### "설정 중 Claude Code CLI 설치 실패"
+
+**원인**: 권한 문제 또는 npm이 PATH에 없음
+
+**해결책**: 수동으로 설치하고 설정을 다시 실행:
+```bash
+# macOS/Linux
+sudo npm install -g @anthropic-ai/claude-code
+
+# Windows (관리자 권한으로 실행)
+npm install -g @anthropic-ai/claude-code
+
+# 그런 다음 설정을 다시 실행
+node setup.cjs
+```
 
 ---
 

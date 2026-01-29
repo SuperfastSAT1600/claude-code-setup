@@ -30,7 +30,7 @@ my-app/                    (your existing project)
 
 - [x] Existing codebase with code in it
 - [x] Git initialized
-- [x] Claude Code CLI installed: `npm install -g @anthropic-ai/claude-code`
+- [x] Node.js installed (v18 or later recommended)
 
 ---
 
@@ -111,10 +111,12 @@ Run the setup wizard to automatically detect your tech stack and update CLAUDE.m
 
 ```bash
 # The wizard will:
+# - Check and install Claude Code CLI if needed
 # - Auto-detect your framework, backend, database, and testing tools
 # - Update CLAUDE.md with your actual stack (no manual editing needed!)
 # - Configure MCP servers
 # - Set up environment files
+# - Offer to install project dependencies (npm/pnpm/yarn/bun)
 node setup.cjs
 ```
 
@@ -189,9 +191,11 @@ cp -r ../claude-code-setup/lib/ .
 node setup.cjs
 
 # The wizard will:
+# - Install Claude Code CLI if not already installed
 # - Auto-detect: Next.js 14, Supabase, Vitest
 # - Update CLAUDE.md with your actual stack (no manual editing!)
 # - Configure MCP servers and environment files
+# - Install project dependencies automatically
 # - You just confirm the detected values and you're done!
 
 # 5. Copy Next.js templates
@@ -270,6 +274,22 @@ ls -la  # Should show .claude/ folder
 **Cause**: You didn't copy `setup.cjs` and `lib/`
 
 **Fix**: Either copy them, or skip the wizard and edit `CLAUDE.md` manually
+
+### "Claude Code CLI installation failed during setup"
+
+**Cause**: Permission issues or npm not in PATH
+
+**Fix**: Install manually and run setup again:
+```bash
+# macOS/Linux
+sudo npm install -g @anthropic-ai/claude-code
+
+# Windows (run as Administrator)
+npm install -g @anthropic-ai/claude-code
+
+# Then re-run setup
+node setup.cjs
+```
 
 ---
 
