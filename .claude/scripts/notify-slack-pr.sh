@@ -76,19 +76,24 @@ esac
 
 # Send to Slack via Claude Code with MCP
 # This will be executed by Claude Code which has access to Slack MCP
-echo "[Slack] Sending notification to #$SLACK_CHANNEL: $EVENT_TYPE"
-echo "[Slack] Channel: $SLACK_CHANNEL"
+echo "[Slack] Sending notification to #$SLACK_CHANNEL: $EVENT_TYPE" >&2
+echo "[Slack] Channel: $SLACK_CHANNEL" >&2
 
-# Output structured data for Claude Code to parse and send via Slack MCP
-cat <<EOF
-{
-  "channel": "$SLACK_CHANNEL",
-  "message": "$MESSAGE",
-  "event_type": "$EVENT_TYPE",
-  "branch": "$BRANCH",
-  "author": "$AUTHOR",
-  "pr_url": "$PR_URL"
-}
-EOF
+# Output properly escaped JSON using jq
+jq -n \
+  --arg channel "$SLACK_CHANNEL" \
+  --arg message "$MESSAGE" \
+  --arg event_type "$EVENT_TYPE" \
+  --arg branch "$BRANCH" \
+  --arg author "$AUTHOR" \
+  --arg pr_url "$PR_URL" \
+  '{
+    channel: $channel,
+    message: $message,
+    event_type: $event_type,
+    branch: $branch,
+    author: $author,
+    pr_url: $pr_url
+  }'
 
 exit 0
