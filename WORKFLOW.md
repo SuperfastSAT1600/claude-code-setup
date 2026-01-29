@@ -882,11 +882,11 @@ Terminal 5: Run /test-and-build (continuous testing)
 Model Context Protocol (MCP) servers provide external tool integrations:
 
 **Available Integrations:**
-- **filesystem**: File operations (always enabled)
+- **filesystem**: File operations (always enabled, REQUIRED)
+- **slack**: Team communication and PR notifications (**REQUIRED** - auto-notifies 개발 channel)
 - **github**: GitHub API operations (issues, PRs, commits)
 - **postgres/sqlite**: Database queries and migrations
 - **vercel/railway**: Deployment to hosting platforms
-- **slack**: Team communication and notifications
 - **memory**: Persistent memory across Claude sessions
 - **sequential-thinking**: Enhanced reasoning for complex problems
 - **brave-search**: Web search capabilities
@@ -898,6 +898,14 @@ Model Context Protocol (MCP) servers provide external tool integrations:
 - **magic**: Additional utilities
 
 **Current Configuration**: 27 pre-configured servers in `.mcp.template.json`, most disabled by default for performance. Enable only what you need.
+
+**Required MCP Servers:**
+- **filesystem**: Always enabled (required for file operations)
+- **slack**: Required during setup (auto-sends PR notifications to 개발 channel)
+
+The setup wizard (`node setup.cjs`) will automatically prompt for Slack MCP credentials:
+- Slack Bot Token (from https://api.slack.com/apps)
+- Slack Team ID (starts with T)
 
 ### 5.2 Enabling MCP Servers
 
@@ -972,6 +980,20 @@ Use for:
 → Viewing deployment logs
 → Rolling back bad deploys
 → Managing environment variables
+```
+
+**Slack Integration** (REQUIRED):
+```
+Enable: slack MCP server (required)
+Use for:
+→ Auto-notify 개발 channel on PR creation
+→ Auto-notify 개발 channel on code push
+→ Full PR title, description, and link included in notifications
+→ Team members see all details without opening GitHub
+→ Team communication and notifications
+
+Important: This template auto-sends Slack messages with full PR descriptions
+to the 개발 channel when using the `/commit-push-pr` command.
 ```
 
 **Search Integration**:

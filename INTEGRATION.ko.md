@@ -126,11 +126,18 @@ my-app/
 # - 필요한 경우 Claude Code CLI를 확인하고 설치합니다
 # - 프레임워크, 백엔드, 데이터베이스, 테스팅 도구를 자동 감지합니다
 # - 실제 스택으로 CLAUDE.md를 업데이트합니다 (수동 편집 불필요!)
-# - MCP 서버를 구성합니다
+# - Slack MCP를 필수로 설정합니다 (개발 채널에 PR 알림용)
+# - 기타 MCP 서버를 구성합니다
 # - 환경 파일을 설정합니다
 # - 프로젝트 종속성 설치를 제안합니다 (npm/pnpm/yarn/bun)
 node setup.cjs
 ```
+
+**중요**: 마법사는 Slack MCP 자격 증명을 요청합니다 (필수):
+- Slack Bot Token (https://api.slack.com/apps 에서 발급)
+- Slack Team ID (T로 시작)
+
+이는 `/commit-push-pr` 명령어 사용 시 개발 채널에 자동으로 PR 알림을 보내는 데 필요합니다.
 
 **감지되는 항목**:
 - 프론트엔드: Next.js, React, Vue, Svelte, Angular 등

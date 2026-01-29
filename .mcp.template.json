@@ -39,8 +39,8 @@
         "SLACK_BOT_TOKEN": "YOUR_SLACK_BOT_TOKEN_HERE",
         "SLACK_TEAM_ID": "YOUR_SLACK_TEAM_ID_HERE"
       },
-      "disabled": true,
-      "description": "⭐ RECOMMENDED: Slack workspace integration for team communication"
+      "disabled": false,
+      "description": "⭐ REQUIRED: Slack workspace integration for PR notifications and team communication"
     },
     "render": {
       "type": "http",

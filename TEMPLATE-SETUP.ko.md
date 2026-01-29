@@ -184,9 +184,16 @@ node setup.cjs
 
 1. **플랫폼 감지** (Windows/macOS/Linux)
 2. **MCP 서버 구성** (올바른 경로 포함)
-3. **API 키 수집** (안전하게, gitignore된 `.mcp.json`에 저장)
-4. **`.env` 파일 생성** (템플릿에서)
-5. **선택적으로 의존성 설치**
+3. **Slack MCP 필수 설정** (개발 채널에 PR 알림을 보내기 위해 필수)
+4. **API 키 수집** (안전하게, gitignore된 `.mcp.json`에 저장)
+5. **`.env` 파일 생성** (템플릿에서)
+6. **선택적으로 의존성 설치**
+
+**중요**: 설정 마법사는 Slack MCP 자격 증명을 요청합니다 (필수):
+- Slack Bot Token (https://api.slack.com/apps 에서 발급)
+- Slack Team ID (T로 시작하는 워크스페이스 ID)
+
+이는 `/commit-push-pr` 명령어 사용 시 개발 채널에 자동으로 PR 알림을 보내는 데 필요합니다.
 
 ### 생성되는 것
 

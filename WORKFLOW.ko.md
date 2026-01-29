@@ -844,11 +844,11 @@ verify-app 에이전트에 위임
 Model Context Protocol(MCP) 서버는 외부 도구 통합을 제공합니다:
 
 **사용 가능한 통합:**
-- **filesystem**: 파일 작업 (항상 활성화)
+- **filesystem**: 파일 작업 (항상 활성화, 필수)
+- **slack**: 팀 커뮤니케이션 및 PR 알림 (**필수** - 개발 채널에 자동 알림)
 - **github**: GitHub API 작업 (이슈, PR, 커밋)
 - **postgres/sqlite**: 데이터베이스 쿼리 및 마이그레이션
 - **vercel/railway**: 호스팅 플랫폼에 배포
-- **slack**: 팀 커뮤니케이션 및 알림
 - **memory**: Claude 세션 간 영구 메모리
 - **sequential-thinking**: 복잡한 문제를 위한 향상된 추론
 - **brave-search**: 웹 검색 기능
@@ -860,6 +860,14 @@ Model Context Protocol(MCP) 서버는 외부 도구 통합을 제공합니다:
 - **magic**: 추가 유틸리티
 
 **현재 구성**: `.mcp.template.json`에 27개의 사전 구성된 서버, 성능을 위해 대부분 기본적으로 비활성화됨. 필요한 것만 활성화하세요.
+
+**필수 MCP 서버:**
+- **filesystem**: 항상 활성화됨 (파일 작업에 필요)
+- **slack**: 설정 중 필수 구성 (개발 채널에 PR 알림을 자동으로 보냄)
+
+설정 마법사(`node setup.cjs`)를 실행하면 Slack MCP 자격 증명이 자동으로 요청됩니다:
+- Slack Bot Token (https://api.slack.com/apps 에서 발급)
+- Slack Team ID (T로 시작하는 ID)
 
 ### 5.2 MCP 서버 활성화
 
@@ -934,6 +942,20 @@ MCP는 Claude Code가 시작될 때 로드됩니다. 변경 사항을 적용하�
 → 배포 로그 보기
 → 잘못된 배포 롤백
 → 환경 변수 관리
+```
+
+**Slack 통합** (필수):
+```
+활성화: slack MCP 서버 (필수)
+용도:
+→ PR 생성 시 개발 채널에 자동 알림
+→ 코드 푸시 시 개발 채널에 자동 알림
+→ PR 제목, 설명, 링크를 포함한 전체 알림
+→ 팀원들이 GitHub를 열지 않고도 모든 세부 정보 확인 가능
+→ 팀 커뮤니케이션 및 알림
+
+중요: 이 템플릿은 `/commit-push-pr` 명령어를 사용할 때 자동으로 개발 채널에
+전체 PR 설명과 함께 Slack 메시지를 보냅니다.
 ```
 
 **검색 통합**:

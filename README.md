@@ -30,10 +30,19 @@ claude
 
 The setup wizard will:
 - Detect your platform (Windows/macOS/Linux) and configure MCP servers accordingly
-- Ask which MCP servers you want to enable
+- **REQUIRE Slack MCP setup** (mandatory for PR notifications to 개발 channel)
+- Ask which optional MCP servers you want to enable
 - Collect API keys securely (stored in gitignored `.mcp.json`)
 - Create your `.env` file from the template
 - Optionally install dependencies
+
+### Required MCP Servers
+
+**Slack MCP** (REQUIRED): This template requires Slack MCP for automatic PR notifications to the 개발 channel. You'll need:
+- Slack Bot Token (from https://api.slack.com/apps)
+- Slack Team ID (starts with T)
+
+The setup wizard will prompt you for these credentials.
 
 ### Manual Setup (Alternative)
 

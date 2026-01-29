@@ -114,11 +114,18 @@ Run the setup wizard to automatically detect your tech stack and update CLAUDE.m
 # - Check and install Claude Code CLI if needed
 # - Auto-detect your framework, backend, database, and testing tools
 # - Update CLAUDE.md with your actual stack (no manual editing needed!)
-# - Configure MCP servers
+# - REQUIRE Slack MCP setup (for PR notifications to 개발 channel)
+# - Configure other MCP servers
 # - Set up environment files
 # - Offer to install project dependencies (npm/pnpm/yarn/bun)
 node setup.cjs
 ```
+
+**Important**: The wizard will prompt for Slack MCP credentials (REQUIRED):
+- Slack Bot Token (from https://api.slack.com/apps)
+- Slack Team ID (starts with T)
+
+This is needed to auto-send PR notifications to the 개발 channel when using `/commit-push-pr`.
 
 **What gets detected**:
 - Frontend: Next.js, React, Vue, Svelte, Angular, etc.

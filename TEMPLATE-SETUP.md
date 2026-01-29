@@ -184,9 +184,16 @@ The wizard will:
 
 1. **Detect your platform** (Windows/macOS/Linux)
 2. **Configure MCP servers** with correct paths
-3. **Collect API keys** securely (stored in gitignored `.mcp.json`)
-4. **Create `.env` file** from template
-5. **Optionally install dependencies**
+3. **Require Slack MCP setup** (REQUIRED for PR notifications to 개발 channel)
+4. **Collect API keys** securely (stored in gitignored `.mcp.json`)
+5. **Create `.env` file** from template
+6. **Optionally install dependencies**
+
+**Important**: The wizard will prompt for Slack MCP credentials (REQUIRED):
+- Slack Bot Token (from https://api.slack.com/apps)
+- Slack Team ID (starts with T, workspace ID)
+
+This is needed to auto-send PR notifications to the 개발 channel when using `/commit-push-pr`.
 
 ### What Gets Created
 
