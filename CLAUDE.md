@@ -22,10 +22,19 @@ Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
 
 This setup continuously improves itself. During every task, the system observes its own configuration and proposes fixes, evolutions, and simplifications after completing your work.
 
+- **Execution Protocol**: `.claude/rules/task-execution-protocol.md` (MANDATORY for all agents)
 - **Rules**: `.claude/rules/self-aware-system.md`
 - **Changelog**: `.claude/health/changelog.md`
 - **Health Check**: Run `/health-check` for a comprehensive audit
 - **Agent count**: 34 (33 specialists + 1 system-health)
+
+### Mandatory Checkpoints (Every Task)
+
+1. **PRE-TASK**: Identify parallel work opportunities [enforced]
+2. **DURING**: Observe `.claude/` issues [passive noting]
+3. **POST-TASK**: Auto-heal recurring patterns, report observations [enforced]
+
+This ensures maximum speed through parallelization and continuous system improvement through auto-healing.
 
 ---
 
