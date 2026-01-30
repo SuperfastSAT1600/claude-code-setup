@@ -79,21 +79,42 @@ esac
 echo "[Slack] Sending notification to #$SLACK_CHANNEL: $EVENT_TYPE" >&2
 echo "[Slack] Channel: $SLACK_CHANNEL" >&2
 
-# Output properly escaped JSON using jq
-jq -n \
-  --arg channel "$SLACK_CHANNEL" \
-  --arg message "$MESSAGE" \
-  --arg event_type "$EVENT_TYPE" \
-  --arg branch "$BRANCH" \
-  --arg author "$AUTHOR" \
-  --arg pr_url "$PR_URL" \
-  '{
-    channel: $channel,
-    message: $message,
-    event_type: $event_type,
-    branch: $branch,
-    author: $author,
-    pr_url: $pr_url
-  }'
+# Save notification details to temp file for Claude Code to process
+TEMP_FILE="/tmp/claude-slack-notification-$$.json"
+
+# Output JSON (with or without jq)
+if command -v jq &> /dev/null; then
+  # Use jq for proper JSON escaping if available
+  jq -n \
+    --arg channel "$SLACK_CHANNEL" \
+    --arg message "$MESSAGE" \
+    --arg event_type "$EVENT_TYPE" \
+    --arg branch "$BRANCH" \
+    --arg author "$AUTHOR" \
+    --arg pr_url "$PR_URL" \
+    '{
+      channel: $channel,
+      message: $message,
+      event_type: $event_type,
+      branch: $branch,
+      author: $author,
+      pr_url: $pr_url
+    }' > "$TEMP_FILE"
+else
+  # Fallback: simple JSON without jq (basic escaping)
+  cat > "$TEMP_FILE" <<EOF
+{
+  "channel": "$SLACK_CHANNEL",
+  "message": "$MESSAGE",
+  "event_type": "$EVENT_TYPE",
+  "branch": "$BRANCH",
+  "author": "$AUTHOR",
+  "pr_url": "$PR_URL"
+}
+EOF
+fi
+
+echo "[Slack] Notification saved to $TEMP_FILE" >&2
+echo "$TEMP_FILE"
 
 exit 0
