@@ -76,10 +76,28 @@
       "Bash(python:*)",
       "Bash(chmod:*)",
       "Bash(tree:*)",
-      "Bash(BROWSER=none python:*)"
+      "Bash(BROWSER=none python:*)",
+      "Bash(git rebase:*)",
+      "mcp__slack__slack_list_channels",
+      "mcp__slack__slack_post_message"
     ]
   },
   "model": "sonnet",
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "filesystem",
+    "github",
+    "supabase",
+    "memory",
+    "slack",
+    "render",
+    "cloudflare-docs",
+    "cloudflare-workers-builds",
+    "cloudflare-workers-bindings",
+    "cloudflare-observability",
+    "context7",
+    "magic-ui"
+  ],
   "hooks": {
     "PreToolUse": [
       {
