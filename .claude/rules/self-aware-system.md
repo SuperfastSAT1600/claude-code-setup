@@ -41,15 +41,52 @@ After finishing the user's requested task, if you noted any system observations:
 ### 1. Report
 Summarize observations grouped by type (heal/evolve/adapt/refactor). Be concise.
 
-### 2. Act by Tier
+### 2. Auto-Detection (AUTOMATIC)
+
+**System automatically scans for recurring patterns**:
+
+```python
+# Pseudo-code for pattern detection
+patterns = {
+  'error_log': scan_file('CLAUDE.md', section='Error Log'),
+  'changelog': scan_file('.claude/health/changelog.md')
+}
+
+for pattern in detect_duplicates(patterns, threshold=2):
+  # If same error/issue appears 2+ times, auto-heal
+  auto_heal(pattern)
+```
+
+**Detection triggers**:
+- Same error in `CLAUDE.md` Error Log 2+ times
+- Same issue in `.claude/health/changelog.md` 2+ times
+- Subagent reports "fixed same issue as last time"
+
+**Auto-healing actions** (no approval needed):
+1. Identify which skill/agent/rule should prevent this error
+2. Add or update the relevant pattern/guidance
+3. Make the fix concise (1-3 lines if possible)
+4. Log as `heal(auto): [description]`
+5. Notify user: "Auto-healed recurring pattern: [what]"
+
+**Example**:
+```
+DETECTED: "wrong API command" appears 3x in error log
+AUTO-HEAL: Update .claude/agents/api-designer.md to include:
+  "API commands: Use POST /v2/resource (not /v1/resource - deprecated)"
+LOG: heal(auto): add correct API command to api-designer agent
+```
+
+### 3. Act by Tier
 
 **Auto-apply + notify** (Minor/structural):
 - Regenerate INDEX.md to match filesystem
 - Fix broken skill/agent references in frontmatter
 - Fix obvious typos in rules or skills
+- **Auto-heal recurring patterns (2+ occurrences)**
 
 **Propose + wait for approval** (Major/content):
-- Update skill or agent content
+- Update skill or agent content (unless auto-healing recurring error)
 - Update rule wording
 - Modify templates
 - Modify checklists or workflows
@@ -63,13 +100,15 @@ Summarize observations grouped by type (heal/evolve/adapt/refactor). Be concise.
 **Never auto-modify**:
 - `.claude/settings.json`
 - `.claude/rules/essential-rules.md`
+- `.claude/rules/task-execution-protocol.md`
 - `setup.cjs`
 
-### 3. Log
+### 4. Log
 After any system change, append to `.claude/health/changelog.md`:
 ```
 ## [YYYY-MM-DD] type(scope): description
 - **Type**: heal|evolve|adapt|refactor
+- **Auto**: yes|no (was this auto-detected and auto-applied?)
 - **Changed**: file(s) modified
 - **Reason**: why
 ```

@@ -49,9 +49,10 @@ You are about to commit changes, push to remote, and create a pull request. Foll
      - Footer: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
    - Use heredoc for PR body to ensure proper formatting
 
-6. **Send Slack Notification** (REQUIRED)
+6. **Send Slack Notification** (REQUIRED - NO EXCEPTIONS)
    After PR creation or pushing to remote:
-   - Use the Slack MCP to post a message to the "개발" channel
+   - **MUST use mcp__slack__slack_post_message tool** with channel_id="개발"
+   - This is NOT optional - every PR/push MUST notify the team
    - **IMPORTANT**: Translate all technical content to natural, professional Korean
    - Messages should be easily understandable by non-technical team members
    - Message format (in natural Korean):

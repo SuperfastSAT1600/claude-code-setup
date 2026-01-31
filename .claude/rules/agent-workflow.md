@@ -4,6 +4,21 @@
 
 ---
 
+## ⚠️ MANDATORY EXECUTION PROTOCOL
+
+**BEFORE starting any task**: Follow the Task Execution Protocol in `.claude/rules/task-execution-protocol.md`
+
+**Required checkpoints** (non-optional):
+1. **PRE-TASK**: Answer "Can this be parallelized?" [YES/NO + reason]
+2. **DURING**: Note any `.claude/` issues you encounter
+3. **POST-TASK**: Report observations, auto-heal patterns, log changes
+
+**Why**: This protocol ensures parallelization happens and the system self-improves.
+
+**Token cost**: ~20-30 tokens per task | **Benefit**: No recurring errors, maximum speed
+
+---
+
 ## Main Agent Priority: STAY ACTIVE
 
 **CRITICAL RULE: Main agent must NEVER sit idle waiting for subagents. Always be working on something - coding, integrating, researching, or orchestrating parallel work.**
