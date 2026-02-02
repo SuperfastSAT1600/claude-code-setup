@@ -87,7 +87,8 @@
       "Bash(then mv .claude/health/changelog.md .claude/user/changelog.md)",
       "Bash(else touch .claude/user/changelog.md)",
       "Bash(./.claude/scripts/update-system.sh:*)",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(gh pr list:*)"
     ]
   },
   "model": "sonnet",
