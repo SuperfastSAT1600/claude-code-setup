@@ -16,6 +16,6 @@
     "typescript": "^5.3.0"
   },
   "dependencies": {
-    "read": "^5.0.1"
+    "enquirer": "^2.4.1"
   }
 }

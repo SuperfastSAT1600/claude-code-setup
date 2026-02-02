@@ -20,8 +20,6 @@
  * - Optional dependency installation
  */
 
-const readline = require('readline');
-
 // Import modules
 const { color, log, header } = require('./lib/ui.cjs');
 const { getPlatformInfo } = require('./lib/platform.cjs');
@@ -42,13 +40,6 @@ const { setupClaudeMd } = require('./lib/claude-md.cjs');
 // HELPER FUNCTIONS
 // =============================================================================
 
-function createReadlineInterface() {
-  return readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-}
-
 function displayPrerequisiteIssues(prereqs, platformInfo) {
   console.log('');
   header('Prerequisites Not Met');
@@ -68,10 +59,10 @@ function displayPrerequisiteIssues(prereqs, platformInfo) {
   console.log('');
 }
 
-async function attemptAutoInstall(rl, prereqs, platformInfo) {
+async function attemptAutoInstall(prereqs, platformInfo) {
   console.log('');
   const tryAutoInstall = await askYesNo(
-    rl,
+    null,
     'Would you like to attempt automatic installation of missing dependencies?',
     true
   );
@@ -86,25 +77,25 @@ async function attemptAutoInstall(rl, prereqs, platformInfo) {
   return installedSomething;
 }
 
-async function continueSetup(rl, platformInfo, prereqs, results) {
+async function continueSetup(platformInfo, prereqs, results) {
   // Step 1: Tech Stack Detection & CLAUDE.md Setup
-  results.claudeMd = await setupClaudeMd(rl);
+  results.claudeMd = await setupClaudeMd(null);
 
   // Step 2: GitHub Setup (REQUIRED)
-  results.github = await setupGitHub(rl, platformInfo);
+  results.github = await setupGitHub(null, platformInfo);
 
   // Step 3: Supabase Setup (REQUIRED)
-  results.supabase = await setupSupabase(rl, platformInfo);
+  results.supabase = await setupSupabase(null, platformInfo);
 
   // Step 4: Claude Code Installation
-  results.claudeCode = await setupClaudeCode(rl, platformInfo);
+  results.claudeCode = await setupClaudeCode(null, platformInfo);
 
   // Step 5: Auto-open localhost configuration
-  results.localhost = await configureAutoOpenLocalhost(rl);
+  results.localhost = await configureAutoOpenLocalhost(null);
 
   // Step 6: MCP Configuration
   results.mcp = await configureMcpServers(
-    rl,
+    null,
     platformInfo,
     results.github || null,
     results.supabase || null,
@@ -123,7 +114,7 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
     Object.assign(collectedEnvVars, results.mcp.collectedEnvVars);
   }
 
-  results.env = await setupEnvironmentFiles(rl, collectedEnvVars);
+  results.env = await setupEnvironmentFiles(null, collectedEnvVars);
 
   // Step 8: Create Directories
   results.directories = createDirectories();
@@ -135,12 +126,12 @@ async function continueSetup(rl, platformInfo, prereqs, results) {
   results.gitignore = updateGitignore();
 
   // Step 11: Package.json Setup
-  results.packageJson = await setupPackageJson(rl);
+  results.packageJson = await setupPackageJson(null);
 
   // Step 12: Install Dependencies
   // Always offer to install, whether package.json was created, updated, or existed
   if (results.packageJson?.created || results.packageJson?.updated || results.packageJson?.exists) {
-    results.dependencies = await installDependencies(rl, prereqs.packageManagers);
+    results.dependencies = await installDependencies(null, prereqs.packageManagers);
   }
 
   // Show Summary
@@ -169,42 +160,28 @@ async function main() {
   if (!prereqs.passed) {
     displayPrerequisiteIssues(prereqs, platformInfo);
 
-    // Create readline early to potentially offer auto-install
-    const rl = createReadlineInterface();
+    // Attempt auto-install of missing dependencies
+    const installedSomething = await attemptAutoInstall(prereqs, platformInfo);
 
-    try {
-      // Attempt auto-install of missing dependencies
-      const installedSomething = await attemptAutoInstall(rl, prereqs, platformInfo);
+    if (installedSomething) {
+      // Re-check prerequisites after installation
+      console.log('\n');
+      prereqs = checkPrerequisites(platformInfo);
 
-      if (installedSomething) {
-        // Re-check prerequisites after installation
-        console.log('\n');
-        prereqs = checkPrerequisites(platformInfo);
-
-        if (!prereqs.passed) {
-          displayPrerequisiteIssues(prereqs, platformInfo);
-          console.log(color('Please fix the remaining issues and run setup again.', 'red'));
-          rl.close();
-          process.exit(1);
-        }
-
-        log('All prerequisites now satisfied!', 'success');
-      } else {
-        console.log(color('Please fix the above issues and run setup again.', 'red'));
-        rl.close();
+      if (!prereqs.passed) {
+        displayPrerequisiteIssues(prereqs, platformInfo);
+        console.log(color('Please fix the remaining issues and run setup again.', 'red'));
         process.exit(1);
       }
-    } catch (error) {
-      rl.close();
-      throw error;
+
+      log('All prerequisites now satisfied!', 'success');
+    } else {
+      console.log(color('Please fix the above issues and run setup again.', 'red'));
+      process.exit(1);
     }
 
-    // Continue with this readline interface
-    try {
-      await continueSetup(rl, platformInfo, prereqs, results);
-    } finally {
-      rl.close();
-    }
+    // Continue with setup
+    await continueSetup(platformInfo, prereqs, results);
     return;
   }
 
@@ -220,15 +197,11 @@ async function main() {
     }
   }
 
-  const rl = createReadlineInterface();
-
   try {
-    await continueSetup(rl, platformInfo, prereqs, results);
+    await continueSetup(platformInfo, prereqs, results);
   } catch (error) {
     console.error('\n' + color(`Setup failed: ${error.message}`, 'red'));
     process.exit(1);
-  } finally {
-    rl.close();
   }
 }
 
