@@ -24,7 +24,7 @@ This setup continuously improves itself. During every task, the system observes 
 
 - **Execution Protocol**: `.claude/rules/task-execution-protocol.md` (MANDATORY for all agents)
 - **Rules**: `.claude/rules/self-aware-system.md`
-- **Changelog**: `.claude/health/changelog.md`
+- **User Data**: `.claude/user/` (changelog, errors, custom content)
 - **Health Check**: Run `/health-check` for a comprehensive audit
 - **Agent count**: 34 (33 specialists + 1 system-health)
 
@@ -119,12 +119,34 @@ When creating React code, the main agent uses:
 
 ---
 
-## Error Log
+## Updating This System
 
-Main agent: append here when you make a mistake so it never repeats. Subagents: report errors in your response for the main agent to log to `.claude/health/changelog.md`.
+To safely update `.claude/` system files while preserving your data:
 
-- Never pass model parameter to Task unless explicitly requested
+```bash
+# Run the update script
+./.claude/scripts/update-system.sh
+```
+
+**What's preserved:**
+- `.claude/user/changelog.md` - Your self-healing history (50+ entries)
+- `.claude/user/errors.md` - Your error log
+- `.claude/user/custom/` - Your custom agents/skills/commands
+- `.claude/settings.local.json` - Your local configuration
+
+**What's updated:**
+- System agents, skills, rules, commands, workflows, templates
+
+The script creates a timestamped backup before updating. See `.claude/user/README.md` for details.
 
 ---
 
-**Last Updated**: 2026-01-26
+## Error Log
+
+Error log is now maintained in `.claude/user/errors.md` to preserve it during system updates.
+
+Main agent: append errors there when you make a mistake. Subagents: report errors in your response for the main agent to log.
+
+---
+
+**Last Updated**: 2026-01-30

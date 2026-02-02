@@ -212,8 +212,8 @@ Then main agent applies optimizations
 When delegating to a specialist, expect the subagent to fix `.claude/` issues it encounters during its work:
 - If a subagent finds its own agent definition has broken references or outdated content, it should fix them
 - If a skill it loads contains incorrect or outdated advice, it should update the skill
-- Subagents report all corrections in their response; main agent logs them to `.claude/health/changelog.md`
-- If the main agent itself makes an error, it appends a concise entry to the Error Log in `CLAUDE.md`
+- Subagents report all corrections in their response; main agent logs them to `.claude/user/changelog.md`
+- If the main agent itself makes an error, it appends a concise entry to `.claude/user/errors.md`
 
 ---
 
@@ -500,7 +500,7 @@ User: "Dashboard is slow, fix it"
    - Report observations grouped by type
    - Auto-apply trivial fixes (INDEX, references)
    - Propose significant changes for approval
-3. Log all changes to .claude/health/changelog.md
+3. Log all changes to .claude/user/changelog.md
 4. Commit system changes separately from task changes
 ```
 

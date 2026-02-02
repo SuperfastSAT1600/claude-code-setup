@@ -33,7 +33,7 @@ Use periodically to validate system integrity, or when the self-aware system sug
    - Batch related fixes together
 
 5. **Review Changelog**
-   - Read `.claude/health/changelog.md` for patterns
+   - Read `.claude/user/changelog.md` for patterns
    - Flag recurring issues that keep being healed (indicates deeper problem)
 
 ## Output Format

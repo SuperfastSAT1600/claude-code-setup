@@ -48,8 +48,8 @@ Summarize observations grouped by type (heal/evolve/adapt/refactor). Be concise.
 ```python
 # Pseudo-code for pattern detection
 patterns = {
-  'error_log': scan_file('CLAUDE.md', section='Error Log'),
-  'changelog': scan_file('.claude/health/changelog.md')
+  'error_log': scan_file('.claude/user/errors.md'),
+  'changelog': scan_file('.claude/user/changelog.md')
 }
 
 for pattern in detect_duplicates(patterns, threshold=2):
@@ -58,8 +58,8 @@ for pattern in detect_duplicates(patterns, threshold=2):
 ```
 
 **Detection triggers**:
-- Same error in `CLAUDE.md` Error Log 2+ times
-- Same issue in `.claude/health/changelog.md` 2+ times
+- Same error in `.claude/user/errors.md` 2+ times
+- Same issue in `.claude/user/changelog.md` 2+ times
 - Subagent reports "fixed same issue as last time"
 
 **Auto-healing actions** (no approval needed):
@@ -104,7 +104,7 @@ LOG: heal(auto): add correct API command to api-designer agent
 - `setup.cjs`
 
 ### 4. Log
-After any system change, append to `.claude/health/changelog.md`:
+After any system change, append to `.claude/user/changelog.md`:
 ```
 ## [YYYY-MM-DD] type(scope): description
 - **Type**: heal|evolve|adapt|refactor
@@ -118,7 +118,7 @@ After any system change, append to `.claude/health/changelog.md`:
 ## Error Correction by Role
 
 ### Main Agent
-When the main agent makes an error (wrong output, misapplied rule, bad pattern, incorrect assumption), it must **append an entry to the Error Log section of `CLAUDE.md`** describing the mistake concisely. This ensures the same mistake is never repeated in future sessions. Format:
+When the main agent makes an error (wrong output, misapplied rule, bad pattern, incorrect assumption), it must **append an entry to `.claude/user/errors.md`** describing the mistake concisely. This ensures the same mistake is never repeated in future sessions. Format:
 ```
 - [short description of what went wrong and the correct approach]
 ```
@@ -131,13 +131,13 @@ When a subagent encounters errors, inconsistencies, or inefficiencies in `.claud
 - **Inconsistency between its instructions and project reality** (e.g., agent says use Prisma but project uses Supabase): Correct the agent/skill to match reality
 - **Inefficiency in its own workflow** (e.g., redundant steps, unnecessary tool usage): Streamline its definition
 
-Subagent fixes follow the same approval tiers as Resolution above — auto-apply minor/structural fixes with notification, propose major content changes for approval. Subagents should note all corrections in their output so the main agent can log them to `.claude/health/changelog.md`.
+Subagent fixes follow the same approval tiers as Resolution above — auto-apply minor/structural fixes with notification, propose major content changes for approval. Subagents should note all corrections in their output so the main agent can log them to `.claude/user/changelog.md`.
 
 ### Accountability Chain
 1. Subagent discovers issue in `.claude/` config → fixes it (or proposes fix) as part of task
 2. Subagent reports corrections in its response to the main agent
-3. Main agent logs corrections to `.claude/health/changelog.md`
-4. Main agent makes its own error → appends to `CLAUDE.md` Error Log immediately
+3. Main agent logs corrections to `.claude/user/changelog.md`
+4. Main agent makes its own error → appends to `.claude/user/errors.md` immediately
 5. Recurring errors (3+ occurrences in Error Log) → trigger rule/skill update proposal
 
 ---

@@ -653,7 +653,7 @@ python skill-creator/scripts/package_skill.py path/to/skill/ ./dist/
 
 ### For Self-Improvement
 - [.claude/rules/self-aware-system.md](../.claude/rules/self-aware-system.md) - System evolution rules
-- [.claude/health/changelog.md](../.claude/health/changelog.md) - System change log
+- [.claude/user/changelog.md](../.claude/user/changelog.md) - System change log (user data)
 
 ### For Usage
 - [INDEX.md](INDEX.md) - Complete skill catalog with descriptions

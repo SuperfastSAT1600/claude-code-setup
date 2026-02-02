@@ -6,9 +6,9 @@ How to detect and auto-heal recurring errors in the self-aware system.
 
 ## Detection Sources
 
-### 1. Error Log (`CLAUDE.md`)
+### 1. Error Log (`.claude/user/errors.md`)
 
-**Location**: End of `CLAUDE.md` under `## Error Log`
+**Location**: `.claude/user/errors.md`
 
 **Format**:
 ```
@@ -31,9 +31,9 @@ Main agent: append here when you make a mistake...
 - Multiple entries about "incorrect tool parameter"
 - Multiple entries about "missed parallelization opportunity"
 
-### 2. Changelog (`.claude/health/changelog.md`)
+### 2. Changelog (`.claude/user/changelog.md`)
 
-**Location**: `.claude/health/changelog.md`
+**Location**: `.claude/user/changelog.md`
 
 **Format**:
 ```
@@ -165,12 +165,12 @@ Auto-healed recurring pattern: Updated api-designer agent with correct v2 API en
 **Run this after completing user's task** (as part of POST-TASK checkpoint):
 
 ```
-1. Scan CLAUDE.md Error Log
+1. Scan .claude/user/errors.md
    → Extract all entries
    → Group semantically similar entries
    → If any group has 2+ entries → Pattern detected
 
-2. Scan .claude/health/changelog.md (last 30 days)
+2. Scan .claude/user/changelog.md (last 30 days)
    → Extract all "heal" entries
    → Group by scope/reason similarity
    → If any group has 2+ entries → Pattern detected
@@ -192,7 +192,7 @@ Auto-healed recurring pattern: Updated api-designer agent with correct v2 API en
 
 ### Example 1: API Version Error
 
-**Error Log** (CLAUDE.md):
+**Error Log** (.claude/user/errors.md):
 ```
 - Used deprecated /api/v1/users endpoint instead of /api/v2/users
 - API v1 called when v2 is required - update agent knowledge

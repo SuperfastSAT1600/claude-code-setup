@@ -108,8 +108,8 @@ While executing the task, note ANY issues in `.claude/` files you encounter:
 ### Checkpoint 3.3: Pattern Detection (AUTOMATIC)
 
 **System automatically checks**:
-- Error log in `CLAUDE.md` (same error 2+ times?)
-- Changelog in `.claude/health/changelog.md` (same issue 2+ times?)
+- Error log in `.claude/user/errors.md` (same error 2+ times?)
+- Changelog in `.claude/user/changelog.md` (same issue 2+ times?)
 
 **If pattern detected** → Auto-apply fix:
 1. Identify the skill/agent/rule that should prevent this error
@@ -126,7 +126,7 @@ echo "## [$(date +%Y-%m-%d)] type(scope): description
 - **Type**: heal|evolve|adapt|refactor
 - **Changed**: [files]
 - **Reason**: [why]
-" >> .claude/health/changelog.md
+" >> .claude/user/changelog.md
 
 # Commit separately from task work
 git add .claude/
@@ -134,7 +134,7 @@ git commit -m "heal(scope): description" # or evolve/adapt/refactor
 ```
 
 **If main agent made an error during task**:
-- Append concise entry to Error Log in `CLAUDE.md`
+- Append concise entry to Error Log in `.claude/user/errors.md`
 - Format: `- [what went wrong and correct approach]`
 
 ---
@@ -185,5 +185,5 @@ AFTER TASK:
 ✓ Auto-apply trivial fixes, propose major changes
 ✓ Check for error patterns (auto-healed if detected)
 ✓ Log all changes to changelog
-✓ If I made error: add to CLAUDE.md Error Log
+✓ If I made error: add to .claude/user/errors.md
 ```
