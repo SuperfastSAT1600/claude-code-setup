@@ -7,6 +7,7 @@ set -e  # Exit on error
 CLAUDE_DIR=".claude"
 USER_DIR="$CLAUDE_DIR/user"
 BACKUP_DIR=".claude-backup-$(date +%Y%m%d-%H%M%S)"
+SOURCE_DIR="../claude-code-setup/.claude"
 
 # Colors for output
 RED='\033[0;31m'
@@ -17,8 +18,21 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}=== Claude Code System Update ===${NC}\n"
 
-# Step 1: Detect existing installation
-echo -e "${BLUE}[1/5] Detecting installation...${NC}"
+# Step 1: Validate source
+echo -e "${BLUE}[1/6] Validating source...${NC}"
+
+if [ ! -d "$SOURCE_DIR" ]; then
+    echo -e "${RED}✗ Error: Source directory not found: $SOURCE_DIR${NC}"
+    echo -e "${YELLOW}Please clone claude-code-setup to the parent directory:${NC}"
+    echo -e "  cd .."
+    echo -e "  git clone https://github.com/YOUR_REPO/claude-code-setup.git"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Source found: $SOURCE_DIR${NC}"
+
+# Step 2: Detect existing installation
+echo -e "\n${BLUE}[2/6] Detecting installation...${NC}"
 
 HAS_NEW_STRUCTURE=false
 HAS_OLD_STRUCTURE=false
@@ -33,8 +47,8 @@ if [ -f "$CLAUDE_DIR/health/changelog.md" ]; then
     HAS_OLD_STRUCTURE=true
 fi
 
-# Step 2: Create backup
-echo -e "\n${BLUE}[2/5] Creating backup...${NC}"
+# Step 3: Create backup
+echo -e "\n${BLUE}[3/6] Creating backup...${NC}"
 
 mkdir -p "$BACKUP_DIR"
 
@@ -66,15 +80,15 @@ fi
 
 echo -e "${GREEN}Backup created at: $BACKUP_DIR${NC}"
 
-# Step 3: Update system files
-echo -e "\n${BLUE}[3/5] Updating system files...${NC}"
+# Step 4: Update system files
+echo -e "\n${BLUE}[4/6] Updating system files...${NC}"
 
 # Preserve user data before update
 TEMP_USER_DIR=$(mktemp -d)
 TEMP_SETTINGS=$(mktemp)
 
-if [ -d "$USER_DIR" ]; then
-    cp -r "$USER_DIR" "$TEMP_USER_DIR/"
+if [ -d "$USER_DIR" ] && [ "$(ls -A $USER_DIR 2>/dev/null)" ]; then
+    cp -r "$USER_DIR/"* "$TEMP_USER_DIR/" 2>/dev/null || true
     echo -e "${YELLOW}→ Preserving user data temporarily${NC}"
 fi
 
@@ -83,16 +97,37 @@ if [ -f "$CLAUDE_DIR/settings.local.json" ]; then
     echo -e "${YELLOW}→ Preserving settings.local.json temporarily${NC}"
 fi
 
-# Here you would normally:
-# 1. git pull or copy new files from repository
-# 2. For this script, we assume files are already in place
+# Copy system files from source (exclude user directory)
+echo -e "${YELLOW}→ Copying system files from $SOURCE_DIR${NC}"
+
+# Copy all directories except user/
+for dir in "$SOURCE_DIR"/*; do
+    if [ -d "$dir" ]; then
+        dirname=$(basename "$dir")
+        if [ "$dirname" != "user" ]; then
+            cp -r "$dir" "$CLAUDE_DIR/"
+            echo -e "  ✓ Updated $dirname/"
+        fi
+    fi
+done
+
+# Copy root-level files in .claude/
+for file in "$SOURCE_DIR"/*; do
+    if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        if [ "$filename" != "settings.local.json" ]; then
+            cp "$file" "$CLAUDE_DIR/"
+            echo -e "  ✓ Updated $filename"
+        fi
+    fi
+done
 
 echo -e "${GREEN}✓ System files updated${NC}"
 
 # Restore user data
-if [ -d "$TEMP_USER_DIR/user" ]; then
+if [ "$(ls -A $TEMP_USER_DIR 2>/dev/null)" ]; then
     mkdir -p "$USER_DIR"
-    cp -r "$TEMP_USER_DIR/user/"* "$USER_DIR/" 2>/dev/null || true
+    cp -r "$TEMP_USER_DIR/"* "$USER_DIR/"
     echo -e "${GREEN}✓ Restored user data${NC}"
 fi
 
@@ -105,9 +140,9 @@ fi
 rm -rf "$TEMP_USER_DIR"
 rm -f "$TEMP_SETTINGS"
 
-# Step 4: Migrate old structure if needed
+# Step 5: Migrate old structure if needed
 if [ "$HAS_OLD_STRUCTURE" = true ]; then
-    echo -e "\n${BLUE}[4/5] Migrating old structure...${NC}"
+    echo -e "\n${BLUE}[5/6] Migrating old structure...${NC}"
 
     mkdir -p "$USER_DIR"
 
@@ -121,13 +156,19 @@ if [ "$HAS_OLD_STRUCTURE" = true ]; then
         fi
     fi
 
+    # Clean up old health directory
+    if [ -d "$CLAUDE_DIR/health" ] && [ ! "$(ls -A $CLAUDE_DIR/health 2>/dev/null)" ]; then
+        rmdir "$CLAUDE_DIR/health"
+        echo -e "${GREEN}✓ Removed empty health/ directory${NC}"
+    fi
+
     echo -e "${GREEN}Migration complete!${NC}"
 else
-    echo -e "\n${BLUE}[4/5] No migration needed${NC}"
+    echo -e "\n${BLUE}[5/6] No migration needed${NC}"
 fi
 
-# Step 5: Verify and report
-echo -e "\n${BLUE}[5/5] Verification...${NC}"
+# Step 6: Verify and report
+echo -e "\n${BLUE}[6/6] Verification...${NC}"
 
 echo -e "\n${GREEN}Updated:${NC}"
 echo "  - .claude/agents/ (system agents)"
