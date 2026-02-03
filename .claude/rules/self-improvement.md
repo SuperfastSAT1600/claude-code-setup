@@ -15,7 +15,7 @@ The system continuously improves itself through aggressive error logging, patter
 | **1. Tool/API** | MCP errors, WebFetch fails, GitHub API errors, Bash failures | `[tool] Error: [what] \| Expected: [expected]` |
 | **2. Code Generation** | Syntax errors, type errors, import errors, security vulnerabilities | `[code] Error: [what] \| Correct: [how]` |
 | **3. Terminal/Command** | Wrong syntax, permission denied, Git failures, package manager errors | `[cmd] Error: [failed] \| Correct: [working]` |
-| **4. Context/Understanding** | Misunderstood intent, wrong file modified, wrong assumptions | `[context] Error: [assumption] \| Reality: [actual]` |
+| **4. Context/Understanding** | Misunderstood intent, wrong file modified, wrong assumptions, **didn't use available skill** | `[context] Error: [assumption] \| Reality: [actual]` |
 | **5. Agent Coordination** | Wrong agent delegated, unhelpful results, missed parallelization | `[agent] Error: [what] \| Better: [approach]` |
 | **6. System Config** | Non-existent file referenced, broken references, outdated patterns | `[config] Error: [broken] \| Fix: [how]` |
 
@@ -32,6 +32,7 @@ Did something not work as expected?
 ├─ Code had errors → LOG IT
 ├─ Command failed → LOG IT
 ├─ Wrong assumption made → LOG IT
+├─ Didn't check/use available skill → LOG IT
 ├─ Subagent didn't help → LOG IT
 ├─ Had to retry → LOG IT
 ├─ User corrected me → LOG IT

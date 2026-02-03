@@ -102,6 +102,46 @@ Task(security-reviewer) → wait → Task(code-reviewer) → wait...
 
 ---
 
+## Skills-First Approach (MANDATORY)
+
+**Before coding or delegating**, check if relevant skills exist.
+
+### Skill Usage Protocol
+
+```
+1. Identify task domain (auth, API, database, frontend, etc.)
+2. Check if skill exists for that domain
+3. Load skill (Skill tool for user-invocable, or reference .claude/skills/)
+4. Apply skill patterns to your work
+5. If pattern doesn't fit → log observation for skill enhancement
+```
+
+### Common Skill Mappings
+
+| Task Type | Load These Skills |
+|-----------|-------------------|
+| Auth implementation | auth-patterns |
+| REST API design | rest-api-design, backend-patterns |
+| GraphQL API | graphql-patterns |
+| React components | react-patterns, frontend-patterns |
+| Next.js pages | nextjs-patterns, react-patterns |
+| Node.js services | nodejs-patterns, backend-patterns |
+| Database schema | database-patterns |
+| Docker setup | docker-patterns |
+| CI/CD pipeline | github-actions |
+| WebSocket setup | websocket-patterns |
+| TDD workflow | tdd-workflow |
+| Documentation | documentation-patterns |
+
+### Error to Log
+
+If you code without checking skills first:
+```
+[context] Error: Didn't check skills before coding | Should have loaded: [skill-name]
+```
+
+---
+
 ## Common Parallel Patterns
 
 ### Quality Gates (all read same codebase)
@@ -219,12 +259,13 @@ database-architect(schema) → [wait] → migration-specialist(script)
 ```
 User: "Add a user profile page"
 
-1. Read existing code, analyze patterns
-2. Create component
-3. Add route, wire up data
-4. Write tests
-5. Update documentation (API docs, README, changelog)
-6. Commit
+1. Check skills: react-patterns, frontend-patterns
+2. Read existing code, analyze patterns
+3. Create component (following react-patterns)
+4. Add route, wire up data
+5. Write tests (following tdd-workflow if complex)
+6. Update documentation (API docs, README, changelog)
+7. Commit
 ```
 
 ### Specialist-Only Task (Correct to Wait)
@@ -255,13 +296,14 @@ User: "Add dashboard with analytics, notifications, and settings"
 ```
 User: "Add OAuth login with user profiles"
 
-1. PARALLEL (single message):
-   - Task(auth-specialist, "Design OAuth 2.0 PKCE flow")
-   - Task(database-architect, "Design user profile schema")
-2. WHILE THEY RUN: Main agent codes UI, error handling, routing
-3. Integrate specialist designs with UI
-4. PARALLEL: security-reviewer + e2e-runner + doc-updater
-5. Commit
+1. Check skills: auth-patterns, react-patterns, frontend-patterns
+2. PARALLEL (single message):
+   - Task(auth-specialist, "Design OAuth 2.0 PKCE flow, use auth-patterns")
+   - Task(database-architect, "Design user profile schema, use database-patterns")
+3. WHILE THEY RUN: Main agent codes UI (react-patterns), error handling, routing
+4. Integrate specialist designs with UI
+5. PARALLEL: security-reviewer + e2e-runner + doc-updater
+6. Commit
 ```
 
 ### Complex Multi-Part Feature

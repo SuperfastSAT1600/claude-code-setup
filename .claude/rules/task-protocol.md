@@ -12,6 +12,20 @@ For detailed guidance on error categories, pattern detection, and enhancement tr
 - Main agent: `.claude/user/errors.md`
 - Subagents: Also read `.claude/user/agent-errors/{your-name}.md`
 
+**Check Skills** (MANDATORY):
+- Identify relevant skills for the task domain
+- Load ALL applicable skills before starting work
+- Skills contain authoritative patterns - use them instead of guessing
+
+**Available skill domains**:
+- auth-patterns, backend-patterns, coding-standards, database-patterns
+- docker-patterns, documentation-patterns, frontend-patterns, github-actions
+- graphql-patterns, nextjs-patterns, nodejs-patterns, prompt-engineering
+- rag-patterns, react-patterns, rest-api-design, tdd-workflow
+- user-intent-patterns, websocket-patterns, skill-creator
+
+**Error to avoid**: `[context] Error: Didn't use available skill | Should have loaded: [skill-name]`
+
 ---
 
 ## Phase 1: PRE-TASK
@@ -124,7 +138,7 @@ Subagents **report** errors and fixes in their response (main agent logs them):
 ## Quick Reference
 
 ```
-INIT:    Read errors.md (subagents: also agent-errors/{name}.md)
+INIT:    Read errors.md (subagents: also agent-errors/{name}.md) + CHECK SKILLS
 PRE:     Parallelizable? [YES/NO]
 DURING:  Note issues + failures mentally
 POST:    Report → Auto-heal → Log errors → Log self-initiated changes → UPDATE DOCS
