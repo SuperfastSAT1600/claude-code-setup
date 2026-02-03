@@ -228,9 +228,9 @@ The changelog tracks Claude's ideas, NOT user requests.
 - `setup.cjs`
 
 ### Git Discipline
-- Every system change gets its own commit
+- Every system change (heal/enhance) gets its own commit
 - Prefix: `heal(scope):` or `enhance(scope):`
-- Commit separately from task work
+- User feature work: NO automatic commits (user handles manually)
 
 ---
 

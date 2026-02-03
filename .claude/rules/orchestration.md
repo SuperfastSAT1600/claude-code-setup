@@ -40,7 +40,7 @@ User: "Review my code for security issues"
 User: "Set up CI/CD pipeline"
 1. Delegate: ci-cd-specialist
 2. Wait for config (no forced work)
-3. Review and commit
+3. Review
 ```
 
 ### When NOT to Force Work
@@ -179,8 +179,6 @@ doc-updater(API) + doc-updater(README) + doc-updater(CHANGELOG)
 PARALLEL:
 - [Write feature code]
 - doc-updater(update API docs for feature)
-
-Then: Commit both together
 ```
 
 ---
@@ -265,7 +263,6 @@ User: "Add a user profile page"
 4. Add route, wire up data
 5. Write tests (following tdd-workflow if complex)
 6. Update documentation (API docs, README, changelog)
-7. Commit
 ```
 
 ### Specialist-Only Task (Correct to Wait)
@@ -276,7 +273,6 @@ User: "Review my authentication code for security issues"
 2. Wait for results (no forced work - this is CORRECT)
 3. Review findings
 4. Address vulnerabilities
-5. Commit fixes
 ```
 
 ### Medium Feature (Parallel Delegation)
@@ -289,7 +285,6 @@ User: "Add dashboard with analytics, notifications, and settings"
 2. WHILE THEY RUN: Main agent builds settings widget + layout
 3. Integrate all widgets
 4. Update documentation (README usage, API docs, changelog)
-5. Commit
 ```
 
 ### Feature with Specialized Needs
@@ -303,7 +298,6 @@ User: "Add OAuth login with user profiles"
 3. WHILE THEY RUN: Main agent codes UI (react-patterns), error handling, routing
 4. Integrate specialist designs with UI
 5. PARALLEL: security-reviewer + e2e-runner + doc-updater
-6. Commit
 ```
 
 ### Complex Multi-Part Feature
@@ -317,7 +311,6 @@ User: "Build e-commerce checkout"
 2. WHILE THEY RUN: Main agent codes checkout flow, validation
 3. Integrate all parts
 4. PARALLEL: unit-test-writer + e2e-runner + doc-updater
-5. Commit
 ```
 
 ---
@@ -391,8 +384,6 @@ Building your feature:
 [Working] Step 2: Writing code...
 [Pending] Step 3: Testing
 ```
-
-Avoid jargon. Say "Saving changes" not "git commit".
 
 ---
 
