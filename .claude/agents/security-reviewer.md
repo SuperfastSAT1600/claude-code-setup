@@ -71,8 +71,18 @@ Found X critical, Y high, Z medium, W low severity issues.
 
 Escalate to senior security team for RCE vulnerabilities, database compromise, widespread secret exposure, zero-days, or active exploitation evidence.
 
+## Resource Checklist
+
+- Store security findings and vulnerability patterns in Memory for tracking across audits
+- Search Memory for previous security issues before reviewing similar code
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/security-reviewer.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

@@ -79,7 +79,20 @@
       "Bash(BROWSER=none python:*)",
       "Bash(git rebase:*)",
       "mcp__slack__slack_list_channels",
-      "mcp__slack__slack_post_message"
+      "mcp__slack__slack_post_message",
+      "Bash(git rm:*)",
+      "Bash(git config:*)",
+      "mcp__filesystem__directory_tree",
+      "Bash(if [ -f .claude/health/changelog.md ])",
+      "Bash(then mv .claude/health/changelog.md .claude/user/changelog.md)",
+      "Bash(else touch .claude/user/changelog.md)",
+      "Bash(./.claude/scripts/update-system.sh:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(gh pr list:*)",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__read_multiple_files",
+      "mcp__filesystem__read_text_file",
+      "Bash(du:*)"
     ]
   },
   "model": "sonnet",

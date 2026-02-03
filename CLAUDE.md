@@ -1,66 +1,26 @@
-# Team Claude Code Guidelines
+# Project Configuration
 
-Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
+Project-specific configuration for Claude Code. For mandatory protocols, see `.claude/rules/`.
 
 ---
 
 ## Quick Reference
 
-**Workflow**: Main agent codes standard tasks, delegates to 34 specialized agents for expertise
-**Agents (34)**: See `.claude/agents/` for full list and INDEX.md
+**Agents**: 34 specialists in `.claude/agents/` (see INDEX.md)
+**Commands**: `/health-check`, `/commit`, `/review-changes`, etc.
+**Skills**: `.claude/skills/` (react-patterns, rest-api-design, etc.)
 
-**Resources**:
-- Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
-- Workflows: `.claude/workflows/`
-- Checklists: `.claude/checklists/`
-- Templates: `.claude/templates/`
-- Scripts: `.claude/scripts/`
+**Rules** (mandatory protocols):
+- `task-protocol.md` - Execution checkpoints
+- `self-improvement.md` - Error logging, pattern detection, enhancement
+- `orchestration.md` - Delegation, parallelization
+- `coding-standards.md` - Code quality standards
 
----
-
-## Self-Aware System
-
-This setup continuously improves itself. During every task, the system observes its own configuration and proposes fixes, evolutions, and simplifications after completing your work.
-
-- **Execution Protocol**: `.claude/rules/task-execution-protocol.md` (MANDATORY for all agents)
-- **Rules**: `.claude/rules/self-aware-system.md`
-- **Changelog**: `.claude/health/changelog.md`
-- **Health Check**: Run `/health-check` for a comprehensive audit
-- **Agent count**: 34 (33 specialists + 1 system-health)
-
-### Mandatory Checkpoints (Every Task)
-
-1. **PRE-TASK**: Identify parallel work opportunities [enforced]
-2. **DURING**: Observe `.claude/` issues [passive noting]
-3. **POST-TASK**: Auto-heal recurring patterns, report observations [enforced]
-
-This ensures maximum speed through parallelization and continuous system improvement through auto-healing.
-
----
-
-## How It Works
-
-**Main agent codes directly** for standard tasks (CRUD, simple features, bug fixes).
-**Specialists handle** complex domains (auth, databases, performance, security).
-
-Just describe what you want in plain English:
-
-| You say | What happens |
-|---------|--------------|
-| "Add a user profile page" | Main agent implements directly |
-| "I want users to log in with OAuth" | Delegates to auth-specialist |
-| "The checkout is broken" | Main agent fixes via quick-fix workflow |
-| "Is this code secure?" | Delegates to security-reviewer |
-| "Make the page faster" | Delegates to performance-optimizer |
-
-### Main Agent Templates
-
-When creating React code, the main agent uses:
-- `variants/react/component.tsx.template` - React components with TypeScript
-- `variants/react/form.tsx.template` - Form components with React Hook Form + Zod
-- `variants/react/hook.ts.template` - Custom React hooks with proper cleanup
-- `variants/react/context.tsx.template` - React Context providers with type safety
-- `variants/react/hoc.tsx.template` - Higher-Order Components with ref forwarding
+**Data Locations**:
+- Error log: `.claude/user/errors.md`
+- Agent errors: `.claude/user/agent-errors/{agent-name}.md`
+- Changelog: `.claude/user/changelog.md` (self-initiated changes only)
+- Custom content: `.claude/user/custom/`
 
 ---
 
@@ -70,27 +30,21 @@ When creating React code, the main agent uses:
 
 **Frontend**: {{FRONTEND_STACK}}
 <!-- Example: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS -->
-<!-- Example: Vue 3, Nuxt 3, TypeScript, UnoCSS -->
-<!-- Example: Svelte 4, SvelteKit, TypeScript -->
 
 **Backend**: {{BACKEND_STACK}}
 <!-- Example: Node.js 20+, Supabase (PostgreSQL, Auth, Storage, Real-time) -->
-<!-- Example: Node.js 20+, Express, PostgreSQL, Prisma -->
-<!-- Example: Python 3.11+, FastAPI, SQLAlchemy -->
 
 **Testing**: {{TESTING_STACK}}
 <!-- Example: Vitest, Playwright, React Testing Library -->
-<!-- Example: Jest, Cypress, Testing Library -->
 
 **DevOps**: {{DEVOPS_STACK}}
 <!-- Example: Docker, GitHub Actions, Vercel -->
-<!-- Example: Docker, GitLab CI, AWS -->
 
 ---
 
 ## Project Structure
 
-> ⚠️ **CUSTOMIZE THIS SECTION** - Update to match your project's actual structure
+> ⚠️ **CUSTOMIZE THIS SECTION** - Update to match your project
 
 ```
 {{PROJECT_STRUCTURE}}
@@ -109,7 +63,7 @@ When creating React code, the main agent uses:
 
 ## Dependencies
 
-> ⚠️ **CUSTOMIZE THIS SECTION** - List approved and forbidden dependencies for your project
+> ⚠️ **CUSTOMIZE THIS SECTION** - List approved and forbidden dependencies
 
 **Approved**: {{APPROVED_DEPS}}
 <!-- Example: date-fns, zod, react-hook-form, @tanstack/react-query -->
@@ -119,12 +73,32 @@ When creating React code, the main agent uses:
 
 ---
 
-## Error Log
+## Main Agent Templates
 
-Main agent: append here when you make a mistake so it never repeats. Subagents: report errors in your response for the main agent to log to `.claude/health/changelog.md`.
-
-- Never pass model parameter to Task unless explicitly requested
+When creating React code:
+- `variants/react/component.tsx.template` - Components with TypeScript
+- `variants/react/form.tsx.template` - Forms with React Hook Form + Zod
+- `variants/react/hook.ts.template` - Custom hooks with proper cleanup
+- `variants/react/context.tsx.template` - Context providers with type safety
+- `variants/react/hoc.tsx.template` - HOCs with ref forwarding
 
 ---
 
-**Last Updated**: 2026-01-26
+## Updating This System
+
+```bash
+# Run the update script
+./.claude/scripts/update-system.sh
+```
+
+**Preserved during updates:**
+- `.claude/user/` - Your error logs, changelog, custom content
+- `.claude/settings.local.json` - Your local configuration
+- `CLAUDE.md` - This file (your project config)
+
+**Updated:**
+- System agents, skills, rules, commands, workflows, templates
+
+---
+
+**Last Updated**: 2026-02-03

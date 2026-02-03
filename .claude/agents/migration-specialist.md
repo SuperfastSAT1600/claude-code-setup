@@ -60,6 +60,11 @@ Plan, design, and execute database schema migrations and data transformations wi
 
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/migration-specialist.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config
