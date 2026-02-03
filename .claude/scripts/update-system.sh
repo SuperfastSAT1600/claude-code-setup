@@ -44,6 +44,9 @@ if [ "$HAS_NEW_STRUCTURE" = true ]; then
         cp -r "$USER_DIR" "$BACKUP_DIR/"
         echo -e "${GREEN}✓ Backed up user/ folder${NC}"
     fi
+    if [ -d "$USER_DIR/agent-errors" ]; then
+        echo -e "${GREEN}✓ Backed up agent-errors/ folder${NC}"
+    fi
 fi
 
 # Backup settings.local.json
@@ -148,6 +151,12 @@ fi
 if [ -d "$USER_DIR/custom" ] && [ "$(ls -A $USER_DIR/custom 2>/dev/null)" ]; then
     CUSTOM_COUNT=$(find "$USER_DIR/custom" -type f | wc -l)
     echo "  - .claude/user/custom/ ($CUSTOM_COUNT custom files)"
+fi
+if [ -d "$USER_DIR/agent-errors" ]; then
+    AGENT_ERROR_COUNT=$(find "$USER_DIR/agent-errors" -name "*.md" -type f 2>/dev/null | wc -l)
+    if [ "$AGENT_ERROR_COUNT" -gt 0 ]; then
+        echo "  - .claude/user/agent-errors/ ($AGENT_ERROR_COUNT agent error logs)"
+    fi
 fi
 
 echo -e "\n${GREEN}Backup location:${NC} $BACKUP_DIR"

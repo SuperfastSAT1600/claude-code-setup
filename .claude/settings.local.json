@@ -88,7 +88,11 @@
       "Bash(else touch .claude/user/changelog.md)",
       "Bash(./.claude/scripts/update-system.sh:*)",
       "Bash(git check-ignore:*)",
-      "Bash(gh pr list:*)"
+      "Bash(gh pr list:*)",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__read_multiple_files",
+      "mcp__filesystem__read_text_file",
+      "Bash(du:*)"
     ]
   },
   "model": "sonnet",

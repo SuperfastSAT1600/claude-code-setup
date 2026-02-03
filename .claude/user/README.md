@@ -14,6 +14,14 @@ Your system's self-healing history. Every time the system auto-fixes an issue or
 ### `errors.md`
 Error log where mistakes are recorded to prevent recurrence. When the main agent makes an error, it's documented here so the same mistake never happens again.
 
+### `agent-errors/`
+Per-agent error logs. Each specialist agent logs domain-specific errors to its own file:
+- `agent-errors/auth-specialist.md` - Auth-related errors
+- `agent-errors/api-designer.md` - API design errors
+- etc.
+
+This enables pattern detection per agent domain and prevents recurring domain-specific mistakes.
+
 ### `custom/`
 Your custom agents, skills, and commands that extend the base system:
 - `custom/agents/` - Custom specialist agents
@@ -77,6 +85,7 @@ The script will:
 - ✅ Update all system files
 - ✅ Preserve your `changelog.md`
 - ✅ Preserve your `errors.md`
+- ✅ Preserve your `agent-errors/` folder
 - ✅ Preserve your `custom/` folder
 - ✅ Preserve your `settings.local.json`
 - ✅ Create a timestamped backup just in case
@@ -86,7 +95,7 @@ The script will:
 ## Git Behavior
 
 This folder is configured via `.claude/.gitignore`:
-- Your data files (`changelog.md`, `errors.md`, `custom/**`) are **NOT tracked**
+- Your data files (`changelog.md`, `errors.md`, `agent-errors/**`, `custom/**`) are **NOT tracked**
 - Folder structure (`.gitkeep` files) **IS tracked**
 - You can commit custom content to your own repos if desired
 

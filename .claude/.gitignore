@@ -1,6 +1,7 @@
 # User data - preserve during updates
 user/changelog.md
 user/errors.md
+user/agent-errors/*.md
 user/custom/**
 
 # Local settings
@@ -8,6 +9,7 @@ settings.local.json
 
 # Keep folder structure
 !user/.gitkeep
+!user/agent-errors/.gitkeep
 !user/custom/agents/.gitkeep
 !user/custom/skills/.gitkeep
 !user/custom/commands/.gitkeep
