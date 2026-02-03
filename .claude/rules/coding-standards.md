@@ -1,6 +1,6 @@
-# Essential Rules (Ultra-Compact)
+# Coding Standards
 
-Core rules that must be followed. For detailed patterns, see archived rules or skills.
+Core rules that must be followed. For detailed patterns, see skills.
 
 ---
 
@@ -54,7 +54,6 @@ res.cookie('session', token, {
 
 ### Early Returns
 ```typescript
-// Good: flat structure
 function process(order: Order): Result {
   if (!order) return { error: 'Order not found' };
   if (!order.items.length) return { error: 'Empty order' };
@@ -164,7 +163,6 @@ class ValidationError extends AppError {
 
 ### Async Handling
 ```typescript
-// Always handle promise rejections
 app.get('/users/:id', async (req, res, next) => {
   try {
     const user = await userService.findById(req.params.id);

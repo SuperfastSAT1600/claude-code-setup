@@ -29,7 +29,7 @@ Use periodically to validate system integrity, or when the self-aware system sug
 
 4. **Propose Resolutions**
    - For each finding, propose a specific fix
-   - Respect approval tiers from `.claude/rules/self-aware-system.md`
+   - Respect approval tiers from `.claude/rules/self-improvement.md`
    - Batch related fixes together
 
 5. **Review Changelog**
