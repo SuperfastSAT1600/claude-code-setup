@@ -82,7 +82,7 @@ cp ../claude-code-setup/setup.cjs .
 cp -r ../claude-code-setup/lib/ .
 
 # MCP 템플릿 복사 (선택 사항)
-cp ../claude-code-setup/.mcp.template.json .
+# (MCP 템플릿은 위의 .claude/ 복사에 이미 포함되어 있습니다)
 
 # 온보딩 문서들 복사
 cp ../claude-code-setup/INTEGRATION.ko.md .
@@ -93,7 +93,7 @@ cp -r ../claude-code-setup/.claude/ .
 cp ../claude-code-setup/CLAUDE.md .
 cp ../claude-code-setup/setup.cjs .
 cp -r ../claude-code-setup/lib/ .
-cp ../claude-code-setup/.mcp.template.json .
+# (MCP 템플릿은 위의 .claude/ 복사에 이미 포함되어 있습니다)
 
 
 
@@ -344,13 +344,13 @@ node setup.cjs
 
 ## 다음 단계
 
-1. [WORKFLOW.md](WORKFLOW.md) 읽기 - 완전한 워크플로우 가이드
+1. [../guides/WORKFLOW.ko.md](../guides/WORKFLOW.ko.md) 읽기 - 완전한 워크플로우 가이드
 2. `/full-feature` 시도 - Claude로 첫 번째 기능 빌드
 3. 변경 사항 커밋: `git add .claude/ CLAUDE.md && git commit -m "Add Claude Code"`
 
 ---
 
 **도움이 필요하신가요?**
-- 템플릿 설정: [TEMPLATE-SETUP.md](TEMPLATE-SETUP.md)
+- 템플릿 설정: [../README.md](../README.md)
 - 메인 README: [README.md](README.md)
 - 이슈: https://github.com/YOUR-ORG/claude-code-setup/issues

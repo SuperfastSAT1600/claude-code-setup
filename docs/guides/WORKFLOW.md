@@ -897,7 +897,7 @@ Model Context Protocol (MCP) servers provide external tool integrations:
 - **context7**: Context management tools
 - **magic**: Additional utilities
 
-**Current Configuration**: 27 pre-configured servers in `.mcp.template.json`, most disabled by default for performance. Enable only what you need.
+**Current Configuration**: 27 pre-configured servers in `.claude/templates/mcp.template.json`, most disabled by default for performance. Enable only what you need.
 
 **Required MCP Servers:**
 - **filesystem**: Always enabled (required for file operations)
@@ -1497,7 +1497,7 @@ npx @modelcontextprotocol/server-github
 ### 9.2 Getting Help
 
 **Self-Service**:
-1. Check this WORKFLOW.md
+1. Check this guide
 2. Review [README.md](README.md)
 3. Read relevant rule files in `.claude/rules/`
 4. Search CLAUDE.md for project-specific guidance
