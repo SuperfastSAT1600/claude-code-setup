@@ -134,6 +134,15 @@ docker-specialist + ci-cd-specialist + monitoring-architect
 doc-updater(API) + doc-updater(README) + doc-updater(CHANGELOG)
 ```
 
+### Code + Documentation (parallel when possible)
+```
+PARALLEL:
+- [Write feature code]
+- doc-updater(update API docs for feature)
+
+Then: Commit both together
+```
+
 ---
 
 ## Must Be Sequential
@@ -195,7 +204,7 @@ database-architect(schema) → [wait] → migration-specialist(script)
 | build-error-resolver | Fix build errors |
 | ci-cd-specialist | Pipeline setup |
 | docker-specialist | Containerization |
-| doc-updater | Documentation sync |
+| doc-updater | **MANDATORY** after every code change (3+ files) |
 
 ### Model Tiers
 - **haiku**: doc-updater, dependency-manager, Explore tasks
@@ -214,7 +223,8 @@ User: "Add a user profile page"
 2. Create component
 3. Add route, wire up data
 4. Write tests
-5. Commit
+5. Update documentation (API docs, README, changelog)
+6. Commit
 ```
 
 ### Specialist-Only Task (Correct to Wait)
@@ -237,7 +247,8 @@ User: "Add dashboard with analytics, notifications, and settings"
    - Task(general-purpose, "Build notifications widget")
 2. WHILE THEY RUN: Main agent builds settings widget + layout
 3. Integrate all widgets
-4. Commit
+4. Update documentation (README usage, API docs, changelog)
+5. Commit
 ```
 
 ### Feature with Specialized Needs
@@ -249,7 +260,7 @@ User: "Add OAuth login with user profiles"
    - Task(database-architect, "Design user profile schema")
 2. WHILE THEY RUN: Main agent codes UI, error handling, routing
 3. Integrate specialist designs with UI
-4. PARALLEL: security-reviewer + e2e-runner
+4. PARALLEL: security-reviewer + e2e-runner + doc-updater
 5. Commit
 ```
 
@@ -263,7 +274,7 @@ User: "Build e-commerce checkout"
    - Task(api-designer, "Design payment API")
 2. WHILE THEY RUN: Main agent codes checkout flow, validation
 3. Integrate all parts
-4. PARALLEL: unit-test-writer + e2e-runner
+4. PARALLEL: unit-test-writer + e2e-runner + doc-updater
 5. Commit
 ```
 

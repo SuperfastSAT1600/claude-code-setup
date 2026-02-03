@@ -68,6 +68,38 @@ Format: `- [category] Error: [what] | Correct: [how]`
 
 Only log changes Claude proposed (not user requests). See `self-improvement.md` for format.
 
+### 3.5 Documentation Update (MANDATORY)
+
+**CRITICAL**: Every code change MUST update documentation.
+
+**Decision Tree**:
+```
+Did you change code?
+├─ Added feature → Update README, API docs, changelog
+├─ Changed API → Update function docs, README examples, changelog
+├─ Fixed bug → Update changelog, affected examples
+├─ Refactored → Update affected docs
+└─ No code change → Skip this step
+```
+
+**How to Update**:
+- **Small changes** (1-2 files): Update docs directly
+- **Large changes** (3+ files): Delegate to `doc-updater` agent
+- **Parallel option**: If multiple independent docs, update in parallel with main work
+
+**What to Update**:
+1. **API Documentation**: JSDoc/TSDoc for changed functions
+2. **README**: Usage examples if API changed
+3. **Changelog**: Add entry (`.claude/user/changelog.md` for self-initiated OR project changelog for user requests)
+4. **Comments**: Inline docs for complex logic
+5. **Examples**: Code samples that reference changed code
+
+**Verification**:
+- [ ] All changed functions have current docs
+- [ ] Examples still work
+- [ ] Changelog updated
+- [ ] No outdated references
+
 ---
 
 ## Subagent Protocol
@@ -95,5 +127,5 @@ Subagents **report** errors and fixes in their response (main agent logs them):
 INIT:    Read errors.md (subagents: also agent-errors/{name}.md)
 PRE:     Parallelizable? [YES/NO]
 DURING:  Note issues + failures mentally
-POST:    Report → Auto-heal → Log errors → Log self-initiated changes
+POST:    Report → Auto-heal → Log errors → Log self-initiated changes → UPDATE DOCS
 ```

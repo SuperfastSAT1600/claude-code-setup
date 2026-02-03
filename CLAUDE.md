@@ -10,12 +10,6 @@ Project-specific configuration for Claude Code. For mandatory protocols, see `.c
 **Commands**: `/health-check`, `/commit`, `/review-changes`, etc.
 **Skills**: `.claude/skills/` (react-patterns, rest-api-design, etc.)
 
-**Rules** (mandatory protocols):
-- `task-protocol.md` - Execution checkpoints
-- `self-improvement.md` - Error logging, pattern detection, enhancement
-- `orchestration.md` - Specialist delegation, parallel patterns, when to wait
-- `coding-standards.md` - Code quality standards
-
 **Data Locations**:
 - Error log: `.claude/user/errors.md`
 - Agent errors: `.claude/user/agent-errors/{agent-name}.md`
