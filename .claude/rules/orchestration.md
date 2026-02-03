@@ -1,32 +1,53 @@
 # Orchestration Rules
 
-**Core principles**: Main agent is both CODER and ORCHESTRATOR. Delegate freely when it increases speed. **DEFAULT TO PARALLEL**. **NEVER SIT IDLE**.
+**Core principles**: Main agent is both CODER and ORCHESTRATOR. Delegate to specialists when needed. **DEFAULT TO PARALLEL** when there's natural parallel work. Don't force-create work.
 
 ---
 
-## Main Agent Priority: STAY ACTIVE
+## Main Agent Priority: DELEGATE CORRECTLY
 
-**CRITICAL**: Main agent must NEVER sit idle waiting for subagents. Always be working on something.
+**Core principle**: Delegate to specialists when needed. Stay active when there's parallel work. Don't force-create work.
 
-### Active Orchestration Pattern
+### Delegation Decision Tree
 
+```
+Does this task need a specialist? (security-reviewer, auth-specialist, etc.)
+├─ YES → Is there natural parallel work for main agent?
+│  ├─ YES → Delegate + work in parallel (IDEAL)
+│  └─ NO → Delegate + wait (CORRECT - don't force-create work)
+└─ NO → Main agent handles directly
+```
+
+### Active vs Passive Delegation
+
+**Active Delegation** (main agent works while specialist runs):
 ```
 GOOD:
-1. Launch agents in PARALLEL (single message, multiple Task calls)
-2. WHILE THEY RUN: Main agent codes related work
+User: "Add OAuth login with user profiles"
+1. PARALLEL: auth-specialist + database-architect
+2. WHILE THEY RUN: Main agent codes UI, routing, error handling
 3. Integrate specialist outputs
-
-BAD:
-1. Delegate to agent
-2. Wait... (IDLE - this is the problem!)
-3. Report results
 ```
 
-### Main Agent Always Has Work
-- Delegating everything → work on integration, testing, or documentation
-- Delegating parts → work on other parts in parallel
-- Delegating review → address findings as they come
-- Delegating research → start coding based on existing patterns
+**Passive Delegation** (main agent correctly waits):
+```
+ALSO GOOD:
+User: "Review my code for security issues"
+1. Delegate: security-reviewer
+2. Wait for results (no forced work)
+3. Address findings
+
+User: "Set up CI/CD pipeline"
+1. Delegate: ci-cd-specialist
+2. Wait for config (no forced work)
+3. Review and commit
+```
+
+### When NOT to Force Work
+- Pure review tasks (security, code quality, accessibility)
+- Specialized setup (CI/CD, Docker, infrastructure)
+- Research/exploration with no obvious implementation yet
+- Planning phase (planner/architect output needed first)
 
 ---
 
@@ -196,6 +217,17 @@ User: "Add a user profile page"
 5. Commit
 ```
 
+### Specialist-Only Task (Correct to Wait)
+```
+User: "Review my authentication code for security issues"
+
+1. Delegate: security-reviewer (comprehensive audit)
+2. Wait for results (no forced work - this is CORRECT)
+3. Review findings
+4. Address vulnerabilities
+5. Commit fixes
+```
+
 ### Medium Feature (Parallel Delegation)
 ```
 User: "Add dashboard with analytics, notifications, and settings"
@@ -244,11 +276,13 @@ User: "Build e-commerce checkout"
 | "Add a login form" | Code directly |
 | "Fix the button styling" | Edit directly |
 | "Fix this bug" | Debug and fix directly |
+| "Review for security" | **DELEGATE**: security-reviewer (wait is correct) |
+| "Check accessibility" | **DELEGATE**: accessibility-auditor (wait is correct) |
+| "Set up CI/CD" | **DELEGATE**: ci-cd-specialist (wait is correct) |
+| "Containerize the app" | **DELEGATE**: docker-specialist (wait is correct) |
 | "Add dashboard with widgets" | **PARALLEL**: Delegate widgets, code layout |
 | "Add OAuth login" | **PARALLEL**: auth-specialist + db-architect, code UI |
-| "Review for security" | **PARALLEL**: security-reviewer + code-reviewer |
 | "Optimize dashboard" | **PARALLEL**: performance-optimizer + db-architect |
-| "Set up CI/CD" | Delegate ci-cd-specialist |
 | "Add GraphQL API" | **PARALLEL**: graphql-specialist designs, code resolvers |
 | "Add WebSocket chat" | **PARALLEL**: websocket-specialist + db-architect, code UI |
 
