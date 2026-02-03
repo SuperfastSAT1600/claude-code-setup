@@ -49,10 +49,23 @@ See `orchestration.md` for patterns and examples.
 
 ## Phase 2: DURING
 
-### Observe & Track (mentally, don't stop working)
+### Error Logging (IMMEDIATE)
 
-1. **System issues** in `.claude/` files (heal/evolve/adapt/refactor)
-2. **Failures** in any of the 6 categories (see `self-improvement.md`)
+**CRITICAL**: Log errors to `.claude/user/errors.md` IMMEDIATELY when they occur. Do NOT wait until end of task.
+
+```
+Tool fails → LOG NOW → Continue
+Code error → LOG NOW → Fix → Continue
+Wrong assumption → LOG NOW → Correct → Continue
+```
+
+### System Observations (note mentally)
+
+Note system improvement opportunities for reporting at end:
+1. **HEAL**: Broken references, contradictions, invalid paths
+2. **EVOLVE**: Missing coverage, new patterns, recurring needs
+3. **ADAPT**: Deprecated tech, stack mismatches, preference changes
+4. **REFACTOR**: Overlaps, bloat, unused components
 
 ---
 
@@ -70,11 +83,13 @@ Per `self-improvement.md`:
 - **Auto-apply**: INDEX sync, broken references, typos
 - **Propose**: Content changes, new components
 
-### 3.3 Error Logging
+### 3.3 Error Logging (Final Check)
 
-**Main agent** logs ALL errors (including those reported by subagents):
+**Verify all errors were logged during task** (should already be in files from immediate logging):
 - Main agent errors → `.claude/user/errors.md`
 - Subagent errors → `.claude/user/agent-errors/{agent-name}.md`
+
+If any were missed, log them now.
 
 Format: `- [category] Error: [what] | Correct: [how]`
 
@@ -140,6 +155,6 @@ Subagents **report** errors and fixes in their response (main agent logs them):
 ```
 INIT:    Read errors.md (subagents: also agent-errors/{name}.md) + CHECK SKILLS
 PRE:     Parallelizable? [YES/NO]
-DURING:  Note issues + failures mentally
-POST:    Report → Auto-heal → Log errors → Log self-initiated changes → UPDATE DOCS
+DURING:  LOG ERRORS IMMEDIATELY + note system observations mentally
+POST:    Report observations → Auto-heal → Verify errors logged → Log self-initiated changes → UPDATE DOCS
 ```

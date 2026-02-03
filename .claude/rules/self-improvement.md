@@ -49,7 +49,7 @@ When a user shares an error (screenshot, log, stack trace), don't just fix it—
 
 ## 2. Observation Framework
 
-While working on the user's primary task, note issues in `.claude/` files. Do NOT stop the task — just note observations mentally.
+While working on the user's primary task, note system improvement opportunities in `.claude/` files. Do NOT stop the task — just note observations mentally and report at end.
 
 ### Four Dimensions
 
@@ -192,10 +192,9 @@ The changelog tracks Claude's ideas, NOT user requests.
 ### Main Agent Responsibilities
 
 1. Read `.claude/user/errors.md` before starting any task
-2. Track ALL failures during task (6 categories)
-3. Log own errors to `errors.md`
-4. When subagent reports errors → log to `agent-errors/{agent-name}.md`
-5. When subagent reports fixes → log to `changelog.md`
+2. **LOG IMMEDIATELY** when failures occur (6 categories) - don't wait until end
+3. When subagent reports errors → log to `agent-errors/{agent-name}.md`
+4. When subagent reports fixes → log to `changelog.md`
 
 ### Subagent Responsibilities
 
