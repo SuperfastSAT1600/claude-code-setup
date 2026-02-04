@@ -87,7 +87,14 @@ echo -e "\n${BLUE}[4/6] Updating system files...${NC}"
 TEMP_USER_DIR=$(mktemp -d)
 TEMP_SETTINGS=$(mktemp)
 
-if [ -d "$USER_DIR" ] && [ "$(ls -A $USER_DIR 2>/dev/null)" ]; then
+# Cleanup trap for temp files
+cleanup() {
+    rm -rf "$TEMP_USER_DIR" 2>/dev/null || true
+    rm -f "$TEMP_SETTINGS" 2>/dev/null || true
+}
+trap cleanup EXIT
+
+if [ -d "$USER_DIR" ] && [ "$(ls -A "$USER_DIR" 2>/dev/null)" ]; then
     cp -r "$USER_DIR/"* "$TEMP_USER_DIR/" 2>/dev/null || true
     echo -e "${YELLOW}→ Preserving user data temporarily${NC}"
 fi
@@ -125,7 +132,7 @@ done
 echo -e "${GREEN}✓ System files updated${NC}"
 
 # Restore user data
-if [ "$(ls -A $TEMP_USER_DIR 2>/dev/null)" ]; then
+if [ "$(ls -A "$TEMP_USER_DIR" 2>/dev/null)" ]; then
     mkdir -p "$USER_DIR"
     cp -r "$TEMP_USER_DIR/"* "$USER_DIR/"
     echo -e "${GREEN}✓ Restored user data${NC}"
@@ -157,7 +164,7 @@ if [ "$HAS_OLD_STRUCTURE" = true ]; then
     fi
 
     # Clean up old health directory
-    if [ -d "$CLAUDE_DIR/health" ] && [ ! "$(ls -A $CLAUDE_DIR/health 2>/dev/null)" ]; then
+    if [ -d "$CLAUDE_DIR/health" ] && [ ! "$(ls -A "$CLAUDE_DIR/health" 2>/dev/null)" ]; then
         rmdir "$CLAUDE_DIR/health"
         echo -e "${GREEN}✓ Removed empty health/ directory${NC}"
     fi
@@ -189,7 +196,7 @@ fi
 if [ -f "$CLAUDE_DIR/settings.local.json" ]; then
     echo "  - .claude/settings.local.json"
 fi
-if [ -d "$USER_DIR/custom" ] && [ "$(ls -A $USER_DIR/custom 2>/dev/null)" ]; then
+if [ -d "$USER_DIR/custom" ] && [ "$(ls -A "$USER_DIR/custom" 2>/dev/null)" ]; then
     CUSTOM_COUNT=$(find "$USER_DIR/custom" -type f | wc -l)
     echo "  - .claude/user/custom/ ($CUSTOM_COUNT custom files)"
 fi
