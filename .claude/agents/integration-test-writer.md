@@ -2,7 +2,6 @@
 name: integration-test-writer
 description: Specialist for writing integration tests that verify component interactions
 model: sonnet
-tools: [Read, Grep, Glob, Bash, Edit, Write]
 skills:
   - tdd-workflow
   - backend-patterns
@@ -41,6 +40,14 @@ API routes with database operations, service-to-service communication, database 
 ## Coordination
 
 Works after unit tests pass. Tests integration between new code and existing system. Reports transaction rollback issues to orchestrator.
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query testing library documentation and integration test patterns
+- **supabase**: Reference database testing patterns and test data setup
+- **memory**: Store integration test patterns and common test scenarios
 
 ## Error Log
 

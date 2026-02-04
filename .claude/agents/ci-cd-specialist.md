@@ -2,7 +2,6 @@
 name: ci-cd-specialist
 description: Expert in CI/CD pipeline configuration and optimization for modern development workflows
 model: sonnet
-tools: [Read, Grep, Glob, Bash, Edit, Write]
 skills:
   - github-actions
   - docker-patterns
@@ -49,6 +48,14 @@ Expert in continuous integration and deployment pipelines. Design fast, reliable
 - GitHub Actions Skill: `.claude/skills/github-actions/`
 - Deployment Checklist: `.claude/checklists/deployment-checklist.md`
 - GitHub Workflow Template: `.claude/templates/github-workflow.yml`
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **github**: Create and manage GitHub Actions workflows, check workflow runs
+- **context7**: Query CI/CD platform documentation and best practices
+- **memory**: Store pipeline configurations and deployment patterns
 
 ## Error Log
 

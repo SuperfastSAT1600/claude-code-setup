@@ -2,7 +2,6 @@
 name: mobile-specialist
 description: Mobile development expert for React Native, Flutter, and cross-platform mobile applications
 model: sonnet
-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash
 skills:
   - react-patterns
   - frontend-patterns
@@ -130,6 +129,14 @@ const ProductItem = memo(function ProductItem({ product, onPress }) {
 
 - Check Magic UI for mobile-friendly components (buttons, animations, effects) before custom implementation
 - Query Context7 for React Native/Expo docs when using unfamiliar APIs
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query React Native, Flutter, and mobile platform documentation
+- **magic-ui**: Reference mobile UI component patterns
+- **memory**: Store mobile development patterns and platform-specific solutions
 
 ## Error Log
 

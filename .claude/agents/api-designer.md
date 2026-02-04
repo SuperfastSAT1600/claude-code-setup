@@ -2,7 +2,6 @@
 name: api-designer
 description: Senior API architect for complete API lifecycle - design, specification, and documentation
 model: sonnet
-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write
 skills:
   - rest-api-design
   - backend-patterns
@@ -60,6 +59,14 @@ Senior API architect handling complete API lifecycle: design scalable REST/Graph
 
 - Query Context7 for API framework docs (Express, Fastify, NestJS) before designing
 - Store API design decisions in Memory (versioning strategy, auth patterns, error formats)
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query API design patterns and REST/GraphQL documentation
+- **supabase**: Reference Supabase API patterns and PostgreSQL REST API design
+- **memory**: Store API design decisions and patterns
 
 ## Error Log
 

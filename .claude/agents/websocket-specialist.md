@@ -2,7 +2,6 @@
 name: websocket-specialist
 description: Implement real-time communication with WebSockets for bidirectional data flow
 model: sonnet
-tools: Read, Write, Edit, Grep, Glob, Bash
 skills:
   - websocket-patterns
   - backend-patterns
@@ -171,6 +170,14 @@ io.adapter(createAdapter(pubClient, subClient));
 
 - Query Context7 for WebSocket library docs (Socket.io, ws, Supabase Realtime) before implementation
 - Store connection management patterns in Memory for reuse across real-time features
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **supabase**: Reference Supabase Realtime and WebSocket patterns
+- **context7**: Query Socket.io and WebSocket library documentation
+- **memory**: Store real-time communication patterns and configurations
 
 ## Error Log
 

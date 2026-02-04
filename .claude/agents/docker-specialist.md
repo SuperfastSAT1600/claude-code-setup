@@ -2,7 +2,6 @@
 name: docker-specialist
 description: Expert in containerization with Docker, multi-stage builds, and container orchestration
 model: sonnet
-tools: [Read, Grep, Glob, Bash, Edit, Write]
 skills:
   - docker-patterns
   - backend-patterns
@@ -80,6 +79,15 @@ services:
 
 - Deployment Checklist: `.claude/checklists/deployment-checklist.md`
 - Docker Patterns: `.claude/skills/docker-patterns/`
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **render**: Query Render deployment configurations and Docker best practices
+- **cloudflare-workers-bindings**: Reference containerized workers patterns
+- **context7**: Query Docker and containerization documentation
+- **memory**: Store Dockerfile patterns and build optimization strategies
 
 ## Error Log
 

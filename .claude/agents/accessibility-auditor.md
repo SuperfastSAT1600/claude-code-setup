@@ -2,7 +2,6 @@
 name: accessibility-auditor
 description: Audit and fix accessibility issues to achieve WCAG 2.1 AA compliance
 model: sonnet
-tools: Read, Edit, Grep, Glob, Bash
 skills:
   - frontend-patterns
   - react-patterns
@@ -58,6 +57,14 @@ Audit web applications for accessibility issues and implement fixes to achieve W
 
 - Accessibility Audit: `.claude/checklists/accessibility-audit.md`
 - React Patterns: `.claude/skills/react-patterns/`
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **magic-ui**: Reference accessible UI component patterns and ARIA examples
+- **context7**: Query WCAG documentation and accessibility library docs
+- **memory**: Store accessibility patterns and audit findings
 
 ## Error Log
 

@@ -2,7 +2,6 @@
 name: unit-test-writer
 description: Specialist for writing comprehensive unit tests with proper isolation and coverage
 model: sonnet
-tools: [Read, Grep, Glob, Bash, Edit, Write]
 skills:
   - tdd-workflow
   - coding-standards
@@ -47,6 +46,13 @@ Provide test file with grouped tests, coverage summary showing happy path + erro
 ## Coordination
 
 Works after code is created by main agent or specialists. Coordinates with tdd-guide for TDD workflow. Reports coverage metrics to orchestrator.
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query testing library documentation and unit test patterns
+- **memory**: Store test patterns and mocking strategies
 
 ## Error Log
 

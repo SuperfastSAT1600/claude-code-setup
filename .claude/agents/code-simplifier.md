@@ -2,7 +2,6 @@
 name: code-simplifier
 description: Reviews and simplifies code by removing unnecessary complexity and abstractions
 model: sonnet
-tools: Bash, Read, Edit, Write, Grep, Glob
 skills:
   - coding-standards
   - backend-patterns
@@ -64,6 +63,13 @@ const displayName = currentUser?.name || 'Anonymous';
 
 - React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for extracting logic)
 - React Context Template: `.claude/templates/variants/react/context.tsx.template` (for state management)
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query refactoring patterns and simplification techniques
+- **memory**: Store simplification patterns and anti-pattern examples
 
 ## Error Log
 

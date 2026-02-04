@@ -2,7 +2,7 @@
 name: security-reviewer
 description: Senior security engineer for application security audits and vulnerability detection
 model: opus
-tools: Read, Grep, Glob, Bash
+disallowedTools: [Edit, Write]
 skills:
   - auth-patterns
   - backend-patterns
@@ -75,6 +75,14 @@ Escalate to senior security team for RCE vulnerabilities, database compromise, w
 
 - Store security findings and vulnerability patterns in Memory for tracking across audits
 - Search Memory for previous security issues before reviewing similar code
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query OWASP documentation and security library references
+- **memory**: Store vulnerability patterns and remediation strategies
+- **github**: Check for exposed secrets in repository history
 
 ## Error Log
 

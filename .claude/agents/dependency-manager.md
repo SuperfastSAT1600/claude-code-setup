@@ -2,7 +2,7 @@
 name: dependency-manager
 description: Expert in managing project dependencies, updates, audits, and conflict resolution
 model: haiku
-tools: [Read, Grep, Glob, Bash]
+disallowedTools: [Edit, Write]
 skills:
   - project-guidelines
   - nodejs-patterns
@@ -95,6 +95,13 @@ npm test
 ## Resources
 
 `.claude/checklists/dependency-audit.md`, `.claude/checklists/security-audit.md`
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query package manager documentation and dependency best practices
+- **github**: Check dependency vulnerabilities and Dependabot alerts
 
 ## Error Log
 

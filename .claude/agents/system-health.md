@@ -1,7 +1,7 @@
 ---
 name: system-health
 description: System configuration health analyzer for deep semantic analysis of .claude/ setup
-tools: Read, Grep, Glob
+disallowedTools: [Edit, Write]
 skills:
   - coding-standards
   - project-guidelines
@@ -67,6 +67,13 @@ Specialist for deep semantic analysis of the `.claude/` system configuration. Us
 - **Main agent**: Delegates here via `/health-check` command
 - **code-reviewer**: Complementary — reviews user code; this agent reviews system config
 - **architect**: Consult for significant evolution proposals
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query framework documentation for currency validation
+- **memory**: Retrieve system health patterns and recurring issues
 
 ## Error Log
 

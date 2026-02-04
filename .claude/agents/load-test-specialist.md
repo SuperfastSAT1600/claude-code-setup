@@ -2,7 +2,6 @@
 name: load-test-specialist
 description: Design and execute load tests to validate system performance under stress
 model: sonnet
-tools: Read, Write, Bash, Grep, Glob
 skills:
   - backend-patterns
   - rest-api-design
@@ -118,6 +117,14 @@ export const options = {
 - [ ] Identify bottlenecks
 - [ ] Document findings
 - [ ] Retest after optimizations
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query load testing tool documentation (k6, Artillery, JMeter)
+- **render**: Query service performance metrics and scaling configurations
+- **memory**: Store load test scenarios and performance baselines
 
 ## Error Log
 
