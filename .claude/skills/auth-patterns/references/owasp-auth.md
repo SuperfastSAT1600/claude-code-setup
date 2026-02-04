@@ -117,7 +117,7 @@ async function isPasswordPwned(password: string): Promise<boolean> {
 
   // Query Have I Been Pwned API (k-anonymity model)
   const response = await new Promise<string>((resolve, reject) => {
-    https.get(`https://api.pwnedpasswords.com/range/${prefix}`, res => {
+    https.get("https://api.pwnedpasswords.com/range/" + prefix, res => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => resolve(data));
@@ -323,7 +323,7 @@ import qrcode from 'qrcode';
 // Generate secret for user
 async function enrollMFA(userId: string): Promise<{ secret: string; qrCode: string }> {
   const secret = speakeasy.generateSecret({
-    name: `MyApp (${userId})`,
+    name: "MyApp (" + userId + ")",
     issuer: 'MyApp',
     length: 32
   });
@@ -379,14 +379,14 @@ async function startRegistration(userId: string) {
   });
 
   // Store challenge for verification
-  await redis.set(`webauthn:challenge:${userId}`, options.challenge, 'EX', 300);
+  await redis.set("webauthn:challenge:" + userId, options.challenge, 'EX', 300);
 
   return options;
 }
 
 // 2. Verify registration response
 async function verifyRegistration(userId: string, response: any) {
-  const expectedChallenge = await redis.get(`webauthn:challenge:${userId}`);
+  const expectedChallenge = await redis.get("webauthn:challenge:" + userId);
 
   const verification = await verifyRegistrationResponse({
     response,
@@ -427,7 +427,7 @@ async function storeRecoveryCodes(userId: string): Promise<string[]> {
 
   await db.query(
     'INSERT INTO recovery_codes (user_id, code_hash, used) VALUES ' +
-    hashedCodes.map((_, i) => `($1, $${i + 2}, false)`).join(', '),
+    hashedCodes.map((_, i) => "($1, $" + (i + 2) + ", false)").join(', '),
     [userId, ...hashedCodes]
   );
 

@@ -327,7 +327,7 @@ CMD ["node", "index.js"]
   with:
     context: .
     push: true
-    tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+    tags: ghcr.io/OWNER/REPO:COMMIT_SHA  # Use GitHub Actions syntax: ghcr.io/${{github.repository}}:${{github.sha}}
     cache-from: type=gha
     cache-to: type=gha,mode=max
 ```

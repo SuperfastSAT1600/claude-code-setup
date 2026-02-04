@@ -159,7 +159,7 @@ sessionStorage.removeItem('oauth_state');
 // Make authenticated API requests
 const response = await fetch('https://api.example.com/user/profile', {
   headers: {
-    'Authorization': `Bearer ${tokens.access_token}`
+    'Authorization': 'Bearer ' + tokens.access_token
   }
 });
 
@@ -389,7 +389,7 @@ async function getClientCredentialsToken() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`
+      'Authorization': 'Basic ' + Buffer.from(clientId + ":" + clientSecret).toString('base64')
     },
     body: new URLSearchParams({
       grant_type: 'client_credentials',
@@ -404,7 +404,7 @@ async function getClientCredentialsToken() {
 // Use token to call API (Service B)
 const token = await getClientCredentialsToken();
 const apiResponse = await fetch('https://api.example.com/data', {
-  headers: { 'Authorization': `Bearer ${token}` }
+  headers: { 'Authorization': 'Bearer ' + token }
 });
 ```
 
@@ -478,7 +478,7 @@ function validateIdToken(idToken: string) {
 ```typescript
 async function getUserInfo(accessToken: string) {
   const response = await fetch('https://auth.example.com/userinfo', {
-    headers: { 'Authorization': `Bearer ${accessToken}` }
+    headers: { 'Authorization': 'Bearer ' + accessToken }
   });
 
   return await response.json();
@@ -499,10 +499,10 @@ async function getUserInfo(accessToken: string) {
 
 **1. Client Secret (Basic Authentication)**
 ```typescript
-const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+const authHeader = Buffer.from(clientId + ":" + clientSecret).toString('base64');
 
 fetch('https://auth.example.com/token', {
-  headers: { 'Authorization': `Basic ${authHeader}` }
+  headers: { 'Authorization': 'Basic ' + authHeader }
 });
 ```
 
