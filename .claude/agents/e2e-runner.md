@@ -2,7 +2,6 @@
 name: e2e-runner
 description: Generates and executes end-to-end tests for web applications
 model: sonnet
-tools: [Bash, Read, Edit, Write, Grep, Glob]
 skills:
   - tdd-workflow
   - frontend-patterns
@@ -47,6 +46,14 @@ Critical paths: authentication flows, checkout processes, registration, search f
 ## Coordination
 
 Runs after implementation and unit tests complete. Reports test results and failures to orchestrator with screenshots.
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **magic-ui**: Reference UI component selectors and patterns for testing
+- **context7**: Query Playwright/Cypress documentation and test patterns
+- **memory**: Store test patterns and common selectors
 
 ## Error Log
 

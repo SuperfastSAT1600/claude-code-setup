@@ -21,7 +21,7 @@ This template provides a complete development workflow setup that can be applied
 git clone <this-repo> my-project
 cd my-project
 
-# 2. Run the setup wizard
+# 2. Run the setup wizard (auto-installs dependencies)
 node setup.cjs
 
 # 3. Start Claude Code
@@ -29,6 +29,7 @@ claude
 ```
 
 The setup wizard will:
+- **Auto-install required dependencies** (`enquirer`) if missing
 - Detect your platform (Windows/macOS/Linux) and configure MCP servers accordingly
 - **REQUIRE Slack MCP setup** (mandatory for PR notifications to 개발 channel)
 - Ask which optional MCP servers you want to enable

@@ -2,7 +2,6 @@
 name: type-safety-enforcer
 description: Enforce TypeScript strict mode and eliminate type safety issues
 model: sonnet
-tools: Read, Edit, Grep, Glob, Bash
 skills:
   - coding-standards
   - backend-patterns
@@ -118,6 +117,13 @@ function handleResult(result: Result) {
 - [ ] Implement type guards
 - [ ] Add exhaustive checks
 - [ ] Mark immutable data as `readonly`
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query TypeScript documentation and strict mode patterns
+- **memory**: Store type safety patterns and common type errors
 
 ## Error Log
 

@@ -2,7 +2,7 @@
 name: planner
 description: Software architect specializing in implementation planning and task breakdown
 model: opus
-tools: Read, Grep, Glob
+disallowedTools: [Edit, Write]
 skills:
   - project-guidelines
   - coding-standards
@@ -79,6 +79,13 @@ Plan is a roadmap, not rigid script. Implementation may reveal better approaches
 
 - Search Memory for similar implementation patterns before planning new features
 - Store finalized plans in Memory for future reference (type="plan")
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query library documentation for technical feasibility
+- **memory**: Store implementation plans and retrieve similar past plans
 
 ## Error Log
 

@@ -2,7 +2,6 @@
 name: ai-integration-specialist
 description: AI/ML integration expert for LLM APIs, prompt engineering, RAG systems, and model serving
 model: opus
-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash
 skills:
   - prompt-engineering
   - rag-patterns
@@ -142,6 +141,13 @@ Expert in integrating LLMs, building RAG systems, and deploying AI-powered featu
 
 - Query Context7 for LLM library docs (OpenAI, Anthropic, LangChain) before implementing
 - Store prompt templates and AI patterns in Memory for reuse across projects
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query LLM API documentation and prompt engineering patterns
+- **memory**: Store AI integration patterns and prompt templates
 
 ## Error Log
 

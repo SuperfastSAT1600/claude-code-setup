@@ -2,7 +2,7 @@
 name: verify-app
 description: Verifies application works correctly after changes through end-to-end testing
 model: sonnet
-tools: Bash, Read, Grep, Glob
+disallowedTools: [Edit, Write]
 skills:
   - project-guidelines
   - backend-patterns
@@ -74,6 +74,13 @@ Verifies application works correctly after changes through end-to-end testing.
 ### Recommendations
 - [Suggested improvements]
 ```
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query testing framework documentation and verification patterns
+- **memory**: Store verification checklists and test scenarios
 
 ## Error Log
 

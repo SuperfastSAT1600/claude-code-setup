@@ -2,7 +2,6 @@
 name: refactor-cleaner
 description: Modernizes legacy code and removes dead code while maintaining behavior
 model: sonnet
-tools: Bash, Read, Edit, Write, Grep, Glob
 skills:
   - coding-standards
   - backend-patterns
@@ -78,6 +77,13 @@ async function fetchUser(id: string): Promise<User> {
 - React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for modernizing to hooks)
 - React Context Template: `.claude/templates/variants/react/context.tsx.template` (for context providers)
 - React HOC Template: `.claude/templates/variants/react/hoc.tsx.template` (for higher-order components)
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query refactoring patterns and code modernization techniques
+- **memory**: Store refactoring strategies and legacy code patterns
 
 ## Error Log
 

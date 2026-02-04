@@ -2,7 +2,7 @@
 name: architect
 description: Senior software architect for evaluating technical decisions and architectural patterns
 model: opus
-tools: Read, Grep, Glob
+disallowedTools: [Edit, Write]
 skills:
   - project-guidelines
   - backend-patterns
@@ -102,6 +102,13 @@ Remember: Best architecture depends on context. There's no one-size-fits-all sol
 
 - Store all architectural decisions in Memory (state management, API design, deployment strategy)
 - Search Memory for past architectural patterns before recommending new approaches
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query library documentation and API references for technology evaluation
+- **memory**: Store and retrieve architectural decisions and patterns
 
 ## Error Log
 

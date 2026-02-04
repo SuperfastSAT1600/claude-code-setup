@@ -204,7 +204,7 @@ function LoginForm() {
 ### SWR Pattern
 ```typescript
 function useUser(id: string) {
-  const { data, error, mutate } = useSWR(`/api/users/${id}`, fetcher);
+  const { data, error, mutate } = useSWR("/api/users/" + id, fetcher);
 
   return {
     user: data,

@@ -2,7 +2,7 @@
 name: code-reviewer
 description: Comprehensive code reviewer focusing on quality, patterns, and maintainability
 model: sonnet
-tools: Read, Grep, Glob, Bash
+disallowedTools: [Edit, Write]
 skills:
   - coding-standards
   - backend-patterns
@@ -62,6 +62,14 @@ You are an expert code reviewer with deep knowledge of software engineering best
 - **security-reviewer**: Defer deep security analysis
 - **performance-optimizer**: Defer complex performance issues
 - **refactor-cleaner**: For larger refactoring suggestions
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query coding standards and best practices documentation
+- **memory**: Retrieve past code review patterns and common issues
+- **github**: Access PR information and diff context if reviewing GitHub PRs
 
 ## Error Log
 

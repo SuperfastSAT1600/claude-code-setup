@@ -2,7 +2,6 @@
 name: i18n-specialist
 description: Implement internationalization (i18n) and localization (l10n) for multilingual support
 model: sonnet
-tools: Read, Write, Edit, Grep, Glob, Bash
 skills:
   - frontend-patterns
   - react-patterns
@@ -166,6 +165,13 @@ function LocaleSwitcher() {
 ## Resource Checklist
 
 - Query Context7 for i18n library docs (react-i18next, next-intl, Format.js) before setup
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query i18n library documentation and localization patterns
+- **memory**: Store translation patterns and locale configurations
 
 ## Error Log
 

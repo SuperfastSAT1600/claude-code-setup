@@ -61,7 +61,7 @@ version: "3.9"
 
 services:
   app:
-    image: myapp:${VERSION:-latest}
+    image: myapp:latest  # Set via VERSION env var or defaults to latest
     deploy:
       replicas: 2
       resources:

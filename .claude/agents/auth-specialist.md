@@ -2,7 +2,6 @@
 name: auth-specialist
 description: Expert in authentication and authorization patterns, OAuth, JWT, and identity management
 model: sonnet
-tools: Read, Grep, Glob, Bash, Edit, Write, WebSearch
 skills:
   - auth-patterns
   - backend-patterns
@@ -60,6 +59,14 @@ Security-focused expert in authentication and authorization systems. Design and 
 
 - Query Context7 for auth library docs (Passport, NextAuth, Auth0, Supabase Auth) before implementation
 - Store auth pattern decisions in Memory (OAuth flow choice, token strategy, session management)
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query OAuth, JWT, and authentication library documentation
+- **supabase**: Reference Supabase Auth patterns and configuration
+- **memory**: Store authentication decisions and security patterns
 
 ## Error Log
 

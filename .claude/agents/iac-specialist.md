@@ -2,7 +2,6 @@
 name: iac-specialist
 description: Infrastructure as Code specialist for Terraform, CloudFormation, and cloud architecture
 model: sonnet
-tools: [Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash]
 skills:
   - docker-patterns
   - backend-patterns
@@ -76,6 +75,15 @@ resource "aws_vpc" "main" {
 ## Resources
 
 `.claude/checklists/deployment-checklist.md`, Terraform docs
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **render**: Query infrastructure deployment patterns and configurations
+- **cloudflare-workers-bindings**: Reference serverless infrastructure patterns
+- **context7**: Query Terraform and CloudFormation documentation
+- **memory**: Store infrastructure patterns and deployment configurations
 
 ## Error Log
 

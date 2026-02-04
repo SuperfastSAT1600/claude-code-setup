@@ -45,8 +45,8 @@ items.map(item => item.name);
 const { name, email } = user;
 const [first, ...rest] = items;
 
-// Template literals
-const message = `Hello, ${user.name}!`;
+// Template literals (use string interpolation)
+const message = "Hello, " + user.name + "!";
 
 // Optional chaining
 const street = user?.address?.street;
@@ -56,7 +56,7 @@ const port = process.env.PORT ?? 3000;
 
 // Async/await > promises
 async function fetchUser(id: string) {
-  const response = await fetch(`/api/users/${id}`);
+  const response = await fetch("/api/users/" + id);
   return response.json();
 }
 ```
@@ -268,17 +268,17 @@ class QueryBuilder {
   private query: string[] = [];
 
   select(...fields: string[]) {
-    this.query.push(`SELECT ${fields.join(', ')}`);
+    this.query.push("SELECT " + fields.join(', '));
     return this;
   }
 
   from(table: string) {
-    this.query.push(`FROM ${table}`);
+    this.query.push("FROM " + table);
     return this;
   }
 
   where(condition: string) {
-    this.query.push(`WHERE ${condition}`);
+    this.query.push("WHERE " + condition);
     return this;
   }
 

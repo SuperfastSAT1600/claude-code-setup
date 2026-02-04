@@ -32,7 +32,7 @@ export const createUserClient = (accessToken: string) => {
   return createClient(supabaseUrl, process.env.SUPABASE_ANON_KEY!, {
     global: {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: "Bearer " + accessToken,
       },
     },
   });
@@ -174,7 +174,7 @@ export class RealtimeService {
           event: 'INSERT',
           schema: 'public',
           table: 'orders',
-          filter: `user_id=eq.${userId}`,
+          filter: "user_id=eq." + userId,
         },
         (payload) => {
           callback(payload.new as Order);
@@ -189,7 +189,7 @@ export class RealtimeService {
 ```typescript
 export class FileService {
   async uploadAvatar(userId: string, file: File) {
-    const fileName = `${userId}/${Date.now()}-${file.name}`;
+    const fileName = userId + "/" + Date.now() + "-" + file.name;
 
     const { data, error } = await supabase.storage
       .from('avatars')

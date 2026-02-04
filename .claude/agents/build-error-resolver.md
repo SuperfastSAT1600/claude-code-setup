@@ -2,7 +2,6 @@
 name: build-error-resolver
 description: Specialist for fixing build errors iteratively and systematically
 model: sonnet
-tools: Read, Edit, Write, Grep, Glob, Bash
 skills:
   - coding-standards
   - backend-patterns
@@ -63,6 +62,13 @@ Verification: Build success, tests passing
 
 - Coding Standards: `.claude/skills/coding-standards/`
 - Build Errors Checklist: `.claude/checklists/build-errors-checklist.md`
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query compiler and build tool documentation for error resolution
+- **memory**: Retrieve past build error solutions and common fixes
 
 ## Error Log
 

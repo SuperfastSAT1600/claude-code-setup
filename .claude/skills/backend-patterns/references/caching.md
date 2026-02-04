@@ -9,14 +9,14 @@ Comprehensive caching patterns and implementation strategies.
 ```typescript
 async function getUser(id: string): Promise<User> {
   // Check cache first
-  const cached = await cache.get(`user:${id}`);
+  const cached = await cache.get("user:" + id);
   if (cached) return cached;
 
   // Cache miss - fetch from database
   const user = await db.users.findById(id);
 
   // Store in cache
-  await cache.set(`user:${id}`, user, { ttl: 3600 });
+  await cache.set("user:" + id, user, { ttl: 3600 });
 
   return user;
 }
@@ -35,7 +35,7 @@ async function updateUser(id: string, data: Partial<User>): Promise<User> {
   const user = await db.users.update(id, data);
 
   // Update cache
-  await cache.set(`user:${id}`, user, { ttl: 3600 });
+  await cache.set("user:" + id, user, { ttl: 3600 });
 
   return user;
 }
@@ -51,8 +51,8 @@ async function updateUser(id: string, data: Partial<User>): Promise<User> {
 ```typescript
 async function deleteUser(id: string): Promise<void> {
   await db.users.delete(id);
-  await cache.delete(`user:${id}`);
-  await cache.delete(`user:${id}:posts`); // Related caches
+  await cache.delete("user:" + id);
+  await cache.delete("user:" + id + ":posts"); // Related caches
 }
 ```
 

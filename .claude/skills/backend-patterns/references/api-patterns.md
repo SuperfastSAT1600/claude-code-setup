@@ -92,7 +92,7 @@ class RateLimiter {
     }
 
     // Add current request
-    await redis.zadd(key, now, `${now}-${Math.random()}`);
+    await redis.zadd(key, now, now + "-" + Math.random());
     await redis.expire(key, Math.ceil(window / 1000));
 
     return true;

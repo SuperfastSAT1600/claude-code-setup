@@ -2,7 +2,6 @@
 name: doc-updater
 description: Synchronizes documentation with code changes to keep docs accurate
 model: haiku
-tools: [Read, Edit, Write, Grep, Glob, Bash]
 skills:
   - documentation-patterns
   - project-guidelines
@@ -100,6 +99,13 @@ Synchronize documentation with code changes. Keep docs current and accurate.
 - README Template: `.claude/templates/readme.template.md`
 - Documentation Patterns: `.claude/skills/documentation-patterns/`
 - Project Guidelines: `.claude/skills/project-guidelines/`
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query documentation standards and markdown best practices
+- **github**: Update README and documentation files in repository
 
 ## Error Log
 

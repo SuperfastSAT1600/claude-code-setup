@@ -2,7 +2,6 @@
 name: tdd-guide
 description: Coaches developers through Test-Driven Development Red-Green-Refactor cycle
 model: sonnet
-tools: [Bash, Read, Edit, Write, Grep, Glob]
 skills:
   - tdd-workflow
   - coding-standards
@@ -47,6 +46,13 @@ Guide developers through Test-Driven Development using Red-Green-Refactor discip
 ## Coordination
 
 Works with unit-test-writer for test patterns. Reports to orchestrator after each cycle completion.
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query testing framework documentation and TDD best practices
+- **memory**: Store test patterns and TDD workflow examples
 
 ## Error Log
 

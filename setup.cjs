@@ -20,7 +20,54 @@
  * - Optional dependency installation
  */
 
+// =============================================================================
+// BOOTSTRAP: Auto-install required dependencies
+// =============================================================================
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+/**
+ * Check if a module is installed and auto-install if missing
+ */
+function ensureDependency(moduleName) {
+  try {
+    require.resolve(moduleName);
+    return true;
+  } catch (e) {
+    console.log(`\n📦 Installing required dependency: ${moduleName}...`);
+    try {
+      // Detect package manager
+      const hasYarn = fs.existsSync(path.join(process.cwd(), 'yarn.lock'));
+      const hasPnpm = fs.existsSync(path.join(process.cwd(), 'pnpm-lock.yaml'));
+
+      let installCmd;
+      if (hasPnpm) {
+        installCmd = `pnpm add ${moduleName}`;
+      } else if (hasYarn) {
+        installCmd = `yarn add ${moduleName}`;
+      } else {
+        installCmd = `npm install ${moduleName}`;
+      }
+
+      execSync(installCmd, { stdio: 'inherit' });
+      console.log(`✅ ${moduleName} installed successfully\n`);
+      return true;
+    } catch (installError) {
+      console.error(`\n❌ Failed to install ${moduleName}`);
+      console.error(`Please run manually: npm install ${moduleName}\n`);
+      process.exit(1);
+    }
+  }
+}
+
+// Ensure enquirer is installed before importing other modules
+ensureDependency('enquirer');
+
+// =============================================================================
 // Import modules
+// =============================================================================
 const { color, log, header } = require('./lib/ui.cjs');
 const { getPlatformInfo } = require('./lib/platform.cjs');
 const { checkPrerequisites } = require('./lib/prerequisites.cjs');

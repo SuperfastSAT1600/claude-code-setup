@@ -2,7 +2,6 @@
 name: database-architect
 description: Expert in database schema design, optimization, and migration strategies
 model: sonnet
-tools: Read, Grep, Glob, Bash, Edit, Write
 skills:
   - database-patterns
   - backend-patterns
@@ -53,6 +52,14 @@ Expert database architect specializing in schema design, query optimization, and
 
 - Query Context7 for database library docs (Prisma, Drizzle, Supabase client) before schema design
 - Store schema decisions in Memory (normalization choices, index strategies, migration patterns)
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **supabase**: Query database schema patterns, execute SQL, and check migrations
+- **context7**: Reference PostgreSQL documentation and best practices
+- **memory**: Store schema design decisions and optimization patterns
 
 ## Error Log
 
