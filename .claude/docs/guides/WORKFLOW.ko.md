@@ -859,7 +859,7 @@ Model Context Protocol(MCP) 서버는 외부 도구 통합을 제공합니다:
 - **context7**: 컨텍스트 관리 도구
 - **magic**: 추가 유틸리티
 
-**현재 구성**: `.mcp.template.json`에 27개의 사전 구성된 서버, 성능을 위해 대부분 기본적으로 비활성화됨. 필요한 것만 활성화하세요.
+**현재 구성**: `.claude/templates/mcp.template.json`에 27개의 사전 구성된 서버, 성능을 위해 대부분 기본적으로 비활성화됨. 필요한 것만 활성화하세요.
 
 **필수 MCP 서버:**
 - **filesystem**: 항상 활성화됨 (파일 작업에 필요)

@@ -77,12 +77,17 @@ description: Quick description of this pattern
 When you update `.claude/` system files from the repository:
 
 ```bash
-# Use the update script - it preserves your data
+# 1. Clone/update claude-code-setup in parent directory
+cd ..
+git clone https://github.com/YOUR_REPO/claude-code-setup.git  # or git pull if already cloned
+
+# 2. Run update script from your project
+cd your-project
 ./.claude/scripts/update-system.sh
 ```
 
 The script will:
-- ✅ Update all system files
+- ✅ Copy latest system files from `../claude-code-setup/.claude/`
 - ✅ Preserve your `changelog.md`
 - ✅ Preserve your `errors.md`
 - ✅ Preserve your `agent-errors/` folder

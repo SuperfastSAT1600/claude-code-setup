@@ -15,7 +15,7 @@ The system continuously improves itself through aggressive error logging, patter
 | **1. Tool/API** | MCP errors, WebFetch fails, GitHub API errors, Bash failures | `[tool] Error: [what] \| Expected: [expected]` |
 | **2. Code Generation** | Syntax errors, type errors, import errors, security vulnerabilities | `[code] Error: [what] \| Correct: [how]` |
 | **3. Terminal/Command** | Wrong syntax, permission denied, Git failures, package manager errors | `[cmd] Error: [failed] \| Correct: [working]` |
-| **4. Context/Understanding** | Misunderstood intent, wrong file modified, wrong assumptions | `[context] Error: [assumption] \| Reality: [actual]` |
+| **4. Context/Understanding** | Misunderstood intent, wrong file modified, wrong assumptions, **didn't use available skill** | `[context] Error: [assumption] \| Reality: [actual]` |
 | **5. Agent Coordination** | Wrong agent delegated, unhelpful results, missed parallelization | `[agent] Error: [what] \| Better: [approach]` |
 | **6. System Config** | Non-existent file referenced, broken references, outdated patterns | `[config] Error: [broken] \| Fix: [how]` |
 
@@ -23,6 +23,16 @@ The system continuously improves itself through aggressive error logging, patter
 
 - **Main agent errors** → `.claude/user/errors.md`
 - **Subagent errors** → `.claude/user/agent-errors/{agent-name}.md`
+
+### Verification System (Automated)
+
+**Hook-based enforcement** ensures errors.md is read before work begins:
+- PreToolUse hook blocks Edit/Write/Task/Bash until errors.md is read
+- PostToolUse hook marks when errors.md is accessed
+- Session timeout: 5 minutes
+- See `.claude/docs/error-verification-system.md` for details
+
+This provides **structural enforcement** rather than relying on following instructions.
 
 ### Decision Tree
 
@@ -32,6 +42,7 @@ Did something not work as expected?
 ├─ Code had errors → LOG IT
 ├─ Command failed → LOG IT
 ├─ Wrong assumption made → LOG IT
+├─ Didn't check/use available skill → LOG IT
 ├─ Subagent didn't help → LOG IT
 ├─ Had to retry → LOG IT
 ├─ User corrected me → LOG IT
@@ -48,7 +59,7 @@ When a user shares an error (screenshot, log, stack trace), don't just fix it—
 
 ## 2. Observation Framework
 
-While working on the user's primary task, note issues in `.claude/` files. Do NOT stop the task — just note observations mentally.
+While working on the user's primary task, note system improvement opportunities in `.claude/` files. Do NOT stop the task — just note observations mentally and report at end.
 
 ### Four Dimensions
 
@@ -108,6 +119,77 @@ AUTO-HEAL: Update .claude/skills/github-actions.md:
   "Always check rate limit before bulk operations: gh api rate_limit"
 LOG: heal(auto): add rate limit checking to github-actions skill
 NOTIFY: "Auto-healed: Added rate limit guidance (3 occurrences detected)"
+```
+
+---
+
+## 3.5. Single-Error Root Cause Fixing (Aggressive)
+
+**Philosophy**: Don't wait for patterns when the root cause is obvious. Fix it immediately.
+
+### When to Fix After 1 Error
+
+**Immediately fix if ALL conditions met:**
+1. ✅ Root cause is **clear and obvious** (not speculative)
+2. ✅ Fix is **localized** (affects 1-3 files max)
+3. ✅ Fix is **low-risk** (strengthening rules, adding checks, fixing broken refs)
+4. ✅ Fix **prevents recurrence** of this exact error
+
+**Examples of obvious root causes:**
+
+| Error | Obvious Root Cause | Immediate Fix |
+|-------|-------------------|---------------|
+| Protocol says "do X" but Claude skips it | Rule too weak, not enforced | Strengthen rule to be blocking/mandatory |
+| Broken file reference in agent frontmatter | Outdated path | Update to correct path |
+| Agent references non-existent skill | Skill was renamed/moved | Update reference |
+| Missing validation causes tool failure | No check before operation | Add validation step to protocol |
+| Gitignored file attempted to commit | Misunderstood .gitignore scope | Add guidance about .claude/user/ |
+
+### Workflow
+
+```
+1. Error logged to errors.md (immediate)
+2. Analyze: Is root cause obvious? Is fix straightforward?
+3. IF YES:
+   a. Apply fix immediately
+   b. Log to changelog with "Auto: yes" (include "after 1 error" in reason)
+   c. Notify user: "Fixed root cause: [what]"
+4. IF NO (speculative, complex, or high-risk):
+   a. Wait for pattern (2+ similar errors)
+   b. Then auto-heal OR propose based on complexity
+```
+
+### Auto-Apply vs Propose (Single Error)
+
+**Auto-apply immediately:**
+- Strengthen enforcement in rules (make blocking)
+- Fix broken references (files, skills, agents)
+- Add missing validation steps
+- Update outdated paths/names
+- Add error handling that was missing
+
+**Propose for approval:**
+- Create new components (skills, agents, templates)
+- Change core logic or workflow
+- Modify API or interface contracts
+- Archive or delete significant code
+
+### Example
+
+```
+ERROR LOGGED:
+[context] Error: Didn't log immediately despite protocol | Correct: Should have logged before continuing
+
+ANALYSIS:
+✅ Root cause obvious: Protocol says "LOG IMMEDIATELY" but not enforced
+✅ Fix localized: task-protocol.md only
+✅ Low risk: Strengthening existing rule
+✅ Prevents recurrence: Makes logging blocking
+
+ACTION: Auto-fix immediately
+CHANGE: Rewrite error logging section with blocking workflow (STOP → LOG → VERIFY → THEN)
+LOG: enhance(error-logging): enforce blocking workflow (after 1 error, root cause obvious)
+NOTIFY: "Fixed root cause: Error logging now blocking requirement"
 ```
 
 ---
@@ -191,10 +273,9 @@ The changelog tracks Claude's ideas, NOT user requests.
 ### Main Agent Responsibilities
 
 1. Read `.claude/user/errors.md` before starting any task
-2. Track ALL failures during task (6 categories)
-3. Log own errors to `errors.md`
-4. When subagent reports errors → log to `agent-errors/{agent-name}.md`
-5. When subagent reports fixes → log to `changelog.md`
+2. **LOG IMMEDIATELY** when failures occur (6 categories) - don't wait until end
+3. When subagent reports errors → log to `agent-errors/{agent-name}.md`
+4. When subagent reports fixes → log to `changelog.md`
 
 ### Subagent Responsibilities
 
@@ -227,9 +308,9 @@ The changelog tracks Claude's ideas, NOT user requests.
 - `setup.cjs`
 
 ### Git Discipline
-- Every system change gets its own commit
+- Every system change (heal/enhance) gets its own commit
 - Prefix: `heal(scope):` or `enhance(scope):`
-- Commit separately from task work
+- User feature work: NO automatic commits (user handles manually)
 
 ---
 

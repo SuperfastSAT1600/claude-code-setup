@@ -12,6 +12,20 @@ For detailed guidance on error categories, pattern detection, and enhancement tr
 - Main agent: `.claude/user/errors.md`
 - Subagents: Also read `.claude/user/agent-errors/{your-name}.md`
 
+**Check Skills** (MANDATORY):
+- Identify relevant skills for the task domain
+- Load ALL applicable skills before starting work
+- Skills contain authoritative patterns - use them instead of guessing
+
+**Available skill domains**:
+- auth-patterns, backend-patterns, coding-standards, database-patterns
+- docker-patterns, documentation-patterns, frontend-patterns, github-actions
+- graphql-patterns, nextjs-patterns, nodejs-patterns, prompt-engineering
+- rag-patterns, react-patterns, rest-api-design, tdd-workflow
+- user-intent-patterns, websocket-patterns, skill-creator
+
+**Error to avoid**: `[context] Error: Didn't use available skill | Should have loaded: [skill-name]`
+
 ---
 
 ## Phase 1: PRE-TASK
@@ -35,10 +49,45 @@ See `orchestration.md` for patterns and examples.
 
 ## Phase 2: DURING
 
-### Observe & Track (mentally, don't stop working)
+### Error Logging (IMMEDIATE - BLOCKING REQUIREMENT)
 
-1. **System issues** in `.claude/` files (heal/evolve/adapt/refactor)
-2. **Failures** in any of the 6 categories (see `self-improvement.md`)
+**ENFORCEMENT RULE**: When ANY error occurs, you MUST log it BEFORE continuing. This is NOT optional.
+
+**Workflow** (these steps are MANDATORY):
+1. Error occurs (tool fails, wrong assumption, code error, etc.)
+2. **STOP** - Do NOT proceed to next step
+3. **LOG** - Append to `.claude/user/errors.md` with format: `[category] Error: [what] | Correct: [how]`
+4. **VERIFY** - Confirm entry was written
+5. **THEN** continue with correction
+
+**Examples of immediate logging in practice**:
+
+```bash
+# Tool fails
+git add changelog.md  # ❌ Error: file is gitignored
+→ BEFORE retrying, LOG: "[context] Error: Assumed changelog should be committed | Reality: .claude/user/ is gitignored"
+→ THEN retry: git add other-file.md
+
+# Wrong assumption
+Read config file, doesn't exist  # ❌ Error: assumed path
+→ BEFORE trying alt path, LOG: "[context] Error: Assumed config at X | Reality: Config is at Y"
+→ THEN read correct path
+
+# Code error
+Write function, syntax error  # ❌ Error: invalid syntax
+→ BEFORE fixing, LOG: "[code] Error: Used invalid syntax X | Correct: Should be Y"
+→ THEN write corrected code
+```
+
+**Self-Check**: After handling any error, ask yourself "Did I log it?" If no → LOG NOW.
+
+### System Observations (note mentally)
+
+Note system improvement opportunities for reporting at end:
+1. **HEAL**: Broken references, contradictions, invalid paths
+2. **EVOLVE**: Missing coverage, new patterns, recurring needs
+3. **ADAPT**: Deprecated tech, stack mismatches, preference changes
+4. **REFACTOR**: Overlaps, bloat, unused components
 
 ---
 
@@ -56,17 +105,51 @@ Per `self-improvement.md`:
 - **Auto-apply**: INDEX sync, broken references, typos
 - **Propose**: Content changes, new components
 
-### 3.3 Error Logging
+### 3.3 Error Logging (Final Check)
 
-**Main agent** logs ALL errors (including those reported by subagents):
+**Verify all errors were logged during task** (should already be in files from immediate logging):
 - Main agent errors → `.claude/user/errors.md`
 - Subagent errors → `.claude/user/agent-errors/{agent-name}.md`
+
+If any were missed, log them now.
 
 Format: `- [category] Error: [what] | Correct: [how]`
 
 ### 3.4 Changelog (self-initiated only)
 
 Only log changes Claude proposed (not user requests). See `self-improvement.md` for format.
+
+### 3.5 Documentation Update (MANDATORY)
+
+**CRITICAL**: Every code change MUST update documentation.
+
+**Decision Tree**:
+```
+Did you change code?
+├─ Added feature → Update README, API docs, changelog
+├─ Changed API → Update function docs, README examples, changelog
+├─ Fixed bug → Update changelog, affected examples
+├─ Refactored → Update affected docs
+└─ No code change → Skip this step
+```
+
+**How to Update**:
+- **Small changes** (1-2 files): Update docs directly
+- **Large changes** (3+ files): Delegate to `doc-updater` agent
+- **Parallel option**: If multiple independent docs, update in parallel with main work
+
+**What to Update**:
+1. **API Documentation**: JSDoc/TSDoc for changed functions
+2. **README**: Usage examples if API changed
+3. **Changelog**: Add entry (`.claude/user/changelog.md` for self-initiated OR project changelog for user requests)
+4. **Comments**: Inline docs for complex logic
+5. **Examples**: Code samples that reference changed code
+
+**Verification**:
+- [ ] All changed functions have current docs
+- [ ] Examples still work
+- [ ] Changelog updated
+- [ ] No outdated references
 
 ---
 
@@ -92,8 +175,9 @@ Subagents **report** errors and fixes in their response (main agent logs them):
 ## Quick Reference
 
 ```
-INIT:    Read errors.md (subagents: also agent-errors/{name}.md)
+INIT:    Read errors.md (subagents: also agent-errors/{name}.md) + CHECK SKILLS
 PRE:     Parallelizable? [YES/NO]
-DURING:  Note issues + failures mentally
-POST:    Report → Auto-heal → Log errors → Log self-initiated changes
+DURING:  Error occurs? → STOP → LOG → VERIFY → THEN continue (BLOCKING)
+         Note system observations mentally
+POST:    Report observations → Auto-heal → Verify errors logged → Log self-initiated changes → UPDATE DOCS
 ```

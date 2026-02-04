@@ -81,8 +81,7 @@ cp ../claude-code-setup/CLAUDE.md .
 cp ../claude-code-setup/setup.cjs .
 cp -r ../claude-code-setup/lib/ .
 
-# Copy MCP template (OPTIONAL)
-cp ../claude-code-setup/.mcp.template.json .
+# Copy MCP template (OPTIONAL - already included in .claude/ copy above)
 ```
 
 **If you used /tmp in Option B**, replace `../claude-code-setup/` with `/tmp/claude-code-setup/`:
@@ -302,13 +301,13 @@ node setup.cjs
 
 ## Next Steps
 
-1. Read [WORKFLOW.md](WORKFLOW.md) - Complete workflow guide
+1. Read [../guides/WORKFLOW.md](../guides/WORKFLOW.md) - Complete workflow guide
 2. Try `/full-feature` - Build your first feature with Claude
 3. Commit changes: `git add .claude/ CLAUDE.md && git commit -m "Add Claude Code"`
 
 ---
 
 **Need Help?**
-- Template setup: [TEMPLATE-SETUP.md](TEMPLATE-SETUP.md)
+- Template setup: [../README.md](../README.md)
 - Main README: [README.md](README.md)
 - Issues: https://github.com/YOUR-ORG/claude-code-setup/issues

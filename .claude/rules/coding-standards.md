@@ -235,9 +235,10 @@ app.get('/users/:id', async (req, res, next) => {
 - [ ] Errors handled
 - [ ] Tests pass (80%+ coverage)
 - [ ] No `any` types
+- [ ] **Documentation updated** (API docs, README, changelog)
 
 ### Before PR
 - [ ] <400 lines changed
 - [ ] Conventional commit messages
 - [ ] No console.logs
-- [ ] Documentation updated if needed
+- [ ] All documentation current and accurate

@@ -3,6 +3,24 @@
   "hooks": {
     "PreToolUse": [
       {
+        "matcher": "tool in [\"Edit\", \"Write\", \"Task\"]",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n./.claude/scripts/verify-errors-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n./.claude/scripts/verify-errors-read.sh"
+          }
+        ]
+      },
+      {
         "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
         "hooks": [
           {
@@ -96,6 +114,15 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "tool == \"Read\" && tool_input.file_path matches \"errors\\\\.md$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n./.claude/scripts/mark-errors-read.sh"
+          }
+        ]
+      },
       {
         "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|json|css|scss|md)$\"",
         "hooks": [

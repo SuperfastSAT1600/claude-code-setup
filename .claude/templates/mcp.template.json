@@ -17,10 +17,10 @@
     },
     "supabase": {
       "type": "http",
-      "url": "http://localhost:54321/mcp",
+      "url": "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF_HERE",
       "env": {},
       "disabled": true,
-      "description": "⭐ RECOMMENDED: Supabase database operations, auth, and storage (requires local dev server)"
+      "description": "⭐ RECOMMENDED: Supabase database operations, auth, and storage. Get project_ref from https://supabase.com/dashboard/project/_/settings/api"
     },
     "memory": {
       "command": "npx",

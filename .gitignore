@@ -4,7 +4,7 @@
 # Local Claude settings (may contain API keys or personal preferences)
 .claude/settings.local.json
 
-# Generated MCP config (contains API keys - use .mcp.template.json as source)
+# Generated MCP config (contains API keys - use .claude/templates/mcp.template.json as source)
 .mcp.json
 
 # Claude plans (may contain work-in-progress or sensitive planning)

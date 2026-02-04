@@ -10,12 +10,6 @@ Project-specific configuration for Claude Code. For mandatory protocols, see `.c
 **Commands**: `/health-check`, `/commit`, `/review-changes`, etc.
 **Skills**: `.claude/skills/` (react-patterns, rest-api-design, etc.)
 
-**Rules** (mandatory protocols):
-- `task-protocol.md` - Execution checkpoints
-- `self-improvement.md` - Error logging, pattern detection, enhancement
-- `orchestration.md` - Delegation, parallelization
-- `coding-standards.md` - Code quality standards
-
 **Data Locations**:
 - Error log: `.claude/user/errors.md`
 - Agent errors: `.claude/user/agent-errors/{agent-name}.md`
@@ -87,7 +81,12 @@ When creating React code:
 ## Updating This System
 
 ```bash
-# Run the update script
+# 1. Clone/update claude-code-setup in parent directory
+cd ..
+git clone https://github.com/YOUR_REPO/claude-code-setup.git  # or git pull
+
+# 2. Run update script from your project
+cd your-project
 ./.claude/scripts/update-system.sh
 ```
 
@@ -96,7 +95,7 @@ When creating React code:
 - `.claude/settings.local.json` - Your local configuration
 - `CLAUDE.md` - This file (your project config)
 
-**Updated:**
+**Updated (from `../claude-code-setup/.claude/`):**
 - System agents, skills, rules, commands, workflows, templates
 
 ---
