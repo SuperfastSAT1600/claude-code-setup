@@ -21,7 +21,7 @@
 git clone <this-repo> my-project
 cd my-project
 
-# 2. 설정 마법사 실행
+# 2. 설정 마법사 실행 (필수 의존성 자동 설치)
 node setup.cjs
 
 # 3. Claude Code 시작
@@ -29,6 +29,7 @@ claude
 ```
 
 설정 마법사는:
+- **필수 의존성 자동 설치** (누락된 경우 `enquirer` 자동 설치)
 - 플랫폼(Windows/macOS/Linux)을 감지하고 그에 따라 MCP 서버를 구성합니다
 - **Slack MCP 설정 필수** (개발 채널에 PR 알림을 보내기 위해 필수)
 - 활성화할 선택적 MCP 서버를 묻습니다
