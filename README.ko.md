@@ -59,10 +59,10 @@ cp .claude/templates/.env.example .env
 **기존 프로젝트의 경우**:
 ```bash
 # 기존 프로젝트에 템플릿 파일 복사
-# 통합 가이드는 docs/getting-started/INTEGRATION.ko.md 및 docs/guides/WORKFLOW.ko.md 섹션 7 참조
+# 통합 가이드는 .claude/docs/getting-started/INTEGRATION.ko.md 및 .claude/docs/guides/WORKFLOW.ko.md 섹션 7 참조
 ```
 
-📖 **전체 설정 지침**: 5분 설정은 [docs/getting-started/INTEGRATION.ko.md](docs/getting-started/INTEGRATION.ko.md) 참조, 포괄적인 커스터마이제이션은 [docs/guides/WORKFLOW.ko.md](docs/guides/WORKFLOW.ko.md) 섹션 7 참조
+📖 **전체 설정 지침**: 5분 설정은 [.claude/docs/getting-started/INTEGRATION.ko.md](.claude/docs/getting-started/INTEGRATION.ko.md) 참조, 포괄적인 커스터마이제이션은 [.claude/docs/guides/WORKFLOW.ko.md](.claude/docs/guides/WORKFLOW.ko.md) 섹션 7 참조
 
 ---
 
@@ -199,8 +199,8 @@ cp .claude/templates/.env.example .env
 
 ### 📚 문서
 
-- [docs/getting-started/INTEGRATION.ko.md](docs/getting-started/INTEGRATION.ko.md) - 일일 워크플로우 빠른 참조 (5분 설정)
-- [docs/guides/WORKFLOW.ko.md](docs/guides/WORKFLOW.ko.md) - **완전한 워크플로우 가이드 (1500+ 줄)** 의사결정 트리 및 실제 예제 포함
+- [.claude/docs/getting-started/INTEGRATION.ko.md](.claude/docs/getting-started/INTEGRATION.ko.md) - 일일 워크플로우 빠른 참조 (5분 설정)
+- [.claude/docs/guides/WORKFLOW.ko.md](.claude/docs/guides/WORKFLOW.ko.md) - **완전한 워크플로우 가이드 (1500+ 줄)** 의사결정 트리 및 실제 예제 포함
 - [CLAUDE.md](CLAUDE.md) - 팀 가이드라인 (프로젝트에 맞게 커스터마이즈)
 - `.claude/rules/` - 자동 강제 가이드라인 (2개의 규칙 파일)
 - `.claude/skills/` - 패턴 참조 (20개의 스킬 파일)
@@ -217,8 +217,8 @@ cp .claude/templates/.env.example .env
 
 ## 시작하기
 
-1. **빠른 시작**: [docs/getting-started/INTEGRATION.ko.md](docs/getting-started/INTEGRATION.ko.md) - 5분 안에 시작
-2. **워크플로우 마스터**: [docs/guides/WORKFLOW.ko.md](docs/guides/WORKFLOW.ko.md) - **완전한 1500+ 줄 가이드** 다음 내용 포함:
+1. **빠른 시작**: [.claude/docs/getting-started/INTEGRATION.ko.md](.claude/docs/getting-started/INTEGRATION.ko.md) - 5분 안에 시작
+2. **워크플로우 마스터**: [.claude/docs/guides/WORKFLOW.ko.md](.claude/docs/guides/WORKFLOW.ko.md) - **완전한 1500+ 줄 가이드** 다음 내용 포함:
    - "필요한 것은..." 시나리오를 위한 의사결정 트리
    - 명령어 및 에이전트 선택 매트릭스
    - 실제 인증 구현 예제
@@ -265,7 +265,7 @@ cp .claude/templates/.env.example .env
 - [ ] 도메인별 작업을 위한 커스텀 에이전트 구축
 - [ ] `.claude/settings.json`에서 모델 선호도 조정
 
-전체 커스터마이제이션 로드맵은 [docs/guides/WORKFLOW.ko.md](docs/guides/WORKFLOW.ko.md) 섹션 7 참조.
+전체 커스터마이제이션 로드맵은 [.claude/docs/guides/WORKFLOW.ko.md](.claude/docs/guides/WORKFLOW.ko.md) 섹션 7 참조.
 
 ---
 
@@ -318,14 +318,17 @@ cp .claude/templates/.env.example .env
 │   ├── techstack.cjs         # 프레임워크/백엔드/데이터베이스 자동 감지
 │   ├── claude-md.cjs         # 감지된 스택에서 CLAUDE.md 생성
 │   └── ... (기타 모듈)
-├── docs/                     # 문서
-│   ├── README.md             # 문서 인덱스
-│   ├── getting-started/      # 통합 가이드
-│   │   ├── INTEGRATION.md    # 기존 프로젝트에 추가
-│   │   └── INTEGRATION.ko.md # 통합 가이드 (한국어)
-│   └── guides/               # 종합 가이드
-│       ├── WORKFLOW.md       # 완전한 워크플로우 가이드 (1500+ 줄)
-│       └── WORKFLOW.ko.md    # 워크플로우 가이드 (한국어)
+│   ├── docs/                 # 시스템 문서
+│   │   ├── README.md         # 문서 인덱스
+│   │   ├── getting-started/  # 통합 가이드
+│   │   │   ├── INTEGRATION.md    # 기존 프로젝트에 추가
+│   │   │   └── INTEGRATION.ko.md # 통합 가이드 (한국어)
+│   │   ├── guides/           # 종합 가이드
+│   │   │   ├── WORKFLOW.md       # 완전한 워크플로우 가이드 (1500+ 줄)
+│   │   │   └── WORKFLOW.ko.md    # 워크플로우 가이드 (한국어)
+│   │   └── system/           # 내부 문서
+│   │       ├── error-verification-system.md
+│   │       └── slack-notifications.md
 ├── .mcp.json                 # 키가 포함된 MCP 구성 (gitignored, 생성됨)
 ├── .env                      # 시크릿 (gitignored, 생성됨)
 ├── setup.cjs                 # 크로스 플랫폼 설정 마법사
@@ -360,15 +363,15 @@ claude
 - `/`를 사용하여 모든 커스텀 명령어 확인
 - [filename.ts:42](src/filename.ts#L42) 구문으로 파일 참조
 - 서로 다른 기능에 대해 최대 5개의 병렬 세션 실행
-- 전체 문서는 [docs/](docs/) 참조
+- 전체 문서는 [.claude/docs/](.claude/docs/) 참조
 
 ---
 
 ## 지원 및 리소스
 
-- **문서 인덱스**: [docs/README.md](docs/README.md) - 완전한 가이드 탐색
-- **통합 가이드**: [docs/getting-started/INTEGRATION.ko.md](docs/getting-started/INTEGRATION.ko.md) - 기존 프로젝트에 추가
-- **완전한 워크플로우 가이드 (1500+ 줄)**: [docs/guides/WORKFLOW.ko.md](docs/guides/WORKFLOW.ko.md) - 의사결정 트리, 예제 및 통합 패턴
+- **문서 인덱스**: [.claude/docs/README.md](.claude/docs/README.md) - 완전한 가이드 탐색
+- **통합 가이드**: [.claude/docs/getting-started/INTEGRATION.ko.md](.claude/docs/getting-started/INTEGRATION.ko.md) - 기존 프로젝트에 추가
+- **완전한 워크플로우 가이드 (1500+ 줄)**: [.claude/docs/guides/WORKFLOW.ko.md](.claude/docs/guides/WORKFLOW.ko.md) - 의사결정 트리, 예제 및 통합 패턴
 - **변경 로그**: [CHANGELOG.md](CHANGELOG.md) - 시스템 업데이트 및 마이그레이션 가이드 추적
 - **Claude Code 도움말**: Claude에서 `/help` 실행 또는 https://claude.com/claude-code 방문
 

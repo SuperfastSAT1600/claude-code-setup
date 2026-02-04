@@ -92,7 +92,8 @@
       "mcp__filesystem__list_directory",
       "mcp__filesystem__read_multiple_files",
       "mcp__filesystem__read_text_file",
-      "Bash(du:*)"
+      "Bash(du:*)",
+      "Skill(commit-push-pr)"
     ]
   },
   "model": "sonnet",

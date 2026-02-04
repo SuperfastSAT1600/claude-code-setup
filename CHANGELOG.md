@@ -9,19 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Documentation organization with `docs/` directory structure
-- `docs/README.md` as documentation index
+### Changed
+- **BREAKING**: Moved all documentation to `.claude/docs/` directory
+  - `docs/getting-started/` → `.claude/docs/getting-started/`
+  - `docs/guides/` → `.claude/docs/guides/`
+  - System documentation → `.claude/docs/system/`
+  - All documentation now travels with `.claude/` folder
+  - Prevents conflicts with user project `docs/` folders
+- Updated all references in README.md and README.ko.md to point to `.claude/docs/`
+
+### Previous Changes (from earlier unreleased work)
+- Documentation organization with `docs/` directory structure (now moved to `.claude/docs/`)
+- `docs/README.md` as documentation index (now `.claude/docs/README.md`)
 - `.claude/templates/.env.example` with application-only variables
 - Clear distinction between `.env` (app runtime) and `.mcp.json` (Claude tooling)
-
-### Changed
 - **BREAKING**: Moved `.mcp.template.json` to `.claude/templates/mcp.template.json`
 - **BREAKING**: Moved `.env.example` to `.claude/templates/.env.example`
-- **BREAKING**: Moved documentation files to `docs/` directory:
-  - `INTEGRATION.md` → `docs/getting-started/INTEGRATION.md`
-  - `WORKFLOW.md` → `docs/guides/WORKFLOW.md`
-  - Korean versions moved similarly
 - Supabase MCP configuration to use cloud-hosted MCP server
   - Updated from localhost (`http://localhost:54321/mcp`) to cloud (`https://mcp.supabase.com/mcp?project_ref=XXX`)
   - Simplified authentication flow (no local server required)
@@ -68,6 +71,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Migration Guide
 
+### From Pre-1.2.0 to 1.2.0+ (Current)
+
+If you're upgrading from an earlier version, follow these steps:
+
+1. **Move Documentation to .claude/docs/:**
+   ```bash
+   mkdir -p .claude/docs/getting-started .claude/docs/guides .claude/docs/system
+
+   # Move user-facing docs
+   mv docs/getting-started/* .claude/docs/getting-started/
+   mv docs/guides/* .claude/docs/guides/
+
+   # Move system docs (if they exist in old location)
+   mv .claude/docs/*.md .claude/docs/system/ 2>/dev/null || true
+
+   # Remove old docs folder
+   rm -rf docs/
+   ```
+
+2. **Update any custom scripts or references:**
+   - Replace `docs/getting-started` with `.claude/docs/getting-started`
+   - Replace `docs/guides` with `.claude/docs/guides`
+
 ### From Pre-1.1.0 to 1.1.0+
 
 If you're upgrading from an earlier version, follow these steps:
@@ -83,7 +109,7 @@ If you're upgrading from an earlier version, follow these steps:
    mv .env.example .claude/templates/.env.example
    ```
 
-3. **Move Documentation:**
+3. **Move Documentation to docs/ (now superseded by 1.2.0):**
    ```bash
    mkdir -p docs/getting-started docs/guides
    mv INTEGRATION.md docs/getting-started/
@@ -91,6 +117,8 @@ If you're upgrading from an earlier version, follow these steps:
    mv WORKFLOW.md docs/guides/
    mv WORKFLOW.ko.md docs/guides/
    ```
+
+   **Note**: As of 1.2.0, documentation has moved again to `.claude/docs/`. See migration guide above.
 
 4. **Update Supabase MCP Configuration:**
    - Edit `.mcp.json`

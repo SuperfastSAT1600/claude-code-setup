@@ -59,10 +59,10 @@ cp .claude/templates/.env.example .env
 **For Existing Projects**:
 ```bash
 # Copy template files into your existing project
-# See docs/getting-started/docs/getting-started/INTEGRATION.md and docs/guides/WORKFLOW.md Section 7 for integration guide
+# See .claude/docs/getting-started/INTEGRATION.md and .claude/docs/guides/WORKFLOW.md Section 7 for integration guide
 ```
 
-📖 **Full Setup Instructions**: See [docs/getting-started/docs/getting-started/INTEGRATION.md](docs/getting-started/docs/getting-started/INTEGRATION.md) for 5-minute setup, or [docs/guides/WORKFLOW.md](docs/guides/WORKFLOW.md) Section 7 for comprehensive customization guide
+📖 **Full Setup Instructions**: See [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) for 5-minute setup, or [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) Section 7 for comprehensive customization guide
 
 ---
 
@@ -147,8 +147,8 @@ cp .claude/templates/.env.example .env
 - **Hybrid Agent Rules** - Main agent codes standard tasks, delegates specialized work for efficiency and expertise
 
 ### 📚 Documentation
-- [docs/getting-started/docs/getting-started/INTEGRATION.md](docs/getting-started/docs/getting-started/INTEGRATION.md) - Daily workflow quick reference (5-minute setup)
-- [docs/guides/WORKFLOW.md](docs/guides/WORKFLOW.md) - **Complete workflow guide (1500+ lines)** with decision trees and real-world examples
+- [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) - Daily workflow quick reference (5-minute setup)
+- [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) - **Complete workflow guide (1500+ lines)** with decision trees and real-world examples
 - [CLAUDE.md](CLAUDE.md) - Team guidelines (customize for your project)
 - `.claude/rules/` - Auto-enforced guidelines (2 rule files)
 - `.claude/skills/` - Pattern references (20 skill files)
@@ -164,8 +164,8 @@ cp .claude/templates/.env.example .env
 
 ## Getting Started
 
-1. **Quick Start**: [docs/getting-started/docs/getting-started/INTEGRATION.md](docs/getting-started/docs/getting-started/INTEGRATION.md) - Get started in 5 minutes
-2. **Master the Workflow**: [docs/guides/WORKFLOW.md](docs/guides/WORKFLOW.md) - **Complete 1500+ line guide** with:
+1. **Quick Start**: [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) - Get started in 5 minutes
+2. **Master the Workflow**: [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) - **Complete 1500+ line guide** with:
    - Decision trees for "I need to..." scenarios
    - Command and agent selection matrices
    - Real-world authentication implementation example
@@ -208,7 +208,7 @@ cp .claude/templates/.env.example .env
 - [ ] Build custom agents for domain-specific tasks
 - [ ] Adjust model preferences in `.claude/settings.json`
 
-See [docs/guides/WORKFLOW.md](docs/guides/WORKFLOW.md) Section 7 for the complete customization roadmap.
+See [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) Section 7 for the complete customization roadmap.
 
 ---
 
@@ -261,14 +261,17 @@ See [docs/guides/WORKFLOW.md](docs/guides/WORKFLOW.md) Section 7 for the complet
 │   ├── techstack.cjs         # Auto-detect framework/backend/database
 │   ├── claude-md.cjs         # Generate CLAUDE.md from detected stack
 │   └── ... (other modules)
-├── docs/                     # Documentation
-│   ├── README.md             # Documentation index
-│   ├── getting-started/      # Integration guides
-│   │   ├── INTEGRATION.md    # Add to existing projects
-│   │   └── INTEGRATION.ko.md # 통합 가이드 (한국어)
-│   └── guides/               # Comprehensive guides
-│       ├── WORKFLOW.md       # Complete workflow guide (1500+ lines)
-│       └── WORKFLOW.ko.md    # 워크플로우 가이드 (한국어)
+│   ├── docs/                 # System documentation
+│   │   ├── README.md         # Documentation index
+│   │   ├── getting-started/  # Integration guides
+│   │   │   ├── INTEGRATION.md    # Add to existing projects
+│   │   │   └── INTEGRATION.ko.md # 통합 가이드 (한국어)
+│   │   ├── guides/           # Comprehensive guides
+│   │   │   ├── WORKFLOW.md       # Complete workflow guide (1500+ lines)
+│   │   │   └── WORKFLOW.ko.md    # 워크플로우 가이드 (한국어)
+│   │   └── system/           # Internal documentation
+│   │       ├── error-verification-system.md
+│   │       └── slack-notifications.md
 ├── .mcp.json                 # MCP config with keys (gitignored, generated)
 ├── .env                      # Your secrets (gitignored, generated)
 ├── setup.cjs                 # Cross-platform setup wizard
@@ -300,15 +303,15 @@ claude
 - Use `/` to see all custom commands
 - Reference files with [filename.ts:42](src/filename.ts#L42) syntax
 - Run up to 5 parallel sessions for different features
-- See [docs/](docs/) for complete documentation
+- See [.claude/docs/](.claude/docs/) for complete documentation
 
 ---
 
 ## Support & Resources
 
-- **Documentation Index**: [docs/README.md](docs/README.md) - Complete guide navigation
-- **Integration Guide**: [docs/getting-started/INTEGRATION.md](docs/getting-started/INTEGRATION.md) - Add to existing projects
-- **Complete Workflow Guide (1500+ lines)**: [docs/guides/WORKFLOW.md](docs/guides/WORKFLOW.md) - Decision trees, examples, and integration patterns
+- **Documentation Index**: [.claude/docs/README.md](.claude/docs/README.md) - Complete guide navigation
+- **Integration Guide**: [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) - Add to existing projects
+- **Complete Workflow Guide (1500+ lines)**: [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) - Decision trees, examples, and integration patterns
 - **Changelog**: [CHANGELOG.md](CHANGELOG.md) - Track system updates and migration guides
 - **Claude Code Help**: Run `/help` in Claude or visit https://claude.com/claude-code
 

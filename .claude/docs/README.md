@@ -14,12 +14,16 @@ Complete guide to using and customizing this Claude Code workflow template.
 - **[Complete Workflow Guide](guides/WORKFLOW.md)** - In-depth guide covering all features (1500+ lines)
 - **[Workflow Guide (Korean)](guides/WORKFLOW.ko.md)** - 전체 워크플로우 가이드 (한국어)
 
+### System Documentation
+- **[Error Verification System](system/error-verification-system.md)** - Hook-based error logging enforcement
+- **[Slack Notifications](system/slack-notifications.md)** - Slack MCP integration setup
+
 ---
 
 ## 🚀 Quick Navigation
 
 ### For New Users
-1. Start with the main [README](../README.md) in the root directory
+1. Start with the main [README](../../README.md) in the root directory
 2. Run `node setup.cjs` to configure your environment
 3. Refer to [WORKFLOW.md](guides/WORKFLOW.md) for detailed usage
 
@@ -31,7 +35,7 @@ Complete guide to using and customizing this Claude Code workflow template.
 ### For Korean Speakers
 - [통합 가이드](getting-started/INTEGRATION.ko.md)
 - [워크플로우 가이드](guides/WORKFLOW.ko.md)
-- [메인 README](../README.ko.md)
+- [메인 README](../../README.ko.md)
 
 ---
 
@@ -65,4 +69,4 @@ Complete guide to using and customizing this Claude Code workflow template.
 
 ---
 
-**Last Updated**: 2026-02-03
+**Last Updated**: 2026-02-04

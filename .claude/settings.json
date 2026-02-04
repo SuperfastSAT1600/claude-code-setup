@@ -3,7 +3,16 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "tool in [\"Edit\", \"Write\", \"Task\"] || (tool == \"Bash\" && !(tool_input.command matches \"^git (status|diff|log|branch)$\"))",
+        "matcher": "tool in [\"Edit\", \"Write\", \"Task\"]",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n./.claude/scripts/verify-errors-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\"",
         "hooks": [
           {
             "type": "command",
