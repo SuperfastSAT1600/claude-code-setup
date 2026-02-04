@@ -113,6 +113,77 @@ NOTIFY: "Auto-healed: Added rate limit guidance (3 occurrences detected)"
 
 ---
 
+## 3.5. Single-Error Root Cause Fixing (Aggressive)
+
+**Philosophy**: Don't wait for patterns when the root cause is obvious. Fix it immediately.
+
+### When to Fix After 1 Error
+
+**Immediately fix if ALL conditions met:**
+1. ✅ Root cause is **clear and obvious** (not speculative)
+2. ✅ Fix is **localized** (affects 1-3 files max)
+3. ✅ Fix is **low-risk** (strengthening rules, adding checks, fixing broken refs)
+4. ✅ Fix **prevents recurrence** of this exact error
+
+**Examples of obvious root causes:**
+
+| Error | Obvious Root Cause | Immediate Fix |
+|-------|-------------------|---------------|
+| Protocol says "do X" but Claude skips it | Rule too weak, not enforced | Strengthen rule to be blocking/mandatory |
+| Broken file reference in agent frontmatter | Outdated path | Update to correct path |
+| Agent references non-existent skill | Skill was renamed/moved | Update reference |
+| Missing validation causes tool failure | No check before operation | Add validation step to protocol |
+| Gitignored file attempted to commit | Misunderstood .gitignore scope | Add guidance about .claude/user/ |
+
+### Workflow
+
+```
+1. Error logged to errors.md (immediate)
+2. Analyze: Is root cause obvious? Is fix straightforward?
+3. IF YES:
+   a. Apply fix immediately
+   b. Log to changelog with "Auto: yes" (include "after 1 error" in reason)
+   c. Notify user: "Fixed root cause: [what]"
+4. IF NO (speculative, complex, or high-risk):
+   a. Wait for pattern (2+ similar errors)
+   b. Then auto-heal OR propose based on complexity
+```
+
+### Auto-Apply vs Propose (Single Error)
+
+**Auto-apply immediately:**
+- Strengthen enforcement in rules (make blocking)
+- Fix broken references (files, skills, agents)
+- Add missing validation steps
+- Update outdated paths/names
+- Add error handling that was missing
+
+**Propose for approval:**
+- Create new components (skills, agents, templates)
+- Change core logic or workflow
+- Modify API or interface contracts
+- Archive or delete significant code
+
+### Example
+
+```
+ERROR LOGGED:
+[context] Error: Didn't log immediately despite protocol | Correct: Should have logged before continuing
+
+ANALYSIS:
+✅ Root cause obvious: Protocol says "LOG IMMEDIATELY" but not enforced
+✅ Fix localized: task-protocol.md only
+✅ Low risk: Strengthening existing rule
+✅ Prevents recurrence: Makes logging blocking
+
+ACTION: Auto-fix immediately
+CHANGE: Rewrite error logging section with blocking workflow (STOP → LOG → VERIFY → THEN)
+LOG: enhance(error-logging): enforce blocking workflow (after 1 error, root cause obvious)
+NOTIFY: "Fixed root cause: Error logging now blocking requirement"
+```
+
+---
+
 ## 4. Proactive Enhancement
 
 Enhancement = improving what works (vs healing = fixing what's broken)
