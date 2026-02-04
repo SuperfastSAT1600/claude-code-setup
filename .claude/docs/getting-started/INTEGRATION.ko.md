@@ -85,9 +85,7 @@ cp -r ../claude-code-setup/lib/ .
 # (MCP 템플릿은 위의 .claude/ 복사에 이미 포함되어 있습니다)
 
 # 온보딩 문서들 복사
-cp ../claude-code-setup/INTEGRATION.ko.md .
 cp ../claude-code-setup/README.ko.md .
-cp ../claude-code-setup/WORKFLOW.ko.md .
 
 cp -r ../claude-code-setup/.claude/ .
 cp ../claude-code-setup/CLAUDE.md .
