@@ -3,6 +3,7 @@ user/changelog.md
 user/errors.md
 user/agent-errors/*.md
 user/custom/**
+user/.errors-read-marker
 
 # Local settings
 settings.local.json

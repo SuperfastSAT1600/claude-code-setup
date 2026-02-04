@@ -24,6 +24,16 @@ The system continuously improves itself through aggressive error logging, patter
 - **Main agent errors** → `.claude/user/errors.md`
 - **Subagent errors** → `.claude/user/agent-errors/{agent-name}.md`
 
+### Verification System (Automated)
+
+**Hook-based enforcement** ensures errors.md is read before work begins:
+- PreToolUse hook blocks Edit/Write/Task/Bash until errors.md is read
+- PostToolUse hook marks when errors.md is accessed
+- Session timeout: 5 minutes
+- See `.claude/docs/error-verification-system.md` for details
+
+This provides **structural enforcement** rather than relying on following instructions.
+
 ### Decision Tree
 
 ```
