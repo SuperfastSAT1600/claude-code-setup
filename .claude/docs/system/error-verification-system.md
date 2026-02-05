@@ -1,6 +1,8 @@
-# Error Verification System
+# Error Verification & MCP Enforcement System
 
-Automated enforcement that ensures `.claude/user/errors.md` is read before any work begins.
+Automated enforcement system with two components:
+1. **Error verification** - Ensures errors.md is read before work begins
+2. **MCP/Skill reminders** - Warns when MCP tools or skills weren't used before coding
 
 ---
 
@@ -209,4 +211,101 @@ echo $OSTYPE
 
 ---
 
-**Last Updated**: 2026-02-04
+---
+
+## Part 2: MCP & Skill Usage Reminders
+
+### Purpose
+
+Provides **warnings** (not blocks) when coding without first:
+- Querying Context7 for library documentation
+- Searching Memory for similar patterns
+- Loading relevant skills
+
+### Components
+
+1. **Marker file**: `.claude/user/.mcp-markers.json`
+   - Tracks which MCP tools were used in session
+   - Timestamp-based (valid for 5 minutes)
+   - Ephemeral (not committed to git)
+
+2. **MCP tracking scripts**:
+   - `.claude/scripts/mark-mcp-used.sh` - PostToolUse for Context7/Memory
+   - `.claude/scripts/mark-skill-loaded.sh` - PostToolUse for Skill tool
+
+3. **Verification script**: `.claude/scripts/verify-prep-done.sh`
+   - PreToolUse on Edit/Write for code files
+   - Checks if MCP markers exist and are fresh
+   - **Warns** (exit 1) if missing, doesn't block
+
+4. **Pattern detection script**: `.claude/scripts/detect-error-patterns.sh`
+   - PostToolUse when errors.md is read
+   - Counts errors by category
+   - **Notifies** (exit 0) if 2+ errors in any category
+
+### Flow
+
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│ MCP Tool Called │ ──▶ │ PostToolUse Hook │ ──▶ │ Marker Created  │
+│ (Context7, etc) │     │ Creates Marker   │     │ (.mcp-markers)  │
+└─────────────────┘     └──────────────────┘     └────────┬────────┘
+                                                          │
+┌─────────────────┐     ┌──────────────────┐              │
+│ Write/Edit Code │ ──▶ │ PreToolUse Hook  │ ◀────────────┘
+│                 │     │ Checks Markers   │
+└─────────────────┘     └──────────────────┘
+                              │
+                    ┌─────────┴─────────┐
+                    ▼                   ▼
+              [ALLOW]            [WARN]
+         (markers present)    (markers missing)
+```
+
+### Enforcement Levels
+
+| Behavior | Exit Code | Effect |
+|----------|-----------|--------|
+| MCP tools not used | 1 | Warning message, continues |
+| Skills not loaded | 1 | Warning message, continues |
+| Error patterns detected | 0 | Notification only |
+| Errors.md not read | 2 | BLOCKED |
+
+### Hooks Added
+
+**PostToolUse**:
+- `mcp__.*context7.*` → mark-mcp-used.sh context7
+- `mcp__memory__*` → mark-mcp-used.sh memory
+- `Skill` → mark-skill-loaded.sh
+- `Read errors.md` → detect-error-patterns.sh (chained)
+
+**PreToolUse**:
+- `Edit/Write` on code files → verify-prep-done.sh
+
+### MCP Markers Format
+
+Individual marker files for simplicity (no jq dependency):
+- `.claude/user/.mcp-context7-marker` - timestamp
+- `.claude/user/.mcp-memory-marker` - timestamp
+- `.claude/user/.skills-marker` - timestamp
+
+Combined JSON file (when jq is available):
+```json
+{
+  "context7": {"lastUsed": 1738742400},
+  "_updated": 1738742400
+}
+```
+
+### Limitations
+
+| Limitation | Mitigation |
+|------------|------------|
+| Can't detect WHICH skill should be loaded | Warn generically |
+| Can't verify Context7 query was relevant | Manual review |
+| Pattern detection is category-based | Good for 2+ threshold |
+| Markers reset each session | By design |
+
+---
+
+**Last Updated**: 2026-02-05
