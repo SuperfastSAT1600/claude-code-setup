@@ -22,19 +22,10 @@ Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
 
 This setup continuously improves itself. During every task, the system observes its own configuration and proposes fixes, evolutions, and simplifications after completing your work.
 
-- **Execution Protocol**: `.claude/rules/task-execution-protocol.md` (MANDATORY for all agents)
 - **Rules**: `.claude/rules/self-aware-system.md`
 - **Changelog**: `.claude/health/changelog.md`
 - **Health Check**: Run `/health-check` for a comprehensive audit
 - **Agent count**: 34 (33 specialists + 1 system-health)
-
-### Mandatory Checkpoints (Every Task)
-
-1. **PRE-TASK**: Identify parallel work opportunities [enforced]
-2. **DURING**: Observe `.claude/` issues [passive noting]
-3. **POST-TASK**: Auto-heal recurring patterns, report observations [enforced]
-
-This ensures maximum speed through parallelization and continuous system improvement through auto-healing.
 
 ---
 
@@ -66,56 +57,40 @@ When creating React code, the main agent uses:
 
 ## Tech Stack
 
-> ⚠️ **CUSTOMIZE THIS SECTION** - Replace with your project's actual tech stack
-
 **Frontend**: {{FRONTEND_STACK}}
-<!-- Example: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS -->
-<!-- Example: Vue 3, Nuxt 3, TypeScript, UnoCSS -->
-<!-- Example: Svelte 4, SvelteKit, TypeScript -->
 
 **Backend**: {{BACKEND_STACK}}
-<!-- Example: Node.js 20+, Supabase (PostgreSQL, Auth, Storage, Real-time) -->
-<!-- Example: Node.js 20+, Express, PostgreSQL, Prisma -->
-<!-- Example: Python 3.11+, FastAPI, SQLAlchemy -->
+
+**Database**: Supabase (PostgreSQL)
 
 **Testing**: {{TESTING_STACK}}
-<!-- Example: Vitest, Playwright, React Testing Library -->
-<!-- Example: Jest, Cypress, Testing Library -->
 
-**DevOps**: {{DEVOPS_STACK}}
-<!-- Example: Docker, GitHub Actions, Vercel -->
-<!-- Example: Docker, GitLab CI, AWS -->
+**DevOps**: Docker, GitHub Actions
 
 ---
 
 ## Project Structure
 
-> ⚠️ **CUSTOMIZE THIS SECTION** - Update to match your project's actual structure
-
 ```
-{{PROJECT_STRUCTURE}}
-# Example for Next.js:
-# src/
-# ├── app/           # Next.js pages
-# ├── components/    # UI components
-# ├── features/      # Feature modules
-# ├── lib/           # Third-party integrations
-# ├── hooks/         # Custom hooks
-# ├── utils/         # Utilities
-# └── types/         # TypeScript types
+src/
+├── app/           # Application pages/routes
+├── components/    # Reusable components
+├── features/      # Feature modules
+├── lib/           # Third-party integrations
+├── hooks/         # Custom hooks (if applicable)
+├── utils/         # Utility functions
+└── types/         # TypeScript types
 ```
 
 ---
 
 ## Dependencies
 
-> ⚠️ **CUSTOMIZE THIS SECTION** - List approved and forbidden dependencies for your project
+**Approved**: date-fns, zod
+<!-- Add your approved dependencies here -->
 
-**Approved**: {{APPROVED_DEPS}}
-<!-- Example: date-fns, zod, react-hook-form, @tanstack/react-query -->
-
-**Forbidden**: {{FORBIDDEN_DEPS}}
-<!-- Example: moment.js, full lodash (use lodash-es with specific imports) -->
+**Forbidden**: moment.js, full lodash
+<!-- Add your forbidden dependencies here -->
 
 ---
 
@@ -123,8 +98,8 @@ When creating React code, the main agent uses:
 
 Main agent: append here when you make a mistake so it never repeats. Subagents: report errors in your response for the main agent to log to `.claude/health/changelog.md`.
 
-- Never pass model parameter to Task unless explicitly requested
+<!-- Add recurring errors here -->
 
 ---
 
-**Last Updated**: 2026-01-26
+**Last Updated**: 2026-01-31

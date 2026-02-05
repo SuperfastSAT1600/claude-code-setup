@@ -86,17 +86,10 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "filesystem",
+    "slack",
     "github",
     "supabase",
-    "memory",
-    "slack",
-    "render",
-    "cloudflare-docs",
-    "cloudflare-workers-builds",
-    "cloudflare-workers-bindings",
-    "cloudflare-observability",
-    "context7",
-    "magic-ui"
+    "memory"
   ],
   "hooks": {
     "PreToolUse": [
@@ -260,14 +253,10 @@
     }
   ],
   "disabledMcpServers": [
-    "filesystem",
-    "github",
     "postgres",
     "sqlite",
     "brave-search",
     "google-maps",
-    "slack",
-    "memory",
     "sequential-thinking",
     "vercel",
     "railway",
