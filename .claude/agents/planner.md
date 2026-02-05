@@ -2,7 +2,7 @@
 name: planner
 description: Software architect specializing in implementation planning and task breakdown
 model: opus
-tools: Read, Grep, Glob
+disallowedTools: [Edit, Write]
 skills:
   - project-guidelines
   - coding-standards
@@ -75,8 +75,25 @@ Start simple (MVP first), consider testing alongside code, identify risks early,
 
 Plan is a roadmap, not rigid script. Implementation may reveal better approaches. Goal is clarity and direction while remaining flexible.
 
+## Resource Checklist
+
+- Search Memory for similar implementation patterns before planning new features
+- Store finalized plans in Memory for future reference (type="plan")
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query library documentation for technical feasibility
+- **memory**: Store implementation plans and retrieve similar past plans
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/planner.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

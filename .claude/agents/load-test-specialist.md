@@ -2,7 +2,6 @@
 name: load-test-specialist
 description: Design and execute load tests to validate system performance under stress
 model: sonnet
-tools: Read, Write, Bash, Grep, Glob
 skills:
   - backend-patterns
   - rest-api-design
@@ -119,8 +118,21 @@ export const options = {
 - [ ] Document findings
 - [ ] Retest after optimizations
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query load testing tool documentation (k6, Artillery, JMeter)
+- **render**: Query service performance metrics and scaling configurations
+- **memory**: Store load test scenarios and performance baselines
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/load-test-specialist.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

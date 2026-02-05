@@ -2,7 +2,6 @@
 name: runbook-writer
 description: Operations specialist for writing deployment procedures, troubleshooting guides, and on-call runbooks
 model: sonnet
-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write
 skills:
   - documentation-patterns
   - backend-patterns
@@ -115,8 +114,21 @@ kubectl logs -n production -l app=myservice --tail=200 | grep -i error
 4. **Regular Review**: Include review dates
 5. **Rollback First**: Always document rollback
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query operational documentation standards and runbook templates
+- **render**: Reference deployment procedures and troubleshooting guides
+- **memory**: Store runbook templates and incident response patterns
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/runbook-writer.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

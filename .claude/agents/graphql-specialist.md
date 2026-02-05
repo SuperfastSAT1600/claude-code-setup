@@ -2,7 +2,6 @@
 name: graphql-specialist
 description: Design and implement GraphQL APIs with queries, mutations, subscriptions, and best practices
 model: sonnet
-tools: Read, Write, Edit, Grep, Glob, Bash
 skills:
   - graphql-patterns
   - backend-patterns
@@ -130,8 +129,26 @@ const userLoader = new DataLoader(async (ids: string[]) => {
 - Complex data relationships
 - Over-fetching/under-fetching problems
 
+## Resource Checklist
+
+- Query Context7 for GraphQL library docs (Apollo Server, GraphQL Yoga, Pothos) before setup
+- Store schema design patterns in Memory for consistency across API versions
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query GraphQL documentation and resolver patterns
+- **supabase**: Reference Supabase GraphQL integration patterns
+- **memory**: Store schema design decisions and resolver patterns
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/graphql-specialist.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

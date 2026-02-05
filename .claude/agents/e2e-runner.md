@@ -2,7 +2,6 @@
 name: e2e-runner
 description: Generates and executes end-to-end tests for web applications
 model: sonnet
-tools: [Bash, Read, Edit, Write, Grep, Glob]
 skills:
   - tdd-workflow
   - frontend-patterns
@@ -48,8 +47,21 @@ Critical paths: authentication flows, checkout processes, registration, search f
 
 Runs after implementation and unit tests complete. Reports test results and failures to orchestrator with screenshots.
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **magic-ui**: Reference UI component selectors and patterns for testing
+- **context7**: Query Playwright/Cypress documentation and test patterns
+- **memory**: Store test patterns and common selectors
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/e2e-runner.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

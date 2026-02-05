@@ -1,7 +1,7 @@
 ---
 name: system-health
 description: System configuration health analyzer for deep semantic analysis of .claude/ setup
-tools: Read, Grep, Glob
+disallowedTools: [Edit, Write]
 skills:
   - coding-standards
   - project-guidelines
@@ -22,7 +22,7 @@ Specialist for deep semantic analysis of the `.claude/` system configuration. Us
 ## Analysis Framework
 
 ### 1. Contradiction Detection
-- Compare rules in essential-rules.md with advice in skills
+- Compare rules in coding-standards.md with advice in skills
 - Compare agent capabilities with workflow expectations
 - Compare template patterns with skill recommendations
 
@@ -68,8 +68,20 @@ Specialist for deep semantic analysis of the `.claude/` system configuration. Us
 - **code-reviewer**: Complementary — reviews user code; this agent reviews system config
 - **architect**: Consult for significant evolution proposals
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query framework documentation for currency validation
+- **memory**: Retrieve system health patterns and recurring issues
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/system-health.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

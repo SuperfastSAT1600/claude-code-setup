@@ -16,21 +16,18 @@
       "description": "GitHub repository management - PRs, issues, files"
     },
     "supabase": {
-      "command": "npx",
-      "args": ["-y", "@supabase/mcp-server"],
-      "env": {
-        "SUPABASE_URL": "YOUR_SUPABASE_URL_HERE",
-        "SUPABASE_SERVICE_KEY": "YOUR_SUPABASE_SERVICE_KEY_HERE"
-      },
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF_HERE",
+      "env": {},
       "disabled": true,
-      "description": "Supabase database operations, auth, and storage"
+      "description": "⭐ RECOMMENDED: Supabase database operations, auth, and storage. Get project_ref from https://supabase.com/dashboard/project/_/settings/api"
     },
     "memory": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
       "env": {},
       "disabled": true,
-      "description": "Persistent knowledge graph memory across sessions"
+      "description": "⭐ RECOMMENDED: Persistent knowledge graph memory across sessions"
     },
     "slack": {
       "command": "npx",
@@ -97,7 +94,7 @@
       "args": ["-y", "@magicuidesign/mcp"],
       "env": {},
       "disabled": true,
-      "description": "Magic UI components library"
+      "description": "⭐ RECOMMENDED: Magic UI components library"
     }
   }
 }

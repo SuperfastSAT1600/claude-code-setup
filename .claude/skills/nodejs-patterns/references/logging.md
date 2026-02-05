@@ -100,10 +100,10 @@ app.use(pinoHttp({
     return 'info';
   },
   customSuccessMessage: (req, res) => {
-    return `${req.method} ${req.url} completed`;
+    return req.method + " " + req.url + " completed";
   },
   customErrorMessage: (req, res, err) => {
-    return `${req.method} ${req.url} errored`;
+    return req.method + " " + req.url + " errored";
   },
 }));
 ```
@@ -144,7 +144,7 @@ log.error({ err, userId }, 'Failed to process payment');
 log.info({ userId: user.id, email: user.email }, 'User created');
 
 // Bad: String interpolation
-log.info(`User ${user.id} created with email ${user.email}`);
+log.info("User " + user.id + " created with email " + user.email);
 
 // Good: Context-rich error logging
 log.error({

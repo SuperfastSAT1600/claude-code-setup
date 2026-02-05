@@ -2,7 +2,6 @@
 name: monitoring-architect
 description: Senior observability engineer for logging, monitoring, alerting, and APM setup
 model: sonnet
-tools: [Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash]
 skills:
   - backend-patterns
   - nodejs-patterns
@@ -82,8 +81,27 @@ req.log.info({ method, path, query }, 'Request started');
 
 `.claude/skills/backend-patterns/`, `.claude/checklists/deployment-checklist.md`
 
+## Resource Checklist
+
+- Query Context7 for observability library docs (Pino, Winston, Sentry, OpenTelemetry) before setup
+- Store monitoring patterns in Memory for consistent observability across services
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **cloudflare-observability**: Query worker logs and observability metrics
+- **render**: Access service logs and monitoring metrics
+- **context7**: Query logging and monitoring library documentation
+- **memory**: Store observability patterns and alert configurations
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/monitoring-architect.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

@@ -38,7 +38,7 @@ function requirePermission(permission: string) {
     const user = req.user;
 
     if (!user.permissions.includes(permission)) {
-      throw new ForbiddenError(`Missing permission: ${permission}`);
+      throw new ForbiddenError("Missing permission: " + permission);
     }
 
     next();

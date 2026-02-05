@@ -2,7 +2,6 @@
 name: code-simplifier
 description: Reviews and simplifies code by removing unnecessary complexity and abstractions
 model: sonnet
-tools: Bash, Read, Edit, Write, Grep, Glob
 skills:
   - coding-standards
   - backend-patterns
@@ -65,8 +64,20 @@ const displayName = currentUser?.name || 'Anonymous';
 - React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for extracting logic)
 - React Context Template: `.claude/templates/variants/react/context.tsx.template` (for state management)
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query refactoring patterns and simplification techniques
+- **memory**: Store simplification patterns and anti-pattern examples
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/code-simplifier.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

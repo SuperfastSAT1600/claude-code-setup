@@ -477,7 +477,7 @@ This system continuously improves itself. When Claude encounters issues in skill
 3. **Auto-fixes**: Broken references, typos, structural issues
 4. **Proposes**: Content updates, new patterns, refactoring
 
-See `.claude/rules/self-aware-system.md` for details.
+See `.claude/rules/self-improvement.md` for details.
 
 ---
 
@@ -652,8 +652,8 @@ python skill-creator/scripts/package_skill.py path/to/skill/ ./dist/
 - [skill-creator/scripts/package_skill.py](skill-creator/scripts/package_skill.py) - Package and distribute
 
 ### For Self-Improvement
-- [.claude/rules/self-aware-system.md](../.claude/rules/self-aware-system.md) - System evolution rules
-- [.claude/health/changelog.md](../.claude/health/changelog.md) - System change log
+- [.claude/rules/self-improvement.md](../.claude/rules/self-improvement.md) - System evolution rules
+- [.claude/user/changelog.md](../.claude/user/changelog.md) - System change log (user data)
 
 ### For Usage
 - [INDEX.md](INDEX.md) - Complete skill catalog with descriptions

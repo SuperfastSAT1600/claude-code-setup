@@ -1,75 +1,42 @@
-# Team Claude Code Guidelines
+# Project Configuration
 
-Team knowledge base for Claude Code. Add mistakes here so they don't repeat.
+Project-specific configuration for Claude Code. For mandatory protocols, see `.claude/rules/`.
 
 ---
 
 ## Quick Reference
 
-**Workflow**: Main agent codes standard tasks, delegates to 34 specialized agents for expertise
-**Agents (34)**: See `.claude/agents/` for full list and INDEX.md
+**Agents**: 34 specialists in `.claude/agents/` (see INDEX.md)
+**Commands**: `/health-check`, `/commit`, `/review-changes`, etc.
+**Skills**: `.claude/skills/` (react-patterns, rest-api-design, etc.)
 
-**Resources**:
-- Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
-- Workflows: `.claude/workflows/`
-- Checklists: `.claude/checklists/`
-- Templates: `.claude/templates/`
-- Scripts: `.claude/scripts/`
-
----
-
-## Self-Aware System
-
-This setup continuously improves itself. During every task, the system observes its own configuration and proposes fixes, evolutions, and simplifications after completing your work.
-
-- **Rules**: `.claude/rules/self-aware-system.md`
-- **Changelog**: `.claude/health/changelog.md`
-- **Health Check**: Run `/health-check` for a comprehensive audit
-- **Agent count**: 34 (33 specialists + 1 system-health)
-
----
-
-## How It Works
-
-**Main agent codes directly** for standard tasks (CRUD, simple features, bug fixes).
-**Specialists handle** complex domains (auth, databases, performance, security).
-
-Just describe what you want in plain English:
-
-| You say | What happens |
-|---------|--------------|
-| "Add a user profile page" | Main agent implements directly |
-| "I want users to log in with OAuth" | Delegates to auth-specialist |
-| "The checkout is broken" | Main agent fixes via quick-fix workflow |
-| "Is this code secure?" | Delegates to security-reviewer |
-| "Make the page faster" | Delegates to performance-optimizer |
-
-### Main Agent Templates
-
-When creating React code, the main agent uses:
-- `variants/react/component.tsx.template` - React components with TypeScript
-- `variants/react/form.tsx.template` - Form components with React Hook Form + Zod
-- `variants/react/hook.ts.template` - Custom React hooks with proper cleanup
-- `variants/react/context.tsx.template` - React Context providers with type safety
-- `variants/react/hoc.tsx.template` - Higher-Order Components with ref forwarding
+**Data Locations**:
+- Error log: `.claude/user/errors.md`
+- Agent errors: `.claude/user/agent-errors/{agent-name}.md`
+- Changelog: `.claude/user/changelog.md` (self-initiated changes only)
+- Custom content: `.claude/user/custom/`
 
 ---
 
 ## Tech Stack
 
 **Frontend**: {{FRONTEND_STACK}}
+<!-- Example: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS -->
 
 **Backend**: {{BACKEND_STACK}}
-
-**Database**: Supabase (PostgreSQL)
+<!-- Example: Node.js 20+, Supabase (PostgreSQL, Auth, Storage, Real-time) -->
 
 **Testing**: {{TESTING_STACK}}
+<!-- Example: Vitest, Playwright, React Testing Library -->
 
-**DevOps**: Docker, GitHub Actions
+**DevOps**: {{DEVOPS_STACK}}
+<!-- Example: Docker, GitHub Actions, Vercel -->
 
 ---
 
 ## Project Structure
+
+> ⚠️ **CUSTOMIZE THIS SECTION** - Update to match your project
 
 ```
 src/
@@ -86,20 +53,44 @@ src/
 
 ## Dependencies
 
-**Approved**: date-fns, zod
-<!-- Add your approved dependencies here -->
+> ⚠️ **CUSTOMIZE THIS SECTION** - List approved and forbidden dependencies
 
 **Forbidden**: moment.js, full lodash
 <!-- Add your forbidden dependencies here -->
 
 ---
 
-## Error Log
+## Main Agent Templates
 
-Main agent: append here when you make a mistake so it never repeats. Subagents: report errors in your response for the main agent to log to `.claude/health/changelog.md`.
-
-<!-- Add recurring errors here -->
+When creating React code:
+- `variants/react/component.tsx.template` - Components with TypeScript
+- `variants/react/form.tsx.template` - Forms with React Hook Form + Zod
+- `variants/react/hook.ts.template` - Custom hooks with proper cleanup
+- `variants/react/context.tsx.template` - Context providers with type safety
+- `variants/react/hoc.tsx.template` - HOCs with ref forwarding
 
 ---
 
-**Last Updated**: 2026-01-31
+## Updating This System
+
+```bash
+# 1. Clone/update claude-code-setup in parent directory
+cd ..
+git clone https://github.com/YOUR_REPO/claude-code-setup.git  # or git pull
+
+# 2. Run update script from your project
+cd your-project
+./.claude/scripts/update-system.sh
+```
+
+**Preserved during updates:**
+- `.claude/user/` - Your error logs, changelog, custom content
+- `.claude/settings.local.json` - Your local configuration
+- `CLAUDE.md` - This file (your project config)
+
+**Updated (from `../claude-code-setup/.claude/`):**
+- System agents, skills, rules, commands, workflows, templates
+
+---
+
+**Last Updated**: 2026-02-03

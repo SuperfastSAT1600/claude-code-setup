@@ -84,7 +84,7 @@ const userLoader = new DataLoader<string, User>(async (userIds: readonly string[
 
   // CRITICAL: Return users in same order as userIds
   const userMap = new Map(users.map(user => [user.id, user]));
-  return userIds.map(id => userMap.get(id) || new Error(`User ${id} not found`));
+  return userIds.map(id => userMap.get(id) || new Error("User " + id + " not found"));
 });
 
 // Use in resolver
@@ -129,7 +129,7 @@ function createUserLoader(db: PrismaClient) {
       where: { id: { in: [...ids] } },
     });
     const userMap = new Map(users.map(u => [u.id, u]));
-    return ids.map(id => userMap.get(id) || new Error(`User ${id} not found`));
+    return ids.map(id => userMap.get(id) || new Error("User " + id + " not found"));
   });
 }
 
@@ -139,7 +139,7 @@ function createPostLoader(db: PrismaClient) {
       where: { id: { in: [...ids] } },
     });
     const postMap = new Map(posts.map(p => [p.id, p]));
-    return ids.map(id => postMap.get(id) || new Error(`Post ${id} not found`));
+    return ids.map(id => postMap.get(id) || new Error("Post " + id + " not found"));
   });
 }
 
@@ -181,7 +181,7 @@ const userLoader = new DataLoader<string, User>(async (userIds) => {
   });
 
   const userMap = new Map(users.map(u => [u.id, u]));
-  return userIds.map(id => userMap.get(id) || new Error(`User ${id} not found`));
+  return userIds.map(id => userMap.get(id) || new Error("User " + id + " not found"));
 });
 
 // Usage
@@ -234,16 +234,16 @@ const likeLoader = new DataLoader<LikeKey, Like | null>(
 
     // Use composite key as string for Map
     const likeMap = new Map(
-      likes.map(like => [`${like.userId}:${like.postId}`, like])
+      likes.map(like => [like.userId + ":" + like.postId, like])
     );
 
     return keys.map(({ userId, postId }) =>
-      likeMap.get(`${userId}:${postId}`) || null
+      likeMap.get(userId + ":" + postId) || null
     );
   },
   {
     // Custom cache key function
-    cacheKeyFn: ({ userId, postId }) => `${userId}:${postId}`,
+    cacheKeyFn: ({ userId, postId }) => userId + ":" + postId,
   }
 );
 
@@ -328,7 +328,7 @@ const userLoader = new DataLoader<string, User>(async (userIds) => {
   return userIds.map(id => {
     const user = userMap.get(id);
     // Return Error for missing users
-    return user || new Error(`User ${id} not found`);
+    return user || new Error("User " + id + " not found");
   });
 });
 
@@ -351,7 +351,7 @@ const userLoader = new DataLoader<string, User>(async (userIds) => {
   if (users.length !== userIds.length) {
     const foundIds = new Set(users.map(u => u.id));
     const missingIds = userIds.filter(id => !foundIds.has(id));
-    throw new Error(`Users not found: ${missingIds.join(', ')}`);
+    throw new Error("Users not found: " + missingIds.join(', '));
   }
 
   const userMap = new Map(users.map(u => [u.id, u]));
@@ -408,7 +408,7 @@ const userWithPostsLoader = new DataLoader<string, UserWithPosts>(
     });
 
     const userMap = new Map(users.map(u => [u.id, u]));
-    return userIds.map(id => userMap.get(id) || new Error(`User ${id} not found`));
+    return userIds.map(id => userMap.get(id) || new Error("User " + id + " not found"));
   }
 );
 ```
@@ -422,7 +422,7 @@ const postLoader = new DataLoader<string, Post>(async (postIds) => {
   });
 
   const postMap = new Map(posts.map(p => [p.id, p]));
-  return postIds.map(id => postMap.get(id) || new Error(`Post ${id} not found`));
+  return postIds.map(id => postMap.get(id) || new Error("Post " + id + " not found"));
 });
 
 // Authorization in resolver
@@ -555,7 +555,7 @@ import { describe, it, expect, vi } from 'vitest';
 describe('userLoader', () => {
   it('batches multiple load calls into single query', async () => {
     const batchFn = vi.fn(async (ids: readonly string[]) => {
-      return ids.map(id => ({ id, username: `user-${id}` }));
+      return ids.map(id => ({ id, username: "user-" + id }));
     });
 
     const loader = new DataLoader(batchFn);
@@ -578,7 +578,7 @@ describe('userLoader', () => {
 
   it('caches repeated loads', async () => {
     const batchFn = vi.fn(async (ids: readonly string[]) => {
-      return ids.map(id => ({ id, username: `user-${id}` }));
+      return ids.map(id => ({ id, username: "user-" + id }));
     });
 
     const loader = new DataLoader(batchFn);

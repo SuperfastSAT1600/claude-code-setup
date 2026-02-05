@@ -93,7 +93,7 @@ app.use('/users', (req, res, next) => {
     return res.status(400).json({
       error: {
         code: 'INVALID_VERSION',
-        message: `API version ${version} not supported`
+        message: "API version " + version + " not supported"
       }
     });
   }

@@ -2,7 +2,6 @@
 name: auth-specialist
 description: Expert in authentication and authorization patterns, OAuth, JWT, and identity management
 model: sonnet
-tools: Read, Grep, Glob, Bash, Edit, Write, WebSearch
 skills:
   - auth-patterns
   - backend-patterns
@@ -56,8 +55,26 @@ Security-focused expert in authentication and authorization systems. Design and 
 - Auth Hook Template: `.claude/templates/variants/react/hook.ts.template` (for useAuth, useSession)
 - Auth HOC Template: `.claude/templates/variants/react/hoc.tsx.template` (for withAuth, withRole)
 
+## Resource Checklist
+
+- Query Context7 for auth library docs (Passport, NextAuth, Auth0, Supabase Auth) before implementation
+- Store auth pattern decisions in Memory (OAuth flow choice, token strategy, session management)
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query OAuth, JWT, and authentication library documentation
+- **supabase**: Reference Supabase Auth patterns and configuration
+- **memory**: Store authentication decisions and security patterns
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/auth-specialist.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

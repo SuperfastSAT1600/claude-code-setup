@@ -2,7 +2,6 @@
 name: api-designer
 description: Senior API architect for complete API lifecycle - design, specification, and documentation
 model: sonnet
-tools: Read, Grep, Glob, WebFetch, WebSearch, Edit, Write
 skills:
   - rest-api-design
   - backend-patterns
@@ -56,8 +55,26 @@ Senior API architect handling complete API lifecycle: design scalable REST/Graph
 - API Route Template: `.claude/templates/api-route.ts.template`
 - API Documentation Template: `.claude/templates/api-documentation.md`
 
+## Resource Checklist
+
+- Query Context7 for API framework docs (Express, Fastify, NestJS) before designing
+- Store API design decisions in Memory (versioning strategy, auth patterns, error formats)
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query API design patterns and REST/GraphQL documentation
+- **supabase**: Reference Supabase API patterns and PostgreSQL REST API design
+- **memory**: Store API design decisions and patterns
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/api-designer.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

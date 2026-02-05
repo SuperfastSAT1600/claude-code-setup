@@ -1,5 +1,170 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "tool in [\"Edit\", \"Write\", \"Task\"]",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n./.claude/scripts/verify-errors-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n./.claude/scripts/verify-errors-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\ngrep -n 'console\\.log' \"$file_path\" 2>/dev/null && echo '[Hook] Warning: console.log detected - consider using a logger' >&2 || true"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git push.*(main|master)\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Pushing to main/master branch - ensure tests pass and code is reviewed!' >&2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(env|credentials|secret|pem|key)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] BLOCKED: Cannot write to sensitive files (.env, .pem, .key, credentials)' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf /\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] BLOCKED: Dangerous rm -rf / command detected!' >&2 && exit 2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git commit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/pre-commit-checks.sh\" ]; then\n  ./.claude/scripts/pre-commit-checks.sh 2>&1 | head -50\nfi || true"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"gh pr create\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/require-tests-pass.sh\" ]; then\n  ./.claude/scripts/require-tests-pass.sh\nfi || true"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"npm publish|yarn publish|pnpm publish\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Publishing package - ensure version is bumped and tests pass!' >&2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Read\" && tool_input.file_path matches \"\\\\.mcp\\\\.json$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nENABLED=$(grep -c '\"disabled\": false' ~/.mcp.json 2>/dev/null || echo 0)\nif [ \"$ENABLED\" -gt 10 ]; then\n  echo \"[Hook] WARNING: $ENABLED MCPs enabled (max 10 recommended). Performance may degrade. Disable unused MCPs in .mcp.json\" >&2\nfi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Read\" && tool_input.file_path matches \"\\\\.(agents|skills)/.*\\\\.md$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nLINES=$(wc -l < \"$file_path\" 2>/dev/null || echo 0)\nLIMIT=500\nif [ \"$LINES\" -gt \"$LIMIT\" ]; then\n  echo \"[Hook] WARNING: File $file_path has $LINES lines (limit: $LIMIT). Consider splitting or reducing.\" >&2\nfi"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "subagent_name == \"security-reviewer\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/log-security-review.sh\" ]; then\n  ./.claude/scripts/log-security-review.sh 2>&1 | head -10\nfi || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "tool == \"Read\" && tool_input.file_path matches \"errors\\\\.md$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\n./.claude/scripts/mark-errors-read.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|json|css|scss|md)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/auto-format.sh\" ]; then\n  ./.claude/scripts/auto-format.sh \"$file_path\" 2>/dev/null\nelse\n  npx prettier --write \"$file_path\" 2>/dev/null || true\nfi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"git commit\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Commit created. Consider running tests before pushing.' >&2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nnpx eslint --fix \"$file_path\" 2>/dev/null || true"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"npm install|yarn add|pnpm add\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\nif [ -f \".claude/scripts/sync-deps.sh\" ]; then\n  ./.claude/scripts/sync-deps.sh 2>&1 | head -20\nfi || true"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
+  },
   "allowedPrompts": [
     {
       "tool": "Bash",
@@ -218,140 +383,6 @@
       "prompt": "sync dependencies"
     }
   ],
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\ngrep -n 'console\\.log' \"$file_path\" 2>/dev/null && echo '[Hook] Warning: console.log detected - consider using a logger' >&2 || true"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"git push.*(main|master)\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] Pushing to main/master branch - ensure tests pass and code is reviewed!' >&2"
-          }
-        ]
-      },
-      {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(env|credentials|secret|pem|key)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] BLOCKED: Cannot write to sensitive files (.env, .pem, .key, credentials)' >&2 && exit 2"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf /\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] BLOCKED: Dangerous rm -rf / command detected!' >&2 && exit 2"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"git commit\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nif [ -f \".claude/scripts/pre-commit-checks.sh\" ]; then\n  ./.claude/scripts/pre-commit-checks.sh 2>&1 | head -50\nfi || true"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"gh pr create\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nif [ -f \".claude/scripts/require-tests-pass.sh\" ]; then\n  ./.claude/scripts/require-tests-pass.sh\nfi || true"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"npm publish|yarn publish|pnpm publish\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] Publishing package - ensure version is bumped and tests pass!' >&2"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Read\" && tool_input.file_path matches \"\\\\.mcp\\\\.json$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nENABLED=$(grep -c '\"disabled\": false' ~/.mcp.json 2>/dev/null || echo 0)\nif [ \"$ENABLED\" -gt 10 ]; then\n  echo \"[Hook] WARNING: $ENABLED MCPs enabled (max 10 recommended). Performance may degrade. Disable unused MCPs in .mcp.json\" >&2\nfi"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Read\" && tool_input.file_path matches \"\\\\.(agents|skills)/.*\\\\.md$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nLINES=$(wc -l < \"$file_path\" 2>/dev/null || echo 0)\nLIMIT=500\nif [ \"$LINES\" -gt \"$LIMIT\" ]; then\n  echo \"[Hook] WARNING: File $file_path has $LINES lines (limit: $LIMIT). Consider splitting or reducing.\" >&2\nfi"
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "matcher": "subagent_name == \"security-reviewer\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nif [ -f \".claude/scripts/log-security-review.sh\" ]; then\n  ./.claude/scripts/log-security-review.sh 2>&1 | head -10\nfi || true"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|json|css|scss|md)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nif [ -f \".claude/scripts/auto-format.sh\" ]; then\n  ./.claude/scripts/auto-format.sh \"$file_path\" 2>/dev/null\nelse\n  npx prettier --write \"$file_path\" 2>/dev/null || true\nfi"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"git commit\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] Commit created. Consider running tests before pushing.' >&2"
-          }
-        ]
-      },
-      {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nnpx eslint --fix \"$file_path\" 2>/dev/null || true"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"npm install|yarn add|pnpm add\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nif [ -f \".claude/scripts/sync-deps.sh\" ]; then\n  ./.claude/scripts/sync-deps.sh 2>&1 | head -20\nfi || true"
-          }
-        ]
-      }
-    ]
-  },
   "thinkingEnabled": true,
   "autoAcceptEdits": false
 }

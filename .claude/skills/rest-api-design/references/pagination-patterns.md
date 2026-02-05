@@ -106,7 +106,7 @@ export async function listUsers(req: Request<{}, {}, {}, PaginationQuery>, res: 
     return res.status(400).json({
       error: {
         code: 'INVALID_SORT_FIELD',
-        message: `Sort field must be one of: ${allowedSortFields.join(', ')}`
+        message: "Sort field must be one of: " + allowedSortFields.join(', ')
       }
     });
   }
@@ -119,15 +119,15 @@ export async function listUsers(req: Request<{}, {}, {}, PaginationQuery>, res: 
 
     // Get paginated data
     const users = await db.query(
-      `SELECT id, name, email, created_at as "createdAt"
-       FROM users
-       ORDER BY ${sortField} ${sortOrder}
-       LIMIT $1 OFFSET $2`,
+      "SELECT id, name, email, created_at as \"createdAt\" " +
+      "FROM users " +
+      "ORDER BY " + sortField + " " + sortOrder + " " +
+      "LIMIT $1 OFFSET $2",
       [perPage, offset]
     );
 
     const totalPages = Math.ceil(total / perPage);
-    const baseUrl = `/v1/users?perPage=${perPage}&sort=${sort}`;
+    const baseUrl = "/v1/users?perPage=" + perPage + "&sort=" + sort;
 
     return res.json({
       data: users,
@@ -140,11 +140,11 @@ export async function listUsers(req: Request<{}, {}, {}, PaginationQuery>, res: 
         hasPreviousPage: page > 1
       },
       links: {
-        first: `${baseUrl}&page=1`,
-        prev: page > 1 ? `${baseUrl}&page=${page - 1}` : null,
-        self: `${baseUrl}&page=${page}`,
-        next: page < totalPages ? `${baseUrl}&page=${page + 1}` : null,
-        last: `${baseUrl}&page=${totalPages}`
+        first: baseUrl + "&page=1",
+        prev: page > 1 ? baseUrl + "&page=" + (page - 1) : null,
+        self: baseUrl + "&page=" + page,
+        next: page < totalPages ? baseUrl + "&page=" + (page + 1) : null,
+        last: baseUrl + "&page=" + totalPages
       }
     });
   } catch (error) {
@@ -382,7 +382,7 @@ export async function listPosts(req: Request<{}, {}, {}, CursorPaginationQuery>,
       });
     }
 
-    const baseUrl = `/v1/posts?limit=${limit}`;
+    const baseUrl = "/v1/posts?limit=" + limit;
 
     return res.json({
       data,
@@ -392,8 +392,8 @@ export async function listPosts(req: Request<{}, {}, {}, CursorPaginationQuery>,
         limit
       },
       links: {
-        self: cursor ? `${baseUrl}&cursor=${req.query.cursor}` : baseUrl,
-        next: nextCursor ? `${baseUrl}&cursor=${nextCursor}` : null
+        self: cursor ? baseUrl + "&cursor=" + req.query.cursor : baseUrl,
+        next: nextCursor ? baseUrl + "&cursor=" + nextCursor : null
       }
     });
   } catch (error) {
@@ -455,7 +455,7 @@ function encodeCursor(cursor: Cursor): string {
     .update(payload)
     .digest('hex');
 
-  return Buffer.from(`${payload}.${signature}`).toString('base64');
+  return Buffer.from(payload + "." + signature).toString('base64');
 }
 
 function decodeCursor(encoded: string): Cursor | null {
@@ -599,14 +599,14 @@ export async function listUsers(req: Request, res: Response) {
   const links: string[] = [];
   const baseUrl = 'https://api.example.com/users';
 
-  links.push(`<${baseUrl}?page=1>; rel="first"`);
+  links.push("<" + baseUrl + "?page=1>; rel=\"first\"");
   if (page > 1) {
-    links.push(`<${baseUrl}?page=${page - 1}>; rel="prev"`);
+    links.push("<" + baseUrl + "?page=" + (page - 1) + ">; rel=\"prev\"");
   }
   if (page < totalPages) {
-    links.push(`<${baseUrl}?page=${page + 1}>; rel="next"`);
+    links.push("<" + baseUrl + "?page=" + (page + 1) + ">; rel=\"next\"");
   }
-  links.push(`<${baseUrl}?page=${totalPages}>; rel="last"`);
+  links.push("<" + baseUrl + "?page=" + totalPages + ">; rel=\"last\"");
 
   res.set('Link', links.join(', '));
 

@@ -2,7 +2,6 @@
 name: doc-updater
 description: Synchronizes documentation with code changes to keep docs accurate
 model: haiku
-tools: [Read, Edit, Write, Grep, Glob, Bash]
 skills:
   - documentation-patterns
   - project-guidelines
@@ -101,8 +100,20 @@ Synchronize documentation with code changes. Keep docs current and accurate.
 - Documentation Patterns: `.claude/skills/documentation-patterns/`
 - Project Guidelines: `.claude/skills/project-guidelines/`
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query documentation standards and markdown best practices
+- **github**: Update README and documentation files in repository
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/doc-updater.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

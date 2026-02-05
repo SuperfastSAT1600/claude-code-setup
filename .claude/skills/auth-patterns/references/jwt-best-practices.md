@@ -170,7 +170,7 @@ const jwt = await new jose.EncryptJWT({ userId: user.id, email: user.email })
 // Server configuration
 app.use((req, res, next) => {
   if (!req.secure && process.env.NODE_ENV === 'production') {
-    return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    return res.redirect(301, "https://" + req.headers.host + req.url);
   }
   next();
 });
@@ -498,12 +498,12 @@ JWTs are stateless by design - once issued, they're valid until expiration. Revo
 ```typescript
 // Revoke token
 async function revokeToken(jti: string) {
-  await redis.set(`blacklist:${jti}`, '1', 'EX', 900); // Expire after token lifetime
+  await redis.set("blacklist:" + jti, '1', 'EX', 900); // Expire after token lifetime
 }
 
 // Check if token is revoked
 async function isTokenRevoked(jti: string): Promise<boolean> {
-  const revoked = await redis.get(`blacklist:${jti}`);
+  const revoked = await redis.get("blacklist:" + jti);
   return revoked !== null;
 }
 

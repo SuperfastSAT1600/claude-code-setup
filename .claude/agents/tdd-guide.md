@@ -2,7 +2,6 @@
 name: tdd-guide
 description: Coaches developers through Test-Driven Development Red-Green-Refactor cycle
 model: sonnet
-tools: [Bash, Read, Edit, Write, Grep, Glob]
 skills:
   - tdd-workflow
   - coding-standards
@@ -48,8 +47,20 @@ Guide developers through Test-Driven Development using Red-Green-Refactor discip
 
 Works with unit-test-writer for test patterns. Reports to orchestrator after each cycle completion.
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query testing framework documentation and TDD best practices
+- **memory**: Store test patterns and TDD workflow examples
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/tdd-guide.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

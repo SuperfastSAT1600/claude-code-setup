@@ -2,7 +2,6 @@
 name: migration-specialist
 description: Design and execute safe database migrations and data transformations
 model: sonnet
-tools: Read, Write, Grep, Glob, Bash
 skills:
   - database-patterns
   - backend-patterns
@@ -58,8 +57,21 @@ Plan, design, and execute database schema migrations and data transformations wi
 - Hotfix Checklist: `.claude/checklists/hotfix-checklist.md`
 - Migration Template: `.claude/templates/migration.sql.template`
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **supabase**: List migrations, apply migrations, and query schema changes
+- **context7**: Query migration library documentation and rollback patterns
+- **memory**: Store migration strategies and rollback procedures
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/migration-specialist.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

@@ -115,7 +115,7 @@ async function main() {
   const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT'];
   signals.forEach(signal => {
     process.on(signal, async () => {
-      logger.info(`Received ${signal}, shutting down gracefully`);
+      logger.info("Received " + signal + ", shutting down gracefully");
       // Supabase client cleanup if needed
       process.exit(0);
     });
@@ -123,7 +123,7 @@ async function main() {
 
   // Start server
   app.listen(config.server.port, () => {
-    logger.info(`Server running on port ${config.server.port}`);
+    logger.info("Server running on port " + config.server.port);
   });
 }
 

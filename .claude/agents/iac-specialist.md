@@ -2,7 +2,6 @@
 name: iac-specialist
 description: Infrastructure as Code specialist for Terraform, CloudFormation, and cloud architecture
 model: sonnet
-tools: [Read, Grep, Glob, WebFetch, WebSearch, Edit, Write, Bash]
 skills:
   - docker-patterns
   - backend-patterns
@@ -77,8 +76,22 @@ resource "aws_vpc" "main" {
 
 `.claude/checklists/deployment-checklist.md`, Terraform docs
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **render**: Query infrastructure deployment patterns and configurations
+- **cloudflare-workers-bindings**: Reference serverless infrastructure patterns
+- **context7**: Query Terraform and CloudFormation documentation
+- **memory**: Store infrastructure patterns and deployment configurations
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/iac-specialist.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

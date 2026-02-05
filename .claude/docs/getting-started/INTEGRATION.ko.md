@@ -82,13 +82,19 @@ cp ../claude-code-setup/setup.cjs .
 cp -r ../claude-code-setup/lib/ .
 
 # MCP 템플릿 복사 (선택 사항)
-cp ../claude-code-setup/.mcp.template.json .
+# (MCP 템플릿은 위의 .claude/ 복사에 이미 포함되어 있습니다)
 
 # 온보딩 문서들 복사
-cp ../claude-code-setup/INTEGRATION.ko.md .
-cp ../claude-code-setup/TEMPLATE-SETUP.ko.md .
 cp ../claude-code-setup/README.ko.md .
-cp ../claude-code-setup/WORKFLOW.ko.md .
+
+cp -r ../claude-code-setup/.claude/ .
+cp ../claude-code-setup/CLAUDE.md .
+cp ../claude-code-setup/setup.cjs .
+cp -r ../claude-code-setup/lib/ .
+# (MCP 템플릿은 위의 .claude/ 복사에 이미 포함되어 있습니다)
+
+
+
 ```
 
 **옵션 B를 사용한 경우**, `../claude-code-setup/`를 `/tmp/claude-code-setup/`로 바꾸세요:
@@ -312,15 +318,37 @@ node setup.cjs
 
 ---
 
+## 시스템 업데이트
+
+나중에 `.claude/` 시스템을 업데이트하려면 사용자 데이터를 보존하면서 안전하게 업데이트할 수 있습니다:
+
+```bash
+# 업데이트 스크립트 실행
+./.claude/scripts/update-system.sh
+```
+
+**보존되는 항목:**
+- `.claude/user/changelog.md` - 자동 치유 기록 (50+ 항목)
+- `.claude/user/errors.md` - 오류 로그
+- `.claude/user/custom/` - 사용자 정의 에이전트/스킬/명령어
+- `.claude/settings.local.json` - 로컬 구성
+
+**업데이트되는 항목:**
+- 시스템 에이전트, 스킬, 규칙, 명령어, 워크플로우, 템플릿
+
+스크립트는 업데이트 전에 타임스탬프가 있는 백업을 생성합니다. 자세한 내용은 `.claude/user/README.md`를 참조하세요.
+
+---
+
 ## 다음 단계
 
-1. [WORKFLOW.md](WORKFLOW.md) 읽기 - 완전한 워크플로우 가이드
+1. [../guides/WORKFLOW.ko.md](../guides/WORKFLOW.ko.md) 읽기 - 완전한 워크플로우 가이드
 2. `/full-feature` 시도 - Claude로 첫 번째 기능 빌드
 3. 변경 사항 커밋: `git add .claude/ CLAUDE.md && git commit -m "Add Claude Code"`
 
 ---
 
 **도움이 필요하신가요?**
-- 템플릿 설정: [TEMPLATE-SETUP.md](TEMPLATE-SETUP.md)
+- 템플릿 설정: [../README.md](../README.md)
 - 메인 README: [README.md](README.md)
 - 이슈: https://github.com/YOUR-ORG/claude-code-setup/issues

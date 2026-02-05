@@ -135,7 +135,7 @@ const resolvers = {
         { authorId }: { authorId?: string },
         { pubsub }: Context
       ) => {
-        const topic = authorId ? `POST_ADDED_${authorId}` : 'POST_ADDED';
+        const topic = authorId ? "POST_ADDED_" + authorId : 'POST_ADDED';
         return pubsub.asyncIterator([topic]);
       },
     },
@@ -203,7 +203,7 @@ Query: {
 // 2. For EACH post, Post.author is called
 Post: {
   author: async (parent: Post, _args, { loaders }): Promise<User> => {
-    console.log(`Post.author called for post ${parent.id}`);
+    console.log("Post.author called for post " + parent.id);
     // Without DataLoader: N queries (1 per post)
     // With DataLoader: 1 batched query
     return loaders.userLoader.load(parent.authorId);

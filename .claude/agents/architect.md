@@ -2,7 +2,7 @@
 name: architect
 description: Senior software architect for evaluating technical decisions and architectural patterns
 model: opus
-tools: Read, Grep, Glob
+disallowedTools: [Edit, Write]
 skills:
   - project-guidelines
   - backend-patterns
@@ -98,8 +98,25 @@ If app grows significantly:
 
 Remember: Best architecture depends on context. There's no one-size-fits-all solution.
 
+## Resource Checklist
+
+- Store all architectural decisions in Memory (state management, API design, deployment strategy)
+- Search Memory for past architectural patterns before recommending new approaches
+
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query library documentation and API references for technology evaluation
+- **memory**: Store and retrieve architectural decisions and patterns
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/architect.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config

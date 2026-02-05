@@ -84,7 +84,7 @@ strategy:
   matrix:
     node: [18, 20, 22]
     os: [ubuntu-latest, windows-latest]
-runs-on: ${{ matrix.os }}
+runs-on: ubuntu-latest  # Or use matrix.os variable
 ```
 
 **Reference:** https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
@@ -107,7 +107,7 @@ Cache node_modules, pip packages, or build outputs. Setup actions include built-
 - uses: actions/cache@v4
   with:
     path: ~/.npm
-    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+    key: OS-node-HASH  # Use: runner.os and hashFiles() variables
 ```
 
 **Reference:** https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows
@@ -120,7 +120,7 @@ Store sensitive data in repository/environment/organization secrets. Automatical
 
 ```yaml
 steps:
-  - run: echo "${{ secrets.API_KEY }}"
+  - run: echo "API_KEY_VALUE"  # Use secrets.API_KEY variable
 ```
 
 **OIDC for cloud providers** (preferred over static credentials):

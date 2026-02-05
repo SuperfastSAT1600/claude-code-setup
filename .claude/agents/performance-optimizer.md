@@ -2,7 +2,7 @@
 name: performance-optimizer
 description: Profile and optimize application performance bottlenecks
 model: sonnet
-tools: Read, Grep, Glob, Bash
+disallowedTools: [Edit, Write]
 skills:
   - backend-patterns
   - frontend-patterns
@@ -56,8 +56,21 @@ Profile, analyze, and optimize application performance across frontend, backend,
 - Backend Patterns: `.claude/skills/backend-patterns/`
 - React Hook Template: `.claude/templates/variants/react/hook.ts.template` (for performance hooks like useMemo, useCallback)
 
+## Recommended MCPs
+
+Before starting work, use ToolSearch to load these MCP servers if needed:
+
+- **context7**: Query performance optimization patterns and profiling tools
+- **memory**: Retrieve past optimization strategies and performance benchmarks
+- **cloudflare-observability**: Query worker performance metrics if optimizing edge functions
+
 ## Error Log
 
-Agent: append here when you make a mistake so it never repeats.
+**Location**: `.claude/user/agent-errors/performance-optimizer.md`
 
-(empty list - no errors yet)
+Before starting work, read the error log to avoid known issues. Log ALL failures encountered during tasks using the format:
+```
+- [YYYY-MM-DD] [category] Error: [what] | Correct: [how]
+```
+
+Categories: tool, code, cmd, context, agent, config
