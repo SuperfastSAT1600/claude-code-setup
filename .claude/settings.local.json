@@ -93,7 +93,13 @@
       "mcp__filesystem__read_multiple_files",
       "mcp__filesystem__read_text_file",
       "Bash(du:*)",
-      "Skill(commit-push-pr)"
+      "Skill(commit-push-pr)",
+      "mcp__filesystem__list_allowed_directories",
+      "mcp__filesystem__search_files",
+      "Bash(./.claude/scripts/detect-error-patterns.sh:*)",
+      "Bash(./.claude/scripts/mark-mcp-used.sh:*)",
+      "Bash(python3:*)",
+      "Bash(__NEW_LINE_f574cdaeb39b6a5f__ echo \"\")"
     ]
   },
   "model": "sonnet",
