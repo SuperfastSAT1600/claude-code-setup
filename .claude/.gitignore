@@ -4,6 +4,9 @@ user/errors.md
 user/agent-errors/*.md
 user/custom/**
 user/.errors-read-marker
+user/.mcp-markers.json
+user/.mcp-*-marker
+user/.skills-marker
 
 # Local settings
 settings.local.json
