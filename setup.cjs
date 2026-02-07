@@ -1,23 +1,25 @@
 #!/usr/bin/env node
 
 /**
- * Cross-Platform Project Setup Script
+ * Cross-Platform Project Setup Script (MCP-Only)
  *
- * This script configures the project for your operating system and preferences.
+ * This script configures the project using ONLY Model Context Protocol (MCP) servers.
  * Run with: node setup.cjs
  *
  * Features:
  * - Platform detection (Windows/macOS/Linux)
- * - GitHub setup (REQUIRED): git identity, GitHub CLI, authentication, PAT
- * - Supabase setup (REQUIRED): CLI, authentication, project linking, API credentials
- * - Slack MCP setup (REQUIRED): Bot token, Team ID for PR notifications
- * - Vercel setup (OPTIONAL): CLI, authentication, project linking, API token
- * - Claude Code CLI installation
- * - MCP server configuration with correct commands
- * - API key collection (securely stored in gitignored files)
- * - Prerequisites checking
+ * - Prerequisites checking (git, node, npm only - NO CLIs)
+ * - MCP server configuration (GitHub, Supabase, Slack, etc.)
+ * - API credential collection for MCP servers
  * - Environment file setup
+ * - Claude Code installation
  * - Optional dependency installation
+ *
+ * What's NOT included (MCP-only approach):
+ * - NO GitHub CLI installation or authentication
+ * - NO Supabase CLI installation or authentication
+ * - NO Vercel CLI installation
+ * - All interactions happen through MCP servers
  */
 
 // =============================================================================
@@ -72,8 +74,6 @@ const { color, log, header } = require('./lib/ui.cjs');
 const { getPlatformInfo } = require('./lib/platform.cjs');
 const { checkPrerequisites } = require('./lib/prerequisites.cjs');
 const { ask, askYesNo } = require('./lib/input.cjs');
-const { setupGitHub } = require('./lib/github.cjs');
-const { setupSupabase } = require('./lib/supabase.cjs');
 const { setupClaudeCode } = require('./lib/claude-code.cjs');
 const { configureAutoOpenLocalhost } = require('./lib/localhost.cjs');
 const { configureMcpServers } = require('./lib/mcp.cjs');
@@ -82,6 +82,7 @@ const { createDirectories, createConfigFiles, updateGitignore } = require('./lib
 const { setupPackageJson, installDependencies } = require('./lib/dependencies.cjs');
 const { showSummary } = require('./lib/summary.cjs');
 const { setupClaudeMd } = require('./lib/claude-md.cjs');
+// Note: GitHub and Supabase setup removed - using MCP-only approach
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -128,54 +129,43 @@ async function continueSetup(platformInfo, prereqs, results) {
   // Step 1: Tech Stack Detection & CLAUDE.md Setup
   results.claudeMd = await setupClaudeMd(null);
 
-  // Step 2: GitHub Setup (REQUIRED)
-  results.github = await setupGitHub(null, platformInfo);
-
-  // Step 3: Supabase Setup (REQUIRED)
-  results.supabase = await setupSupabase(null, platformInfo);
-
-  // Step 4: Claude Code Installation
-  results.claudeCode = await setupClaudeCode(null, platformInfo);
-
-  // Step 5: Auto-open localhost configuration
-  results.localhost = await configureAutoOpenLocalhost(null);
-
-  // Step 6: MCP Configuration
+  // Step 2: MCP Configuration (CORE STEP - replaces CLI-based setup)
+  // This collects all API credentials and configures MCP servers
   results.mcp = await configureMcpServers(
     null,
     platformInfo,
-    results.github || null,
-    results.supabase || null,
-    null  // No Vercel token - it can be configured in MCP step if needed
+    null, // No GitHub CLI config
+    null, // No Supabase CLI config
+    null  // No Vercel config - all done via MCP
   );
 
-  // Step 7: Environment Files
+  // Step 3: Claude Code Installation
+  results.claudeCode = await setupClaudeCode(null, platformInfo);
+
+  // Step 4: Auto-open localhost configuration
+  results.localhost = await configureAutoOpenLocalhost(null);
+
+  // Step 5: Environment Files
   const collectedEnvVars = {};
-  if (results.github?.token) {
-    collectedEnvVars.GITHUB_PERSONAL_ACCESS_TOKEN = results.github.token;
-  }
-  if (results.supabase?.credentials) {
-    Object.assign(collectedEnvVars, results.supabase.credentials);
-  }
   if (results.mcp?.collectedEnvVars) {
     Object.assign(collectedEnvVars, results.mcp.collectedEnvVars);
   }
 
   results.env = await setupEnvironmentFiles(null, collectedEnvVars);
 
-  // Step 8: Create Directories
+  // Step 6: Create Directories
   results.directories = createDirectories();
 
-  // Step 9: Create Config Files
+  // Step 7: Create Config Files
   results.configFiles = createConfigFiles();
 
-  // Step 10: Update .gitignore
+  // Step 8: Update .gitignore
   results.gitignore = updateGitignore();
 
-  // Step 11: Package.json Setup
+  // Step 9: Package.json Setup
   results.packageJson = await setupPackageJson(null);
 
-  // Step 12: Install Dependencies
+  // Step 10: Install Dependencies
   // Always offer to install, whether package.json was created, updated, or existed
   if (results.packageJson?.created || results.packageJson?.updated || results.packageJson?.exists) {
     results.dependencies = await installDependencies(null, prereqs.packageManagers);
