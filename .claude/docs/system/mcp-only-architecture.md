@@ -24,7 +24,7 @@ This template uses **ONLY Model Context Protocol (MCP) servers** for all externa
 | Service | MCP Type | Authentication | Setup |
 |---------|----------|----------------|-------|
 | **GitHub** | Process (npx) | Personal Access Token | https://github.com/settings/tokens |
-| **Supabase** | HTTP | Project Reference + OAuth | https://supabase.com/dashboard |
+| **Supabase** | HTTP | OAuth (via `claude /mcp`) | Project ref in URL, then authenticate |
 | **Slack** | Process (npx) | Bot Token + Team ID | https://api.slack.com/apps |
 | **Render** | HTTP | API Key | https://dashboard.render.com/account/settings |
 | **Cloudflare** | HTTP | API Token | https://dash.cloudflare.com/profile/api-tokens |
@@ -86,12 +86,13 @@ All credentials are stored in `.mcp.json` (gitignored):
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=abcdefghijklmnopqr",
-      "env": {},
       "disabled": false
     }
   }
 }
 ```
+
+**Note**: Supabase HTTP MCP has no `env` object - authentication happens via OAuth through `claude /mcp`.
 
 **Security**:
 - ✅ File is gitignored (never committed)
