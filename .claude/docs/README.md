@@ -15,6 +15,7 @@ Complete guide to using and customizing this Claude Code workflow template.
 - **[Workflow Guide (Korean)](guides/WORKFLOW.ko.md)** - 전체 워크플로우 가이드 (한국어)
 
 ### System Documentation
+- **[MCP-Only Architecture](system/mcp-only-architecture.md)** - Understanding the MCP-only approach (no CLI tools)
 - **[Error Verification System](system/error-verification-system.md)** - Hook-based error logging enforcement
 - **[Slack Notifications](system/slack-notifications.md)** - Slack MCP integration setup
 
