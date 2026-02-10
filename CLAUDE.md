@@ -65,11 +65,8 @@ supabase/              # Supabase project config
 
 > ⚠️ **CUSTOMIZE THIS SECTION** - List approved and forbidden dependencies
 
-**Approved**: {{APPROVED_DEPS}}
-<!-- Example: date-fns, zod, react-hook-form, @tanstack/react-query -->
-
-**Forbidden**: {{FORBIDDEN_DEPS}}
-<!-- Example: moment.js, full lodash (use lodash-es with specific imports) -->
+**Forbidden**: moment.js, full lodash
+<!-- Add your forbidden dependencies here -->
 
 ---
 
