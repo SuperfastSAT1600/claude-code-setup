@@ -18,9 +18,8 @@
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=YOUR_PROJECT_REF_HERE",
-      "env": {},
       "disabled": true,
-      "description": "⭐ RECOMMENDED: Supabase database operations, auth, and storage. Get project_ref from https://supabase.com/dashboard/project/_/settings/api"
+      "description": "⭐ RECOMMENDED: Supabase database operations, auth, and storage. Authenticate via 'claude /mcp' after setup. Get project_ref from https://supabase.com/dashboard/project/_/settings/api"
     },
     "memory": {
       "command": "npx",
