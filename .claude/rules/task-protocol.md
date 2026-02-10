@@ -12,6 +12,10 @@ For detailed guidance on error categories, pattern detection, and enhancement tr
 - Main agent: `.claude/user/errors.md`
 - Subagents: Also read `.claude/user/agent-errors/{your-name}.md`
 
+**Read PRD for core feature work** (MANDATORY when touching product behavior):
+- Read `docs/PRD.md` to understand product scope, architecture, and success metrics
+- Especially important for: new features, architectural changes, workflow modifications, agent/skill additions
+
 **Check Skills** (MANDATORY):
 - Identify relevant skills for the task domain
 - Load ALL applicable skills before starting work
@@ -175,7 +179,7 @@ Subagents **report** errors and fixes in their response (main agent logs them):
 ## Quick Reference
 
 ```
-INIT:    Read errors.md (subagents: also agent-errors/{name}.md) + CHECK SKILLS
+INIT:    Read errors.md (subagents: also agent-errors/{name}.md) + READ PRD (core features) + CHECK SKILLS
 PRE:     Parallelizable? [YES/NO]
 DURING:  Error occurs? → STOP → LOG → VERIFY → THEN continue (BLOCKING)
          Note system observations mentally

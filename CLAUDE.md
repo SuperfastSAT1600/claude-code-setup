@@ -18,35 +18,45 @@ Project-specific configuration for Claude Code. For mandatory protocols, see `.c
 
 ---
 
+## Domain Knowledge
+
+> **Must-read before working on core features.**
+
+- **PRD**: `docs/PRD.md` — product scope, architecture, agent/skill inventory, workflow patterns, and success metrics
+
+---
+
 ## Tech Stack
 
-**Frontend**: {{FRONTEND_STACK}}
-<!-- Example: React 18+, Next.js 14+ (App Router), TypeScript 5+, Tailwind CSS -->
-
-**Backend**: {{BACKEND_STACK}}
-<!-- Example: Node.js 20+, Supabase (PostgreSQL, Auth, Storage, Real-time) -->
-
-**Testing**: {{TESTING_STACK}}
-<!-- Example: Vitest, Playwright, React Testing Library -->
-
-**DevOps**: {{DEVOPS_STACK}}
-<!-- Example: Docker, GitHub Actions, Vercel -->
+**Runtime**: Node.js (CommonJS modules via `.cjs`)
+**Language**: JavaScript (with TypeScript tooling for downstream projects)
+**CLI Framework**: enquirer (interactive prompts)
+**AI Services**: Claude Code CLI, MCP servers (Slack, GitHub, Filesystem, Render, Cloudflare, Context7, Magic UI, Memory, Supabase)
+**Linting/Formatting**: ESLint, Prettier, TypeScript
+**Platform**: Cross-platform (Windows/MINGW64, macOS, Linux)
 
 ---
 
 ## Project Structure
 
-> ⚠️ **CUSTOMIZE THIS SECTION** - Update to match your project
-
 ```
-src/
-├── app/           # Application pages/routes
-├── components/    # Reusable components
-├── features/      # Feature modules
-├── lib/           # Third-party integrations
-├── hooks/         # Custom hooks (if applicable)
-├── utils/         # Utility functions
-└── types/         # TypeScript types
+setup.cjs              # Interactive setup wizard (entry point)
+lib/                   # Setup modules (platform, mcp, config, env, etc.)
+docs/                  # Product documentation (PRD.md)
+supabase/              # Supabase project config
+.claude/
+├── agents/            # 34 specialist agent definitions + INDEX.md
+├── commands/          # User-invocable slash commands
+├── skills/            # Domain pattern references (20+ skills)
+├── rules/             # Mandatory protocols (coding-standards, task-protocol, etc.)
+├── templates/         # Code scaffolding templates (React, Next.js, generic)
+├── workflows/         # Multi-step orchestrated processes
+├── checklists/        # Quality review checklists (13)
+├── scripts/           # Hook scripts (pre-commit, auto-format, etc.)
+├── docs/              # Internal system documentation
+├── user/              # Per-user data (errors, changelog, custom) [gitignored]
+├── settings.json      # Shared Claude Code settings
+└── settings.local.json # Local overrides [gitignored]
 ```
 
 ---
@@ -93,4 +103,4 @@ cd your-project
 
 ---
 
-**Last Updated**: 2026-02-03
+**Last Updated**: 2026-02-09
