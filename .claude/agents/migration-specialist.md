@@ -21,12 +21,34 @@ Plan, design, and execute database schema migrations and data transformations wi
 
 ## Approach
 
+**STEP 0 (MANDATORY - BLOCKING REQUIREMENT)**:
+```sql
+-- ALWAYS query actual schema BEFORE writing any migration/seeder
+SELECT
+  table_name,
+  column_name,
+  data_type,
+  is_nullable,
+  column_default
+FROM information_schema.columns
+WHERE table_schema = 'public'
+ORDER BY table_name, ordinal_position;
+```
+
+**NEVER assume table/column names. NEVER infer from code. ALWAYS verify schema first.**
+
+Then proceed:
+
 1. **Plan**: Document goal, impact analysis, risk assessment, dependencies, rollback strategy
 2. **Design Migration**: Write up script (schema changes), down script (rollback), validation queries
 3. **Test on Staging**: Run migration on production-like data, measure duration, verify rollback works
-4. **Execute**: Run migration in transaction (if possible), monitor metrics, watch for locks
+4. **Deploy**: Automatically apply migration (`supabase db push` for Supabase projects) unless approval needed
 5. **Validate**: Check data integrity, verify application functionality, monitor performance
 6. **Document**: Record changes, keep rollback script for 1 week
+
+**IMPORTANT**:
+- Deploy migrations automatically. Don't just create files and tell users to deploy.
+- If you write ANY migration/seeder without querying information_schema first, STOP and log error.
 
 ## Key Patterns
 

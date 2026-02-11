@@ -34,6 +34,24 @@ For detailed guidance on error categories, pattern detection, and enhancement tr
 
 ## Phase 1: PRE-TASK
 
+### Delegation Check (MANDATORY)
+
+**Question**: Does this task require a specialist?
+
+Check the **Mandatory Delegation Checklist** in `orchestration.md`:
+- Database work? → `database-architect` or `migration-specialist`
+- API design? → `api-designer` or `graphql-specialist`
+- Auth? → `auth-specialist`
+- Security review? → `security-reviewer`
+- Testing? → `unit-test-writer`, `integration-test-writer`, `e2e-runner`
+- Infrastructure? → `docker-specialist`, `ci-cd-specialist`
+- Code review? → `code-reviewer`
+- Performance? → `performance-optimizer`
+
+**If specialist exists for task domain: MUST DELEGATE. Do NOT do specialist work yourself.**
+
+Exception: Task is <10 lines, no domain knowledge needed, follows existing patterns.
+
 ### Parallelization Analysis
 
 **Question**: Can this be parallelized?

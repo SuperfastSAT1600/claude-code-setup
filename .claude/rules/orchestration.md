@@ -80,25 +80,67 @@ Task(security-reviewer) → wait → Task(code-reviewer) → wait...
 
 ---
 
-## When to Delegate
+## When to Delegate (MANDATORY)
 
-### Delegate for Speed (parallel work)
-- Multiple independent features can be built simultaneously
-- Large task can be split across multiple agents
-- General agents can handle parts while main agent handles others
+**CRITICAL**: If a specialist agent exists for the task domain, you MUST delegate. Do NOT do specialist work yourself.
 
-### Delegate for Expertise (specialized knowledge)
-- **Architecture**: architect, planner
-- **Auth**: auth-specialist (OAuth, JWT, MFA)
-- **Database**: database-architect (schemas, migrations)
-- **API**: api-designer (REST, OpenAPI), graphql-specialist
-- **Real-time**: websocket-specialist
-- **Security**: security-reviewer
-- **Testing**: tdd-guide, unit-test-writer, e2e-runner, integration-test-writer
-- **Performance**: performance-optimizer
-- **Operations**: ci-cd-specialist, docker-specialist, migration-specialist
-- **Quality**: code-reviewer, accessibility-auditor
-- **Refactoring**: refactor-cleaner, code-simplifier
+### Mandatory Delegation Checklist
+
+Before starting ANY task, ask yourself:
+
+1. **Database work?** (schema, migration, seeder, query optimization)
+   - ✅ MUST delegate to: `database-architect` or `migration-specialist`
+   - ❌ NEVER: Write schema/migration/seeder yourself
+
+2. **API design?** (REST endpoints, OpenAPI spec, GraphQL schema)
+   - ✅ MUST delegate to: `api-designer` or `graphql-specialist`
+   - ❌ NEVER: Design API yourself
+
+3. **Auth implementation?** (OAuth, JWT, MFA, session management)
+   - ✅ MUST delegate to: `auth-specialist`
+   - ❌ NEVER: Implement auth yourself
+
+4. **Security review?** (vulnerability scan, OWASP check)
+   - ✅ MUST delegate to: `security-reviewer`
+   - ❌ NEVER: Do security review yourself
+
+5. **Testing?** (unit tests, integration tests, e2e tests)
+   - ✅ MUST delegate to: `unit-test-writer`, `integration-test-writer`, `e2e-runner`
+   - ❌ NEVER: Write comprehensive tests yourself
+
+6. **Infrastructure?** (Docker, CI/CD, deployment)
+   - ✅ MUST delegate to: `docker-specialist`, `ci-cd-specialist`, `iac-specialist`
+   - ❌ NEVER: Set up infrastructure yourself
+
+7. **Code review?** (quality check, pattern review)
+   - ✅ MUST delegate to: `code-reviewer`
+   - ❌ NEVER: Review code yourself
+
+8. **Performance optimization?** (profiling, bottleneck analysis)
+   - ✅ MUST delegate to: `performance-optimizer`
+   - ❌ NEVER: Optimize without profiling
+
+### Delegation Error
+
+If you catch yourself doing specialist work:
+1. STOP immediately
+2. Log error to `.claude/user/errors.md`
+3. Delegate to appropriate specialist
+4. Use their output
+
+### Simple Task Exception
+
+ONLY do it yourself if ALL of these are true:
+- Task is <10 lines of code
+- No specialized domain knowledge required
+- Follows existing patterns exactly
+- No architecture decisions needed
+
+Examples of "simple enough":
+- Add a console.log
+- Fix a typo
+- Update a string constant
+- Add a simple prop to existing component
 
 ---
 
@@ -312,6 +354,53 @@ User: "Build e-commerce checkout"
 3. Integrate all parts
 4. PARALLEL: unit-test-writer + e2e-runner + doc-updater
 ```
+
+---
+
+## Deployment Protocol (MANDATORY)
+
+**Principle**: Deploy changes automatically. Don't just instruct users to deploy.
+
+### When to Deploy
+
+After completing these changes, **automatically deploy**:
+- Database migrations (Supabase: `supabase db push`)
+- Edge functions (Supabase: `supabase functions deploy <name>`)
+- Schema changes (Supabase: `supabase db push`)
+- Environment variable updates (inform user to update via dashboard)
+
+### How to Deploy
+
+```
+1. Make changes (migration, function, etc.)
+2. Test locally if possible
+3. Deploy automatically using appropriate command
+4. Verify deployment succeeded
+5. Report status to user
+```
+
+### Example Workflow
+
+```
+WRONG:
+- Create migration file
+- Tell user: "Run supabase db push to deploy"
+
+CORRECT:
+- Create migration file
+- Run: supabase db push
+- Verify: Check migration applied
+- Report: "Migration deployed successfully"
+```
+
+### Exceptions (Don't Auto-Deploy)
+
+- Production deployments requiring approval
+- Destructive operations (DROP TABLE, etc.)
+- Changes with business impact requiring sign-off
+- First-time Supabase setup (link project first)
+
+In these cases, clearly state why approval is needed.
 
 ---
 

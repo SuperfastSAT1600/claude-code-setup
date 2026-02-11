@@ -41,7 +41,9 @@ You are about to commit changes, push to remote, and create a pull request. Foll
    - If already tracking, use: `git push`
 
 5. **Create Pull Request**
-   - Use `gh pr create` command
+   - Check if `develop` branch exists on remote: `git ls-remote --heads origin develop`
+   - If `develop` exists: `gh pr create --base develop`
+   - If `develop` does not exist: `gh pr create --base main`
    - Title should be clear and descriptive
    - Body should include:
      - **Summary**: 1-3 bullet points of what changed
@@ -107,8 +109,9 @@ EOF
 # Push
 git push -u origin feature/button-hover
 
-# Create PR
-gh pr create --title "Add hover animation to Button component" --body "$(cat <<'EOF'
+# Create PR (target develop if it exists, otherwise main)
+git ls-remote --heads origin develop  # check if develop exists
+gh pr create --base develop --title "Add hover animation to Button component" --body "$(cat <<'EOF'
 ## Summary
 - Added CSS transition for hover state
 - Improved accessibility with focus indicators
