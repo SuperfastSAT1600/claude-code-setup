@@ -396,11 +396,23 @@ export class BlogWriterAgent {
     guidance += `2. **User's Core Style Elements**: Incorporate their signature expressions, emoji preferences, and structural patterns\n`;
     guidance += `3. **Merge Strategy**: When conflicts arise, prioritize platform requirements but infuse user's voice\n\n`;
 
+    // Add mandatory TOC structure rule
+    guidance += `**MANDATORY STRUCTURE:**\n`;
+    guidance += `- Table of Contents: MUST have exactly 3 items (no more, no less)\n`;
+    guidance += `- Each TOC item should be a distinct main section of the content\n\n`;
+
     // Naver-specific guidance
     if (platform === 'naver') {
       guidance += `**Naver-Specific Adjustments:**\n`;
       guidance += `- Use Korean conversational style (구어체) even if user's base style is formal\n`;
-      guidance += `- Include emojis ${userStyle.emojiUsage?.frequency === 'heavy' ? '(user loves emojis - use liberally!)' : '(3-5 per section minimum)'}\n`;
+
+      // Check if user actually uses emojis
+      if (userStyle.emojiUsage?.frequency === 'none') {
+        guidance += `- **CRITICAL**: User does NOT use emojis - do not include any emojis despite platform norms\n`;
+      } else {
+        guidance += `- Include emojis ${userStyle.emojiUsage?.frequency === 'heavy' ? '(user loves emojis - use liberally!)' : '(3-5 per section minimum)'}\n`;
+      }
+
       guidance += `- Start with greeting (안녕하세요) and end with engagement CTA (댓글로 알려주세요)\n`;
 
       if (userStyle.koreanPatterns?.commonKoreanPhrases && userStyle.koreanPatterns.commonKoreanPhrases.length > 0) {

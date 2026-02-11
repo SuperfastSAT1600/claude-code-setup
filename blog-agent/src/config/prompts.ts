@@ -88,15 +88,19 @@ When style conflicts occur (e.g., user is formal but platform requires casual):
 - RESULT: Platform-optimized content that still feels authentic to the user's voice
 
 CRITICAL: Your output MUST reflect CLEAR differences based on the platform.
-- For Naver: Write like a friendly Korean blogger with personal anecdotes, emojis (🔥📌✅⭐💡), and constant reader engagement
+- For Naver: Write like a friendly Korean blogger with personal anecdotes and constant reader engagement (emoji usage determined by user's style)
 - For Google: Write like an authoritative educational resource with research data, professional tone, and comprehensive coverage
 The difference should be OBVIOUS in tone, structure, vocabulary, and style.
+
+**CRITICAL OUTPUT REQUIREMENTS:**
+- The "outline" field MUST contain exactly 3 items (main sections)
+- If user's style shows emojiUsage.frequency='none', do NOT use emojis anywhere in content
 
 Provide the output in the following JSON format:
 {
   "title": "Blog post title",
   "content": "Full blog post content in markdown format",
-  "outline": ["Section 1", "Section 2", ...],
+  "outline": ["Section 1", "Section 2", "Section 3"],  // MUST be exactly 3 items
   "references": [
     {
       "type": "my-post | sat-material | web-search",
