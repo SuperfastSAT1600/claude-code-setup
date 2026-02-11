@@ -17,7 +17,7 @@ Commands differ from agents:
 
 ---
 
-## Available Commands (21 Total)
+## Available Commands (22 Total)
 
 ### Workflow Orchestration
 
@@ -231,6 +231,45 @@ Commands differ from agents:
 
 ---
 
+### System Maintenance
+
+#### [`health-check.md`](health-check.md)
+**Usage**: `/health-check`
+
+**Purpose**: Run comprehensive audit of .claude/ system configuration
+
+**What It Does**:
+- Executes static checks on system files
+- Validates file references and structure
+- Checks for contradictions and staleness
+- Reports findings with proposed fixes
+
+**Duration**: 2-5 minutes
+
+---
+
+#### [`update-system.md`](update-system.md)
+**Usage**: `/update-system`
+
+**Purpose**: Update .claude/ system files from upstream repository
+
+**What It Does**:
+- Validates upstream source exists
+- Creates timestamped backup
+- Updates agents, skills, rules, commands, workflows, templates
+- Preserves all user data and local settings
+- Handles structural migrations automatically
+- Verifies update success
+
+**Duration**: 30 seconds - 2 minutes
+
+**Example**:
+```
+/update-system    # Update system from ../claude-code-setup
+```
+
+---
+
 ### Testing & Verification
 
 #### [`tdd.md`](tdd.md)
@@ -425,8 +464,8 @@ Some commands accept arguments:
 
 | Duration | Commands |
 |----------|----------|
-| **Fast** (<1 min) | `/lint-fix`, `/audit-deps`, `/new-component`, `/open-localhost` |
-| **Medium** (5-15 min) | `/quick-fix`, `/create-migration`, `/update-docs`, `/test-coverage` |
+| **Fast** (<1 min) | `/lint-fix`, `/audit-deps`, `/new-component`, `/open-localhost`, `/update-system` |
+| **Medium** (5-15 min) | `/quick-fix`, `/create-migration`, `/update-docs`, `/test-coverage`, `/health-check` |
 | **Long** (30+ min) | `/full-feature`, `/security-review`, `/e2e` |
 
 ### By Purpose
@@ -441,6 +480,7 @@ Some commands accept arguments:
 | **Documentation** | `/update-docs` |
 | **Development Tools** | `/new-component`, `/create-migration`, `/open-localhost` |
 | **Git/CI** | `/commit-push-pr`, `/build-fix` |
+| **System Maintenance** | `/health-check`, `/update-system` |
 
 ---
 
@@ -530,4 +570,4 @@ Details...
 
 ---
 
-**Last Updated**: 2026-01-22
+**Last Updated**: 2026-02-11
