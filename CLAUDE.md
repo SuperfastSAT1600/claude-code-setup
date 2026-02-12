@@ -30,14 +30,19 @@
 
 ---
 
-## Commands
+**Forbidden**: moment.js, full lodash
+<!-- Add your forbidden dependencies here -->
 
-- `/health-check` - System diagnostics
-- `/commit` - Smart git commit
-- `/review-changes` - Code review
-- `/plan` - Implementation planning
+---
 
-See `.claude/commands/README.md` for all commands.
+## Main Agent Templates
+
+When creating React code:
+- `variants/react/component.tsx.template` - Components with TypeScript
+- `variants/react/form.tsx.template` - Forms with React Hook Form + Zod
+- `variants/react/hook.ts.template` - Custom hooks with proper cleanup
+- `variants/react/context.tsx.template` - Context providers with type safety
+- `variants/react/hoc.tsx.template` - HOCs with ref forwarding
 
 ---
 

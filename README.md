@@ -31,11 +31,31 @@ claude
 The setup wizard will:
 - **Auto-install required dependencies** (`enquirer`) if missing
 - Detect your platform (Windows/macOS/Linux) and configure MCP servers accordingly
+- **Configure MCP servers ONLY** (no CLI tools like GitHub CLI or Supabase CLI)
 - **REQUIRE Slack MCP setup** (mandatory for PR notifications to 개발 channel)
-- Ask which optional MCP servers you want to enable
-- Collect API keys securely (stored in gitignored `.mcp.json`)
+- Collect API credentials for all enabled MCP servers (GitHub PAT, Supabase project ref, etc.)
+- Store credentials securely in gitignored `.mcp.json`
 - Create your `.env` file from the template
 - Optionally install dependencies
+
+**🎯 MCP-Only Approach**: This template uses ONLY Model Context Protocol (MCP) servers. You don't need to install GitHub CLI, Supabase CLI, or any other CLI tools. All interactions happen through MCP servers, making setup faster and more consistent across platforms.
+
+### MCP-Only Architecture
+
+**No CLI Tools Required**: This template uses ONLY Model Context Protocol (MCP) servers for all integrations:
+
+| Service | Traditional Approach | MCP-Only Approach |
+|---------|---------------------|-------------------|
+| **GitHub** | Requires GitHub CLI (`gh`) | GitHub MCP with Personal Access Token |
+| **Supabase** | Requires Supabase CLI | Supabase HTTP MCP with project reference |
+| **Slack** | Requires Slack CLI | Slack MCP with bot token |
+
+**Benefits**:
+- ✅ Faster setup (no CLI installations)
+- ✅ Cross-platform consistency (same setup on Windows/macOS/Linux)
+- ✅ No PATH configuration needed
+- ✅ All credentials in one place (`.mcp.json`)
+- ✅ Automatic authentication via `claude /mcp`
 
 ### Required MCP Servers
 
