@@ -44,11 +44,13 @@ See `.claude/commands/README.md` for all commands.
 ## Updating System
 
 ```bash
-cd ..
-git clone https://github.com/YOUR_REPO/claude-code-setup.git  # or git pull
-cd claude-code-setup
 ./.claude/scripts/update-system.sh
 ```
+
+The script automatically:
+- Clones `claude-code-setup` (if needed) to parent directory
+- Pulls latest changes from the repository
+- Updates system files while preserving your data
 
 **Preserved**: `.claude/user/`, `settings.local.json`, `CLAUDE.md`
 **Updated**: agents, skills, rules, commands, workflows, templates
