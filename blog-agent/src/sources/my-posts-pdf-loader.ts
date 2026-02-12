@@ -46,7 +46,7 @@ export class MyPostsPDFLoader {
   /**
    * Parse a PDF post into MyPost object
    */
-  private static parsePDFPost(filename: string, content: string, relativePath: string): MyPost {
+  private static parsePDFPost(filename: string, content: string, _relativePath: string): MyPost {
     // Extract title from filename or first line
     let title = filename.replace('.pdf', '').replace(/[-_]/g, ' ');
 
@@ -194,23 +194,147 @@ export class MyPostsPDFLoader {
   }
 
   /**
-   * Analyze Korean language patterns
+   * Extract Korean sentences from content
+   */
+  private static extractKoreanSentences(content: string): string[] {
+    // Split on Korean and Western sentence endings: . ! ? 。
+    return content
+      .split(/[.!?。]/g)
+      .map(s => s.trim())
+      .filter(s => /[가-힣]/.test(s) && s.length > 3);
+  }
+
+  /**
+   * Classify sentence ending as formal or conversational
+   */
+  private static classifySentenceEndings(sentences: string[]): {
+    formal: string[];
+    conversational: string[];
+  } {
+    const formal: string[] = [];
+    const conversational: string[] = [];
+
+    // FORMAL patterns: ~다, ~ㄴ다, ~는다, ~ㅂ니다, ~습니다
+    const formalRegex = /(한다|된다|있다|없다|이다|간다|온다|본다|만든다|한다|ㄴ다|는다|ㅂ니다|습니다)$/;
+
+    // CONVERSATIONAL patterns: ~요, ~어요, ~아요
+    const conversationalRegex = /(해요|되요|에요|네요|예요|세요|드려요|거예요|했어요|가요|왔어요|봤어요|같아요|죠|요)$/;
+
+    sentences.forEach(sentence => {
+      if (formalRegex.test(sentence)) {
+        formal.push(sentence);
+      } else if (conversationalRegex.test(sentence)) {
+        conversational.push(sentence);
+      }
+    });
+
+    return { formal, conversational };
+  }
+
+  /**
+   * Analyze WHERE each ending type appears (context detection)
+   */
+  private static analyzeEndingContext(
+    _content: string,
+    classified: { formal: string[]; conversational: string[] }
+  ): {
+    formalContexts: string[];
+    conversationalContexts: string[];
+  } {
+    const formalContexts = new Set<string>();
+    const conversationalContexts = new Set<string>();
+
+    // Heuristic detection based on surrounding text patterns
+    classified.formal.forEach(sentence => {
+      // Check if sentence contains definition markers
+      if (/(이란|라는 것은|의미는|정의|설명하면)/g.test(sentence)) {
+        formalContexts.add('definitions');
+      }
+      // Check if sentence contains explanation markers
+      if (/(때문|이유|따라서|그러므로|즉)/g.test(sentence)) {
+        formalContexts.add('explanations');
+      }
+      // Check if sentence is stating main points
+      if (/(핵심|중요|포인트|전략|방법)/g.test(sentence)) {
+        formalContexts.add('main_points');
+      }
+    });
+
+    classified.conversational.forEach(sentence => {
+      // Check if sentence contains examples
+      if (/(예를 들어|예시|예컨대|보면)/g.test(sentence)) {
+        conversationalContexts.add('examples');
+      }
+      // Check if sentence is reassuring/encouraging
+      if (/(할 수 있|괜찮|걱정|충분|도움)/g.test(sentence)) {
+        conversationalContexts.add('reassurance');
+      }
+      // Check if sentence is a question
+      if (/[?？]$/.test(sentence)) {
+        conversationalContexts.add('questions');
+      }
+    });
+
+    return {
+      formalContexts: Array.from(formalContexts),
+      conversationalContexts: Array.from(conversationalContexts)
+    };
+  }
+
+  /**
+   * Extract unique ending patterns (remove duplicates)
+   */
+  private static extractUniqueEndings(sentences: string[]): string[] {
+    const endingPattern = /[가-힣]{2,4}$/; // Last 2-4 Korean characters
+    const endings = new Set<string>();
+
+    sentences.forEach(sentence => {
+      const match = sentence.match(endingPattern);
+      if (match) endings.add(match[0]);
+    });
+
+    return Array.from(endings);
+  }
+
+  /**
+   * Analyze Korean language patterns (ENHANCED with ratio-based mixing detection)
    */
   private static analyzeKoreanPatterns(content: string): WritingStyle['koreanPatterns'] {
-    // 존댓말 patterns (formal polite)
-    const jondaemalRegex = /(합니다|습니다|해요|되요|에요|네요|예요|세요|드려요|거예요)/g;
-    const jondaemalMatches = content.match(jondaemalRegex) || [];
-    const usesJondaemal = jondaemalMatches.length > 3;
+    // PHASE 1: Extract Korean sentences
+    const sentences = this.extractKoreanSentences(content);
 
-    // 구어체 patterns (conversational)
-    const gueoChaeRegex = /(했어요|가요|왔어요|봤어요|거\s*같아요|것\s*같아요|네요|죠)/g;
-    const gueoChaeMatches = content.match(gueoChaeRegex) || [];
-    const usesGueoChae = gueoChaeMatches.length > 3;
+    // PHASE 2: Classify each sentence ending
+    const classified = this.classifySentenceEndings(sentences);
 
-    // Empathy expressions
+    // PHASE 3: Calculate ratios
+    const totalEndings = classified.formal.length + classified.conversational.length;
+    const formalRatio = totalEndings > 0 ? classified.formal.length / totalEndings : 0;
+    const conversationalRatio = totalEndings > 0 ? classified.conversational.length / totalEndings : 0;
+
+    // PHASE 4: Determine dominant pattern
+    let dominantEnding: 'formal' | 'conversational' | 'mixed';
+    if (formalRatio >= 0.8) dominantEnding = 'formal';
+    else if (conversationalRatio >= 0.8) dominantEnding = 'conversational';
+    else dominantEnding = 'mixed';
+
+    // PHASE 5: Analyze contextual usage (WHERE each ending appears)
+    const usageContext = this.analyzeEndingContext(content, classified);
+
+    // PHASE 6: Extract examples
+    const detectedEndings = {
+      formal: {
+        count: classified.formal.length,
+        examples: this.extractUniqueEndings(classified.formal).slice(0, 5)
+      },
+      conversational: {
+        count: classified.conversational.length,
+        examples: this.extractUniqueEndings(classified.conversational).slice(0, 5)
+      }
+    };
+
+    // PHASE 7: Legacy empathy/phrases detection (for backwards compatibility)
     const empathyRegex = /(그쵸|맞죠|그렇죠|죠\?|나요\?|가요\?|인가요\?)/g;
-    const empathyMatches = content.match(empathyRegex) || [];
-    const hasEmpathy = empathyMatches.length > 0;
+    const hasEmpathy = empathyRegex.test(content);
 
     // Extract common Korean phrases (2-3 word sequences)
     const koreanWords = content.match(/[가-힣]+(\s+[가-힣]+){1,2}/g) || [];
@@ -227,7 +351,18 @@ export class MyPostsPDFLoader {
       .slice(0, 5)
       .map(([phrase]) => phrase);
 
+    // Legacy flags for backwards compatibility
+    const usesJondaemal = formalRatio > 0.2;  // More than 20% formal
+    const usesGueoChae = conversationalRatio > 0.2;  // More than 20% conversational
+
     return {
+      endingStyle: {
+        formalRatio,
+        conversationalRatio,
+        dominantEnding
+      },
+      usageContext,
+      detectedEndings,
       usesJondaemal,
       usesGueoChae,
       hasEmpathy,

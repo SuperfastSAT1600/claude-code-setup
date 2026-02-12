@@ -72,15 +72,56 @@ Web Research:
 {{SEO_INSTRUCTIONS}}
 
 INSTRUCTIONS:
-1. Read the USER'S WRITING STYLE carefully - this is their unique voice
-2. Read the STYLE GUIDANCE - this tells you how to merge their style with platform requirements
-3. FOLLOW the Platform-Specific Content Rules for SEO optimization
-4. Your output should sound like the USER wrote it, but optimized for the PLATFORM
-5. Use the example opening/closing as structural templates
-6. Use information from SAT materials for accuracy
-7. Reference web research for current trends and examples
-8. Include proper citations for all references
-9. Make it engaging and helpful for {{TARGET_AUDIENCE}}
+1. **LANGUAGE REQUIREMENT**: Write the ENTIRE post in KOREAN (한국어) regardless of platform
+2. Read the USER'S WRITING STYLE carefully - this is their unique voice
+3. Read the STYLE GUIDANCE - this tells you how to merge their style with platform requirements
+4. FOLLOW the Platform-Specific Content Rules for SEO optimization
+5. Your output should sound like the USER wrote it, but optimized for the PLATFORM
+6. Use the example opening/closing as structural templates
+7. Use information from SAT materials for accuracy
+8. Reference web research for current trends and examples
+9. Include proper citations for all references
+10. Make it engaging and helpful for {{TARGET_AUDIENCE}}
+11. **ELABORATION REQUIREMENTS (Expert-Teacher Tone):**
+    - For each main point: Explain WHAT it is, WHY it matters, HOW to apply it
+    - Break down complex concepts into digestible steps
+    - Provide concrete examples for abstract ideas
+    - Use transitional phrases to guide readers through explanations
+    - Don't assume prior knowledge - explain background when needed
+    - Reassure readers when topics are challenging
+    - Use more sentences to ensure thorough understanding - aim for clarity over conciseness
+
+12. **표(TABLE) 사용 가이드라인:**
+    - **먼저 평가하기**: 이 정보가 표 형식에 적합한가?
+    - **표를 사용해야 할 때:**
+      * 2개 이상의 전략/방법을 여러 속성으로 비교할 때
+      * 점수 범위/분석을 해석과 함께 보여줄 때
+      * 시간표나 학습 계획을 표시할 때
+      * 문제 유형 분석 (유형, 접근법, 난이도, 시간)
+      * 전후 비교 (점수 개선, 학습 습관 변화)
+    - **표를 사용하지 말아야 할 때:**
+      * 단순 순차적 단계 (번호 목록 사용)
+      * 1차원 나열 (글머리 기호 사용)
+      * 서술적 설명이나 이야기
+    - **표 품질 요구사항:**
+      * 열은 3-5개 최대 (모바일 가독성)
+      * 행은 3-8개 이상적 (너무 많으면 압도적)
+      * 명확하고 설명적인 헤더
+      * 간결한 셀 내용 (셀당 2-10단어 이상적)
+      * 일관된 데이터 정렬
+    - **플랫폼별 스타일:**
+      * 구글: 전문적 레이블, 표에 이모지 없음, 데이터 중심
+      * 네이버: 대화체 레이블, 헤더에 이모지 가능 (사용자 스타일 따름), 참여 중심
+    - **배치 전략:**
+      * 개요 표: 도입부 후
+      * 상세 비교 표: 관련 섹션 내부
+      * 요약 표: 결론 전
+    - **제한**: 글당 최대 1-3개의 표
+    - **SAT 사용 예시:**
+      * 점수 해석 표 (범위 → 의미)
+      * 전략 비교 매트릭스 (방법 → 장단점 → 시간 → 난이도)
+      * 학습 일정 (시간 → 과목 → 집중도 → 팁)
+      * 문제 유형 분석 (유형 → 특징 → 접근법)
 
 When style conflicts occur (e.g., user is formal but platform requires casual):
 - PRIORITIZE: Platform SEO requirements
@@ -88,9 +129,48 @@ When style conflicts occur (e.g., user is formal but platform requires casual):
 - RESULT: Platform-optimized content that still feels authentic to the user's voice
 
 CRITICAL: Your output MUST reflect CLEAR differences based on the platform.
-- For Naver: Write like a friendly Korean blogger with personal anecdotes and constant reader engagement (emoji usage determined by user's style)
-- For Google: Write like an authoritative educational resource with research data, professional tone, and comprehensive coverage
+- For Naver: Write IN KOREAN (한국어) like a friendly Korean blogger with personal anecdotes and constant reader engagement (emoji usage determined by user's style)
+- For Google: Write IN KOREAN (한국어) like an authoritative educational resource with research data, professional tone, and comprehensive coverage
 The difference should be OBVIOUS in tone, structure, vocabulary, and style.
+
+**LANGUAGE REMINDER: ALL content must be written in KOREAN (한국어). Do NOT write in English.**
+
+**KOREAN SENTENCE ENDING MIXING (CRITICAL INSTRUCTION):**
+
+If the user's style shows a MIXED sentence ending pattern (e.g., 70% formal + 30% conversational):
+
+1. **Follow the Exact Ratio**: Match the percentage distribution shown in "Korean Sentence Ending Pattern"
+   - Example: If user uses 70% formal, aim for ~7 formal sentences per 10 sentences
+   - Maintain this ratio throughout the entire post, not just overall
+
+2. **Contextual Usage Rules** (when to use which ending):
+
+   **FORMAL (~다, ~ㄴ다, ~습니다)** - Use for main explanations, definitions, core concepts:
+   * "SAT Reading은 시간 관리가 핵심이다"
+   * "첫 번째 전략은 키워드 찾기다"
+   * "문법 규칙을 이해하는 것이 중요하다"
+   * "이 방법은 효과적이다"
+
+   **CONVERSATIONAL (~요, ~어요, ~죠)** - Use for examples, reassurance, questions:
+   * "예를 들어, 이런 문제를 봤어요?"
+   * "여러분도 충분히 할 수 있어요"
+   * "궁금한 점 있으면 댓글로 알려주세요"
+   * "이해가 되시나요?"
+
+3. **Paragraph-Level Mixing Pattern**:
+   - Typical structure: Formal intro + Formal main points + Conversational example/reassurance
+   - Example paragraph:
+     * SAT Reading에서 시간 관리가 가장 중요하다. [FORMAL - main point]
+     * 각 지문당 13분을 배분하는 것이 이상적이다. [FORMAL - explanation]
+     * 예를 들어, 첫 번째 지문을 12분 안에 풀면 나머지 시간을 확보할 수 있어요. [CONVERSATIONAL - example]
+     * 여러분도 충분히 할 수 있어요! [CONVERSATIONAL - reassurance]
+
+4. **Platform Independence**: This mixing pattern applies to BOTH Google AND Naver
+   - The expert tone with controlled friendliness works across platforms
+   - Naver gets additional engagement elements (emojis, CTAs) but NOT pure conversational style
+   - Google maintains the same professional-approachable mix
+
+**CRITICAL**: Do NOT default to pure conversational (~요) just because platform is Naver. Respect the user's sophisticated mixing pattern that creates expert authority with approachability.
 
 **CRITICAL OUTPUT REQUIREMENTS:**
 - The "outline" field MUST contain exactly 3 items (main sections)
