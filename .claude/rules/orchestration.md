@@ -39,14 +39,26 @@ Does this task need a specialist?
 
 ### Mandatory Delegation Checklist
 
-1. **Database** (schema, migration, seeder, query optimization) → `database-architect`, `migration-specialist`
-2. **API design** (REST/GraphQL endpoints, OpenAPI) → `api-designer`, `graphql-specialist`
-3. **Auth** (OAuth, JWT, MFA, sessions) → `auth-specialist`
-4. **Security review** (vulnerabilities, OWASP) → `security-reviewer`
-5. **Testing** (unit, integration, e2e) → `unit-test-writer`, `integration-test-writer`, `e2e-runner`
-6. **Infrastructure** (Docker, CI/CD, deployment) → `docker-specialist`, `ci-cd-specialist`, `iac-specialist`
-7. **Code review** (quality, patterns) → `code-reviewer`
-8. **Performance** (profiling, optimization) → `performance-optimizer`
+1. **Planning** (implementation plans, task breakdown) → `planner`
+2. **Architecture** (system design, technical decisions) → `architect`
+3. **Database** (schema, migration, seeder, query optimization) → `database-architect`, `migration-specialist`
+4. **API design** (REST/GraphQL endpoints, OpenAPI) → `api-designer`, `graphql-specialist`
+5. **Auth** (OAuth, JWT, MFA, sessions) → `auth-specialist`
+6. **Real-time** (WebSockets, Socket.io) → `websocket-specialist`
+7. **Security** (vulnerabilities, OWASP audits) → `security-reviewer`
+8. **Code quality** (PR reviews, simplification, debt) → `code-reviewer`, `code-simplifier`, `tech-debt-analyzer`
+9. **Refactoring** (modernize legacy, remove dead code) → `refactor-cleaner`
+10. **Type safety** (eliminate `any`, strict mode) → `type-safety-enforcer`
+11. **Testing** (unit, integration, e2e, load, TDD) → `unit-test-writer`, `integration-test-writer`, `e2e-runner`, `load-test-specialist`, `tdd-guide`, `verify-app`
+12. **Infrastructure** (Docker, CI/CD, IaC, deployment) → `docker-specialist`, `ci-cd-specialist`, `iac-specialist`
+13. **Operations** (build errors, monitoring, dependencies) → `build-error-resolver`, `monitoring-architect`, `dependency-manager`
+14. **Documentation** (sync docs, runbooks) → `doc-updater`, `runbook-writer`
+15. **Accessibility** (WCAG compliance) → `accessibility-auditor`
+16. **i18n** (internationalization) → `i18n-specialist`
+17. **Performance** (profiling, optimization) → `performance-optimizer`
+18. **Mobile** (React Native, Flutter) → `mobile-specialist`
+19. **AI/ML** (LLM APIs, RAG systems) → `ai-integration-specialist`
+20. **System health** (.claude/ config analysis) → `system-health`
 
 ### Delegation Error
 

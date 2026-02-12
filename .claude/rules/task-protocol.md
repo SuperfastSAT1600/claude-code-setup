@@ -6,11 +6,9 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 
 ## Phase 0: INIT
 
-**Errors**: Main → `.claude/user/errors.md`, Subagents → also `.claude/user/agent-errors/{name}.md`
-**PRD** (core features): `docs/PRD.md` for scope, architecture, metrics
-**Skills** (MANDATORY): Identify + load ALL before work. Skills = authoritative patterns. Error: `[context] Error: Didn't use available skill | Should have loaded: [skill]`
+**FIRST ACTION (MANDATORY)**: Use the Read tool to read `.claude/user/errors.md` (main agent) or `.claude/user/agent-errors/{name}.md` (subagent). This MUST be your first task upon loading.
 
-**Domains**: auth-patterns, backend-patterns, database-patterns, docker-patterns, documentation-patterns, frontend-patterns, github-actions, graphql-patterns, nextjs-patterns, nodejs-patterns, prompt-engineering, rag-patterns, react-patterns, rest-api-design, tdd-workflow, user-intent-patterns, websocket-patterns
+**PRD** (core features): `docs/PRD.md` for scope, architecture, metrics
 
 ---
 
@@ -27,6 +25,18 @@ Database → database-architect, migration-specialist | API → api-designer, gr
 
 Independent files/features/domains? → PARALLEL (one message, multiple Tasks)
 Research + implementation? → PARALLEL | Review? → PARALLEL | Single atomic? → SEQUENTIAL
+
+### Task List (MANDATORY)
+
+**Create task list for**:
+- Multi-step tasks (3+ steps)
+- Non-trivial complex tasks
+- User provides multiple tasks
+- Plan mode work
+
+**Skip for**: Single straightforward tasks, trivial tasks (<3 steps), conversational requests
+
+**Mark tasks**: `in_progress` when starting, `completed` when done
 
 ---
 
@@ -67,8 +77,8 @@ Fixed: [file] - [what]
 ## Quick Reference
 
 ```
-INIT:    errors + PRD + SKILLS
-PRE:     Delegate? Parallel?
+INIT:    Read errors.md FIRST → PRD
+PRE:     Delegate? Parallel? Task list?
 DURING:  Error → STOP → LOG → VERIFY → THEN
 POST:    Observations → Heal → Errors → Changelog → DOCS
 ```
