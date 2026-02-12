@@ -76,10 +76,43 @@ export interface WritingStyle {
   };
 
   koreanPatterns?: {
-    usesJondaemal: boolean;  // 존댓말 (formal polite: ~습니다, ~해요)
-    usesGueoChae: boolean;   // 구어체 (conversational: ~했어요, ~거예요)
+    // Enhanced: Sentence ending distribution and mixing pattern
+    endingStyle?: {
+      formalRatio: number;        // 0.0-1.0 (e.g., 0.7 = 70% formal)
+      conversationalRatio: number; // 0.0-1.0 (e.g., 0.3 = 30% conversational)
+      dominantEnding: 'formal' | 'conversational' | 'mixed';
+    };
+
+    // Enhanced: Contextual usage patterns (when to use each ending type)
+    usageContext?: {
+      formalContexts: string[];      // e.g., ["explanations", "definitions", "main_points"]
+      conversationalContexts: string[]; // e.g., ["examples", "reassurance", "questions"]
+    };
+
+    // Enhanced: Detected ending patterns with examples
+    detectedEndings?: {
+      formal: {
+        count: number;
+        examples: string[];  // Actual ending patterns found (e.g., ["한다", "된다", "습니다"])
+      };
+      conversational: {
+        count: number;
+        examples: string[];  // Actual ending patterns found (e.g., ["해요", "거예요", "네요"])
+      };
+    };
+
+    // Legacy: Keep for backwards compatibility
+    usesJondaemal?: boolean;  // 존댓말 (formal polite: ~습니다, ~해요)
+    usesGueoChae?: boolean;   // 구어체 (conversational: ~했어요, ~거예요)
     hasEmpathy: boolean;     // 공감 표현 (empathy: 그쵸?, 맞죠?)
     commonKoreanPhrases: string[];  // Frequently used Korean expressions
+  };
+
+  // NEW: User preferences for Korean endings (overrides detected patterns)
+  koreanPreferences?: {
+    preferFormalEndings?: boolean;       // true = override to formal
+    targetFormalRatio?: number;          // 0.0-1.0 (e.g., 0.8 = 80% formal)
+    enforceMinimumFormalRatio?: number;  // Never go below this % (e.g., 0.7)
   };
 
   headingStyle?: {
@@ -148,6 +181,14 @@ export interface GeneratedContent {
   generatedAt: Date;
   seoMetadata?: SEOMetadata;
   seoPlatform?: SEOPlatform;  // Platform for format display (naver=text, google=markdown)
+  completionStatus?: {
+    isComplete: boolean;
+    stopReason: 'end_turn' | 'max_tokens' | 'stop_sequence';
+    tokenUsage: {
+      input: number;
+      output: number;
+    };
+  };
 }
 
 export interface SEOMetadata {
@@ -192,6 +233,9 @@ export interface BlogWriterConfig extends AgentConfig {
   enableWebSearch: boolean;
   enableSATReferences: boolean;
   enableMyPostsAnalysis: boolean;
+  enableSupabaseStorage: boolean;
+  preferSupabasePosts: boolean;
+  enablePatternLearning: boolean;
 }
 
 // ========================================

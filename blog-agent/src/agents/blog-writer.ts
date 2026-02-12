@@ -1,9 +1,10 @@
 import type { ContentRequest, GeneratedContent, PromptContext } from '../types.js';
-import type { LLMProvider, LLMProviderType } from '../providers/llm-provider.js';
+import type { LLMProvider, LLMProviderType, LLMResponse } from '../providers/llm-provider.js';
 import { createLLMProvider } from '../providers/index.js';
 import { defaultBlogWriterConfig } from '../config/agent-config.js';
 import { MyPostsLoader } from '../sources/my-posts-loader.js';
 import { MyPostsPDFLoader } from '../sources/my-posts-pdf-loader.js';
+import { MyPostsSupabaseLoader } from '../sources/my-posts-supabase-loader.js';
 import { SATMaterialsLoader } from '../sources/sat-materials-loader.js';
 import { SATMaterialsPDFLoader } from '../sources/sat-materials-pdf-loader.js';
 import { WebSearchEngine } from '../sources/web-search-engine.js';
@@ -48,10 +49,21 @@ export class BlogWriterAgent {
       const prompt = this.buildPrompt(request, context);
 
       // 3. Call LLM API
-      const response = await this.callLLM(prompt);
+      const llmResponse = await this.callLLM(prompt);
 
       // 4. Parse and return result
-      const generated = this.parseResponse(response, request.seoPlatform);
+      const generated = this.parseResponse(llmResponse.text, request.seoPlatform);
+
+      // 5. Add completion status
+      generated.completionStatus = {
+        isComplete: llmResponse.stopReason === 'end_turn',
+        stopReason: llmResponse.stopReason,
+        tokenUsage: llmResponse.tokenUsage
+      };
+
+      if (llmResponse.stopReason === 'max_tokens') {
+        Logger.warn('⚠️  Post may be incomplete - hit max_tokens limit');
+      }
 
       Logger.info('Blog post generation completed successfully');
       return generated;
@@ -67,8 +79,11 @@ export class BlogWriterAgent {
   private async gatherContext(request: ContentRequest): Promise<PromptContext> {
     Logger.info('Gathering context...');
 
-    // Load from both markdown and PDF sources
-    const [mdPosts, pdfPosts, mdSAT, pdfSAT, webResults] = await Promise.all([
+    // Load from Supabase (primary), markdown, and PDF sources
+    const [supabasePosts, mdPosts, pdfPosts, mdSAT, pdfSAT, webResults] = await Promise.all([
+      this.config.enableMyPostsAnalysis
+        ? MyPostsSupabaseLoader.getSamples(5)
+        : Promise.resolve([]),
       this.config.enableMyPostsAnalysis
         ? MyPostsLoader.getSamples(5)
         : Promise.resolve([]),
@@ -86,13 +101,18 @@ export class BlogWriterAgent {
         : Promise.resolve([])
     ]);
 
-    // Combine posts from both sources
-    const myPosts = [...mdPosts, ...pdfPosts];
+    // Prioritize Supabase posts (richer metadata), deduplicate file-based posts
+    const myPosts = [
+      ...supabasePosts,
+      ...mdPosts.filter(p => !supabasePosts.some(sp => sp.title === p.title)),
+      ...pdfPosts.filter(p => !supabasePosts.some(sp => sp.title === p.title))
+    ].slice(0, 10); // Top 10 posts
+
     const satMaterials = [...mdSAT, ...pdfSAT]
       .sort((a, b) => (b.relevance || 0) - (a.relevance || 0))
       .slice(0, 5); // Top 5 most relevant
 
-    Logger.info(`Loaded ${myPosts.length} user posts (${mdPosts.length} MD, ${pdfPosts.length} PDF)`);
+    Logger.info(`Loaded ${myPosts.length} user posts (${supabasePosts.length} DB, ${mdPosts.length} MD, ${pdfPosts.length} PDF)`);
     Logger.info(`Loaded ${satMaterials.length} SAT materials (${mdSAT.length} MD, ${pdfSAT.length} PDF)`);
     Logger.info(`Found ${webResults.length} web search results`);
 
@@ -106,6 +126,88 @@ export class BlogWriterAgent {
       satMaterials,
       webResults,
       styleGuide
+    };
+  }
+
+  /**
+   * Calculate average ratio from multiple styles
+   */
+  private averageRatio(styles: import('../types.js').WritingStyle[], field: 'formalRatio' | 'conversationalRatio'): number {
+    const ratios = styles
+      .map(s => s.koreanPatterns?.endingStyle?.[field])
+      .filter((r): r is number => r !== undefined);
+
+    if (ratios.length === 0) return 0;
+    return ratios.reduce((sum, r) => sum + r, 0) / ratios.length;
+  }
+
+  /**
+   * Get the most common dominant ending pattern
+   */
+  private getMostCommonDominantEnding(styles: import('../types.js').WritingStyle[]): 'formal' | 'conversational' | 'mixed' {
+    const endings = styles
+      .map(s => s.koreanPatterns?.endingStyle?.dominantEnding)
+      .filter((e): e is 'formal' | 'conversational' | 'mixed' => e !== undefined);
+
+    if (endings.length === 0) return 'mixed';
+
+    const counts = new Map<'formal' | 'conversational' | 'mixed', number>();
+    endings.forEach(e => counts.set(e, (counts.get(e) || 0) + 1));
+    return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0][0];
+  }
+
+  /**
+   * Merge usage contexts from multiple styles
+   */
+  private mergeUsageContexts(styles: import('../types.js').WritingStyle[]): {
+    formalContexts: string[];
+    conversationalContexts: string[];
+  } {
+    const formalContextsSet = new Set<string>();
+    const conversationalContextsSet = new Set<string>();
+
+    styles.forEach(s => {
+      s.koreanPatterns?.usageContext?.formalContexts.forEach(c => formalContextsSet.add(c));
+      s.koreanPatterns?.usageContext?.conversationalContexts.forEach(c => conversationalContextsSet.add(c));
+    });
+
+    return {
+      formalContexts: Array.from(formalContextsSet),
+      conversationalContexts: Array.from(conversationalContextsSet)
+    };
+  }
+
+  /**
+   * Merge detected endings from multiple styles
+   */
+  private mergeDetectedEndings(styles: import('../types.js').WritingStyle[]): {
+    formal: { count: number; examples: string[] };
+    conversational: { count: number; examples: string[] };
+  } {
+    const formalExamples = new Set<string>();
+    const conversationalExamples = new Set<string>();
+    let formalCount = 0;
+    let conversationalCount = 0;
+
+    styles.forEach(s => {
+      const endings = s.koreanPatterns?.detectedEndings;
+      if (endings) {
+        formalCount += endings.formal?.count || 0;
+        conversationalCount += endings.conversational?.count || 0;
+        endings.formal?.examples.forEach(e => formalExamples.add(e));
+        endings.conversational?.examples.forEach(e => conversationalExamples.add(e));
+      }
+    });
+
+    return {
+      formal: {
+        count: formalCount,
+        examples: Array.from(formalExamples).slice(0, 5)
+      },
+      conversational: {
+        count: conversationalCount,
+        examples: Array.from(conversationalExamples).slice(0, 5)
+      }
     };
   }
 
@@ -164,13 +266,76 @@ export class BlogWriterAgent {
       commonEmojis: [...new Set(styles.flatMap(s => s.emojiUsage?.commonEmojis || []))].slice(0, 5)
     } : undefined;
 
-    // Merge Korean patterns
-    const koreanPatterns = {
-      usesJondaemal: styles.filter(s => s.koreanPatterns?.usesJondaemal).length > styles.length / 2,
-      usesGueoChae: styles.filter(s => s.koreanPatterns?.usesGueoChae).length > styles.length / 2,
-      hasEmpathy: styles.filter(s => s.koreanPatterns?.hasEmpathy).length > styles.length / 2,
-      commonKoreanPhrases: [...new Set(styles.flatMap(s => s.koreanPatterns?.commonKoreanPhrases || []))].slice(0, 8)
-    };
+    // Merge Korean patterns (ENHANCED with ratio-based mixing + preference override)
+    const hasNewKoreanPatterns = styles.some(s => s.koreanPatterns?.endingStyle);
+
+    let koreanPatterns;
+    if (hasNewKoreanPatterns) {
+      // Calculate detected ratios from existing posts
+      const detectedFormalRatio = this.averageRatio(styles, 'formalRatio');
+      const detectedConversationalRatio = this.averageRatio(styles, 'conversationalRatio');
+
+      // NEW: Apply user preference override if set
+      const koreanPref = this.config.stylePreferences.koreanPreferences;
+      let finalFormalRatio = detectedFormalRatio;
+      let finalConversationalRatio = detectedConversationalRatio;
+
+      if (koreanPref?.preferFormalEndings) {
+        // Override to target ratio
+        finalFormalRatio = koreanPref.targetFormalRatio || 0.85;
+        finalConversationalRatio = 1.0 - finalFormalRatio;
+
+        Logger.info(`Korean preference override: ${Math.round(finalFormalRatio * 100)}% formal (detected: ${Math.round(detectedFormalRatio * 100)}%)`);
+      } else if (koreanPref?.enforceMinimumFormalRatio) {
+        // Enforce minimum if detected is too low
+        if (detectedFormalRatio < koreanPref.enforceMinimumFormalRatio) {
+          finalFormalRatio = koreanPref.enforceMinimumFormalRatio;
+          finalConversationalRatio = 1.0 - finalFormalRatio;
+
+          Logger.info(`Enforcing minimum formal ratio: ${Math.round(finalFormalRatio * 100)}% (detected: ${Math.round(detectedFormalRatio * 100)}%)`);
+        }
+      }
+
+      koreanPatterns = {
+        // New structure: ratio-based mixing pattern (with override)
+        endingStyle: {
+          formalRatio: finalFormalRatio,
+          conversationalRatio: finalConversationalRatio,
+          dominantEnding: finalFormalRatio >= 0.8 ? 'formal' as const : 'mixed' as const
+        },
+        usageContext: this.mergeUsageContexts(styles),
+        detectedEndings: this.mergeDetectedEndings(styles),
+        // Legacy fields for backwards compatibility
+        usesJondaemal: styles.filter(s => s.koreanPatterns?.usesJondaemal).length > styles.length / 2,
+        usesGueoChae: styles.filter(s => s.koreanPatterns?.usesGueoChae).length > styles.length / 2,
+        hasEmpathy: styles.filter(s => s.koreanPatterns?.hasEmpathy).length > styles.length / 2,
+        commonKoreanPhrases: [...new Set(styles.flatMap(s => s.koreanPatterns?.commonKoreanPhrases || []))].slice(0, 8)
+      };
+    } else {
+      // Fallback: Use user preference if no detected patterns
+      const koreanPref = this.config.stylePreferences.koreanPreferences;
+      const targetRatio = koreanPref?.targetFormalRatio || 0.85;
+
+      koreanPatterns = {
+        endingStyle: {
+          formalRatio: targetRatio,
+          conversationalRatio: 1.0 - targetRatio,
+          dominantEnding: targetRatio >= 0.8 ? 'formal' as const : 'mixed' as const
+        },
+        usageContext: {
+          formalContexts: ['definitions', 'explanations', 'main_points', 'strategies'],
+          conversationalContexts: ['examples', 'reassurance']
+        },
+        detectedEndings: {
+          formal: { count: 0, examples: [] },
+          conversational: { count: 0, examples: [] }
+        },
+        usesJondaemal: styles.filter(s => s.koreanPatterns?.usesJondaemal).length > styles.length / 2,
+        usesGueoChae: styles.filter(s => s.koreanPatterns?.usesGueoChae).length > styles.length / 2,
+        hasEmpathy: styles.filter(s => s.koreanPatterns?.hasEmpathy).length > styles.length / 2,
+        commonKoreanPhrases: [...new Set(styles.flatMap(s => s.koreanPatterns?.commonKoreanPhrases || []))].slice(0, 8)
+      };
+    }
 
     // Merge heading style
     const headingStyle = {
@@ -207,6 +372,7 @@ export class BlogWriterAgent {
       vocabulary,
       emojiUsage,
       koreanPatterns,
+      koreanPreferences: this.config.stylePreferences.koreanPreferences, // NEW: Include preference
       headingStyle,
       engagementStyle,
       structurePreferences
@@ -338,12 +504,60 @@ export class BlogWriterAgent {
     }
 
     if (style.koreanPatterns) {
-      description += `**Korean Style**: `;
-      const features = [];
-      if (style.koreanPatterns.usesJondaemal) features.push('존댓말 (formal polite)');
-      if (style.koreanPatterns.usesGueoChae) features.push('구어체 (conversational)');
-      if (style.koreanPatterns.hasEmpathy) features.push('공감 표현 (empathy markers)');
-      description += features.join(', ') + `\n`;
+      // ENHANCED: Show detailed mixing pattern if available
+      if (style.koreanPatterns.endingStyle) {
+        const es = style.koreanPatterns.endingStyle;
+        description += `**Korean Sentence Ending Pattern (CRITICAL)**:\n`;
+
+        // NEW: Highlight if user preference is overriding
+        if (style.koreanPreferences?.preferFormalEndings) {
+          description += `- **USER PREFERENCE ENFORCED**: Use FORMAL endings (not conversational)\n`;
+        }
+
+        description += `- Mixing Ratio: ${Math.round(es.formalRatio * 100)}% formal (~다, ~습니다, ~입니다) + ${Math.round(es.conversationalRatio * 100)}% conversational (~요, ~어요)\n`;
+        description += `- Dominant Style: ${es.dominantEnding}\n`;
+
+        // NEW: Add explicit formal ending examples if formal preference is high
+        if (es.formalRatio >= 0.7) {
+          description += `- **Use these formal endings predominantly**: ~다, ~ㄴ다, ~습니다, ~입니다, ~한다, ~된다, ~있다\n`;
+          description += `- **Minimize conversational endings**: Limit ~요, ~어요, ~이에요 to only ${Math.round(es.conversationalRatio * 100)}% of sentences\n`;
+        }
+
+        // Show contextual usage rules
+        if (style.koreanPatterns.usageContext) {
+          const uc = style.koreanPatterns.usageContext;
+          if (uc.formalContexts.length > 0) {
+            description += `- Use FORMAL (~다, ~습니다) for: ${uc.formalContexts.join(', ')}\n`;
+          }
+          if (uc.conversationalContexts.length > 0) {
+            description += `- Use CONVERSATIONAL (~요) SPARINGLY for: ${uc.conversationalContexts.join(', ')}\n`;
+          }
+        }
+
+        // Show detected patterns
+        if (style.koreanPatterns.detectedEndings) {
+          const de = style.koreanPatterns.detectedEndings;
+          if (de.formal.count > 0) {
+            description += `- Formal Endings (${de.formal.count} found): ${de.formal.examples.join(', ')}\n`;
+          }
+          if (de.conversational.count > 0) {
+            description += `- Conversational Endings (${de.conversational.count} found): ${de.conversational.examples.join(', ')}\n`;
+          }
+        }
+
+        // Legacy empathy/phrases
+        if (style.koreanPatterns.hasEmpathy) {
+          description += `- Empathy Expressions: Yes (그쵸?, 맞죠?, etc.)\n`;
+        }
+      } else {
+        // Fallback to legacy format
+        description += `**Korean Style**: `;
+        const features = [];
+        if (style.koreanPatterns.usesJondaemal) features.push('존댓말 (formal polite)');
+        if (style.koreanPatterns.usesGueoChae) features.push('구어체 (conversational)');
+        if (style.koreanPatterns.hasEmpathy) features.push('공감 표현 (empathy markers)');
+        description += features.join(', ') + `\n`;
+      }
 
       if (style.koreanPatterns.commonKoreanPhrases.length > 0) {
         description += `**Korean Expressions**: "${style.koreanPatterns.commonKoreanPhrases.slice(0, 5).join('", "')}"\n`;
@@ -401,10 +615,69 @@ export class BlogWriterAgent {
     guidance += `- Table of Contents: MUST have exactly 3 items (no more, no less)\n`;
     guidance += `- Each TOC item should be a distinct main section of the content\n\n`;
 
+    // Add Expert-Teacher tone guidance
+    guidance += `**EXPERT-TEACHER TONE (CRITICAL):**\n`;
+    guidance += `- Write as a patient, knowledgeable teacher explaining to students who want to learn\n`;
+    guidance += `- For complex concepts: Break down into steps, provide context, explain WHY not just WHAT\n`;
+    guidance += `- Use transitional phrases: "Let me explain why this matters", "Here's the key point", "To understand this better"\n`;
+    guidance += `- Include concrete examples for abstract concepts\n`;
+    guidance += `- Reassure readers: "This might seem difficult at first, but...", "Don't worry if this feels complex..."\n`;
+    guidance += `- Use more sentences to elaborate thoroughly - clarity over brevity\n\n`;
+
     // Naver-specific guidance
     if (platform === 'naver') {
       guidance += `**Naver-Specific Adjustments:**\n`;
-      guidance += `- Use Korean conversational style (구어체) even if user's base style is formal\n`;
+
+      // ENHANCED: Strong formal Korean enforcement
+      if (userStyle.koreanPatterns?.endingStyle) {
+        const kr = userStyle.koreanPatterns;
+        const es = kr.endingStyle!; // Non-null assertion - we're in the if block
+
+        // NEW: Check if user prefers formal
+        const preferFormal = userStyle.koreanPreferences?.preferFormalEndings;
+
+        if (preferFormal) {
+          guidance += `- **Sentence Ending Pattern** (USER PREFERENCE - STRICTLY ENFORCE):\n`;
+          guidance += `  * TARGET: ${Math.round(es.formalRatio * 100)}% FORMAL ENDINGS (~다, ~습니다, ~입니다)\n`;
+          guidance += `  * Examples: "이것은 중요한 개념이다", "첫 번째 전략은 키워드 찾기다", "연습이 필요합니다"\n`;
+          guidance += `  * LIMIT conversational to ${Math.round(es.conversationalRatio * 100)}% only (examples, reassurance)\n`;
+          guidance += `  * DO NOT use conversational endings for main explanations or core concepts\n`;
+
+          // Contextual guidance
+          if (kr.usageContext && kr.usageContext.formalContexts.length > 0) {
+            guidance += `  * Use FORMAL when: ${kr.usageContext.formalContexts.join(', ')}\n`;
+          }
+          if (kr.usageContext && kr.usageContext.conversationalContexts.length > 0) {
+            guidance += `  * Use CONVERSATIONAL SPARINGLY when: ${kr.usageContext.conversationalContexts.join(', ')}\n`;
+          }
+
+          // Add paragraph-level example
+          guidance += `\n  **Example Paragraph Structure (${Math.round(es.formalRatio * 100)}% formal)**:\n`;
+          guidance += `  - SAT Reading에서 시간 관리가 가장 중요하다. [FORMAL]\n`;
+          guidance += `  - 각 지문당 13분을 배분하는 것이 이상적이다. [FORMAL]\n`;
+          guidance += `  - 첫 번째 전략은 키워드 미리 파악하기다. [FORMAL]\n`;
+          guidance += `  - 예를 들어, 제목과 첫 문장을 먼저 읽어보세요. [CONVERSATIONAL - example only]\n`;
+          guidance += `  * This maintains professional, authoritative tone\n`;
+        } else {
+          // Original logic for respecting detected ratio
+          guidance += `- **Sentence Ending Pattern** (maintain user's exact ratio):\n`;
+          guidance += `  * ${Math.round(es.formalRatio * 100)}% formal endings (~다, ~ㄴ다, ~습니다)\n`;
+          guidance += `  * ${Math.round(es.conversationalRatio * 100)}% conversational endings (~요, ~어요)\n`;
+
+          // Provide contextual guidance
+          if (kr.usageContext && kr.usageContext.formalContexts.length > 0) {
+            guidance += `  * Use FORMAL when: ${kr.usageContext.formalContexts.join(', ')}\n`;
+          }
+          if (kr.usageContext && kr.usageContext.conversationalContexts.length > 0) {
+            guidance += `  * Use CONVERSATIONAL when: ${kr.usageContext.conversationalContexts.join(', ')}\n`;
+          }
+
+          guidance += `  * This maintains your expert-but-approachable tone\n`;
+        }
+      } else {
+        // Fallback if no Korean patterns detected
+        guidance += `- Use Korean conversational style (구어체) as default\n`;
+      }
 
       // Check if user actually uses emojis
       if (userStyle.emojiUsage?.frequency === 'none') {
@@ -427,6 +700,45 @@ export class BlogWriterAgent {
     // Google-specific guidance
     if (platform === 'google') {
       guidance += `**Google-Specific Adjustments:**\n`;
+
+      // Apply same formal enforcement logic as Naver
+      if (userStyle.koreanPatterns?.endingStyle) {
+        const kr = userStyle.koreanPatterns;
+        const es = kr.endingStyle!; // Non-null assertion - we're in the if block
+
+        // NEW: Check if user prefers formal
+        const preferFormal = userStyle.koreanPreferences?.preferFormalEndings;
+
+        if (preferFormal) {
+          guidance += `- **Sentence Ending Pattern** (USER PREFERENCE - STRICTLY ENFORCE):\n`;
+          guidance += `  * TARGET: ${Math.round(es.formalRatio * 100)}% FORMAL ENDINGS (~다, ~습니다, ~입니다)\n`;
+          guidance += `  * Examples: "이것은 중요한 개념이다", "첫 번째 전략은 키워드 찾기다", "연습이 필요합니다"\n`;
+          guidance += `  * LIMIT conversational to ${Math.round(es.conversationalRatio * 100)}% only (examples, reassurance)\n`;
+          guidance += `  * DO NOT use conversational endings for main explanations or core concepts\n`;
+
+          if (kr.usageContext && kr.usageContext.formalContexts.length > 0) {
+            guidance += `  * Use FORMAL when: ${kr.usageContext.formalContexts.join(', ')}\n`;
+          }
+          if (kr.usageContext && kr.usageContext.conversationalContexts.length > 0) {
+            guidance += `  * Use CONVERSATIONAL SPARINGLY when: ${kr.usageContext.conversationalContexts.join(', ')}\n`;
+          }
+
+          guidance += `  * This maintains professional, authoritative tone\n`;
+        } else {
+          // Original logic for respecting detected ratio
+          guidance += `- **Sentence Ending Pattern** (maintain user's exact ratio):\n`;
+          guidance += `  * ${Math.round(es.formalRatio * 100)}% formal endings (~다, ~ㄴ다, ~습니다)\n`;
+          guidance += `  * ${Math.round(es.conversationalRatio * 100)}% conversational endings (~요, ~어요)\n`;
+
+          if (kr.usageContext && kr.usageContext.formalContexts.length > 0) {
+            guidance += `  * Use FORMAL when: ${kr.usageContext.formalContexts.join(', ')}\n`;
+          }
+          if (kr.usageContext && kr.usageContext.conversationalContexts.length > 0) {
+            guidance += `  * Use CONVERSATIONAL when: ${kr.usageContext.conversationalContexts.join(', ')}\n`;
+          }
+        }
+      }
+
       guidance += `- Maintain professional-conversational tone but ${userStyle.tone === 'academic' ? 'can be more formal (matches user style)' : 'keep it accessible'}\n`;
       guidance += `- Use rhetorical questions and soft CTAs\n`;
 
@@ -447,7 +759,7 @@ export class BlogWriterAgent {
   /**
    * Call LLM API (Anthropic or OpenAI)
    */
-  private async callLLM(prompt: string): Promise<string> {
+  private async callLLM(prompt: string): Promise<LLMResponse> {
     const isOpenAI = this.provider.providerType === 'openai';
     const model = isOpenAI
       ? (this.config.openaiModel || 'gpt-4o')
