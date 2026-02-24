@@ -14,7 +14,7 @@ Use this command when you've completed a feature or fix and want to create a PR 
 
 You are about to commit changes, push to remote, and create a pull request. Follow these steps:
 
-**IMPORTANT**: After creating the PR or pushing to an existing PR, you MUST send a notification to the Slack channel "개발" with the PR details. Use the Slack MCP to post the message.
+**IMPORTANT**: After creating the PR or pushing to an existing PR, you MUST send a notification to the Slack channel "commit-업데이트" with the PR details. Use the Slack MCP to post the message.
 
 1. **Check Current Status**
    - Run `git status` to see what files have changed
@@ -53,7 +53,7 @@ You are about to commit changes, push to remote, and create a pull request. Foll
 
 6. **Send Slack Notification** (REQUIRED - NO EXCEPTIONS)
    After PR creation or pushing to remote:
-   - **MUST use mcp__slack__slack_post_message tool** with channel_id="개발"
+   - **MUST use mcp__slack__slack_post_message tool** with channel_id="commit-업데이트"
    - This is NOT optional - every PR/push MUST notify the team
    - **IMPORTANT**: Translate all technical content to natural, professional Korean
    - Messages should be easily understandable by non-technical team members
