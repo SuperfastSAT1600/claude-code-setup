@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pretendard Variable Font for Korean */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+:root {
+  --font-pretendard: 'Pretendard Variable', 'Pretendard', sans-serif;
+}
+
+body {
+  background: #050816;
+  min-height: 100vh;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe area support for notched phones */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Custom scrollbar - dark theme */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Focus ring utility - dark theme */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  --tw-ring-color: rgba(96, 133, 255, 0.4);
+  --tw-ring-offset-color: #050816;
+}
+
+/* Card selection animation - dark clay morphism */
+.card-selectable {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.card-selectable:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 20px 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.card-selectable.selected {
+  border-color: rgba(96, 133, 255, 0.5);
+  box-shadow:
+    20px 20px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(96, 133, 255, 0.3),
+    0 0 20px rgba(96, 133, 255, 0.15);
+}
