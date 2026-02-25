@@ -1,6 +1,13 @@
 #!/bin/bash
 # Safe update script for .claude/ system files
 # Preserves user data while updating system configuration
+#
+# NOTE: All logic is wrapped in main() so the entire script is loaded into
+# memory before execution begins. This prevents issues when the script
+# overwrites itself mid-run (e.g. when updating from a codebase that uses
+# this template).
+
+main() {
 
 set -e  # Exit on error
 
@@ -250,3 +257,7 @@ echo -e "\n${GREEN}Backup location:${NC} $BACKUP_DIR"
 echo -e "${YELLOW}You can safely delete the backup after verifying everything works.${NC}"
 
 echo -e "\n${GREEN}✓ Update complete!${NC}\n"
+
+} # end main
+
+main "$@"
