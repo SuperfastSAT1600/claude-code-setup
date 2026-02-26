@@ -342,8 +342,8 @@ jobs:
 
 ## Related Commands
 
-- `/test-and-build` - Run all tests including E2E
-- `/review-changes` - Review E2E test coverage
+- `/checkpoint` - Run all tests including E2E
+- `/review` - Review E2E test coverage
 - `/tdd` - Write E2E tests first (BDD style)
 
 ---

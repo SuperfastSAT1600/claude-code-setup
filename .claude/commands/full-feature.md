@@ -243,7 +243,7 @@ The command pauses for confirmation at:
 - `/checkpoint` - Run full verification gate independently
 - `/test-ladder` - Progressive test escalation tied to spec
 - `/tdd` - Just the testing phase
-- `/security-review` - Just security review
+- `/review` - Just review phase
 - `/commit-push-pr` - Just the commit/PR phase
 
 ---

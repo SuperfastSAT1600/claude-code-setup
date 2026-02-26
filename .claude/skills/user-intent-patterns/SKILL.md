@@ -31,19 +31,19 @@ Users describe what they want in plain English. Classify intent, select appropri
 
 ### Code Review
 **Triggers**: "Review...", "Check...", "Is this okay?", "Look at...", "Audit...", "Examine..."
-**Route to**: `/review-changes` skill
+**Route to**: `/review` skill
 **Examples**:
-- "Review my changes" → review-changes
-- "Check if this is secure" → security-review
+- "Review my changes" → review
+- "Check if this is secure" → review
 - "Is this code good?" → code-reviewer agent
 
 ### Security Audit
 **Triggers**: "Secure?", "Safe?", "Vulnerable?", "Security...", "Hack...", "Exploit..."
-**Route to**: `/security-review` skill
+**Route to**: `/review` skill
 **Examples**:
-- "Is this secure?" → security-review
-- "Check for vulnerabilities" → security-review
-- "Audit security" → security-review
+- "Is this secure?" → review
+- "Check for vulnerabilities" → review
+- "Audit security" → review
 
 ### Performance Optimization
 **Triggers**: "Slow...", "Fast...", "Optimize...", "Speed up...", "Performance...", "Faster..."
@@ -80,11 +80,11 @@ Users describe what they want in plain English. Classify intent, select appropri
 
 ### Quality Improvements
 **Triggers**: "Lint...", "Format...", "Type errors...", "TypeScript...", "ESLint..."
-**Route to**: `/lint-fix` or `/type-check`
+**Route to**: `/checkpoint` or `/type-check`
 **Examples**:
-- "Fix linting errors" → lint-fix
+- "Fix linting errors" → checkpoint
 - "Fix type errors" → type-check
-- "Format the code" → lint-fix
+- "Format the code" → checkpoint
 
 ### Deployment
 **Triggers**: "Deploy...", "Release...", "Ship...", "Go live...", "Publish..."
@@ -256,7 +256,7 @@ Offer options with context for each
 - User: "Users need to reset passwords" → Feature: auth-specialist
 - User: "The cart total is wrong" → Bug: quick-fix
 - User: "Make the dashboard load faster" → Optimize: frontend-specialist
-- User: "Is this PR ready?" → Review: review-changes
+- User: "Is this PR ready?" → Review: review
 - User: "Ship it" → Deploy: release workflow
 
 ### Handling Vagueness

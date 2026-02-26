@@ -273,8 +273,7 @@ Plans are saved to `.claude/plans/[feature-name].md`
 ## Related Commands
 
 - `/tdd` - Implement feature with TDD
-- `/review-changes` - Review implementation against plan
-- `/security-review` - Security audit planned changes
+- `/review` - Review implementation against plan
 
 ---
 

@@ -481,5 +481,5 @@ migrations/
 /create-migration "add status column" && npm run migrate:test
 
 # Create migration + review changes
-/create-migration "refactor user schema" && /review-changes
+/create-migration "refactor user schema" && /review
 ```

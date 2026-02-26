@@ -443,13 +443,13 @@ Generated:
 
 ```bash
 # Run type check, then lint
-/type-check && /lint-fix
+/type-check && /checkpoint
 
 # Type check before commit
 /type-check && git commit
 
 # Full quality check
-/type-check && /test-and-build
+/type-check && /checkpoint
 ```
 
 ---

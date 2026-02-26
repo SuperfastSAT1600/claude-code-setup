@@ -275,9 +275,9 @@ Great progress! Most errors are resolved.
 
 ## Related Commands
 
-- `/test-and-build` - Run tests and build together
+- `/checkpoint` - Run tests, build, and full verification
 - `/refactor-clean` - Clean up after build fixes
-- `/review-changes` - Review all applied fixes
+- `/review` - Review all applied fixes
 
 ---
 

@@ -442,6 +442,8 @@ check_dead_references() {
         ".claude/rules/testing.md"
         ".claude/rules/security.md"
         ".claude/skills/github-actions.md"
+        ".claude/plans/"
+        ".claude/user/session-log.jsonl"
     )
 
     should_skip() {

@@ -170,7 +170,7 @@ The code is already clean for this simple case. Let's move to the next test...
 
 - `/test-coverage` - Analyze test coverage
 - `/refactor-clean` - Clean code with test protection
-- `/review-changes` - Review implementation
+- `/review` - Review implementation
 
 ---
 

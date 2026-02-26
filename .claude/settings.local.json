@@ -100,7 +100,10 @@
       "Bash(./.claude/scripts/detect-error-patterns.sh:*)",
       "Bash(./.claude/scripts/mark-mcp-used.sh:*)",
       "Bash(python3:*)",
-      "Bash(__NEW_LINE_f574cdaeb39b6a5f__ echo \"\")"
+      "Bash(__NEW_LINE_f574cdaeb39b6a5f__ echo \"\")",
+      "Bash(git push:*)",
+      "Bash(gh pr comment:*)",
+      "Bash(rm:*)"
     ]
   },
   "model": "sonnet",
