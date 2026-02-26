@@ -48,11 +48,11 @@
         ]
       },
       {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"rm -rf /\"",
+        "matcher": "tool == \"Bash\"",
         "hooks": [
           {
             "type": "command",
-            "command": "echo '[Hook] BLOCKED: Dangerous rm -rf / command detected!' >&2 && exit 2"
+            "command": "bash ./.claude/scripts/block-dangerous-commands.sh \"$tool_input_command\""
           }
         ]
       },

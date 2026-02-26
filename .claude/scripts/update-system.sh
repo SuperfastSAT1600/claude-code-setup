@@ -1,6 +1,13 @@
 #!/bin/bash
 # Safe update script for .claude/ system files
 # Preserves user data while updating system configuration
+#
+# NOTE: All logic is wrapped in main() so the entire script is loaded into
+# memory before execution begins. This prevents issues when the script
+# overwrites itself mid-run (e.g. when updating from a codebase that uses
+# this template).
+
+main() {
 
 set -e  # Exit on error
 
@@ -18,18 +25,57 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}=== Claude Code System Update ===${NC}\n"
 
-# Step 1: Validate source
-echo -e "${BLUE}[1/6] Validating source...${NC}"
+# Step 1: Validate and update source
+echo -e "${BLUE}[1/6] Validating and updating source...${NC}"
+
+REPO_DIR="../claude-code-setup"
+
+if [ ! -d "$REPO_DIR" ]; then
+    echo -e "${RED}✗ Error: Repository not found: $REPO_DIR${NC}"
+    echo -e "${YELLOW}Cloning repository...${NC}"
+    cd ..
+    if ! git clone https://github.com/YOUR_REPO/claude-code-setup.git; then
+        echo -e "${RED}✗ Failed to clone repository${NC}"
+        echo -e "${YELLOW}Please clone manually:${NC}"
+        echo -e "  cd .."
+        echo -e "  git clone https://github.com/YOUR_REPO/claude-code-setup.git"
+        exit 1
+    fi
+    cd - > /dev/null
+    echo -e "${GREEN}✓ Repository cloned${NC}"
+else
+    echo -e "${GREEN}✓ Repository found: $REPO_DIR${NC}"
+
+    # Pull latest changes
+    echo -e "${YELLOW}→ Pulling latest changes...${NC}"
+    cd "$REPO_DIR"
+
+    # Stash any local changes if they exist
+    if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+        echo -e "${YELLOW}  → Stashing local changes...${NC}"
+        git stash push -m "Auto-stash before update-system $(date +%Y%m%d-%H%M%S)" > /dev/null
+    fi
+
+    # Pull latest from the default remote branch
+    if ! git pull; then
+        echo -e "${RED}✗ Failed to pull updates${NC}"
+        echo -e "${YELLOW}Please update manually:${NC}"
+        echo -e "  cd $REPO_DIR"
+        echo -e "  git pull"
+        cd - > /dev/null
+        exit 1
+    fi
+
+    cd - > /dev/null
+    echo -e "${GREEN}✓ Repository updated${NC}"
+fi
 
 if [ ! -d "$SOURCE_DIR" ]; then
     echo -e "${RED}✗ Error: Source directory not found: $SOURCE_DIR${NC}"
-    echo -e "${YELLOW}Please clone claude-code-setup to the parent directory:${NC}"
-    echo -e "  cd .."
-    echo -e "  git clone https://github.com/YOUR_REPO/claude-code-setup.git"
     exit 1
 fi
 
-echo -e "${GREEN}✓ Source found: $SOURCE_DIR${NC}"
+echo -e "${GREEN}✓ Source ready: $SOURCE_DIR${NC}"
 
 # Step 2: Detect existing installation
 echo -e "\n${BLUE}[2/6] Detecting installation...${NC}"
@@ -211,3 +257,7 @@ echo -e "\n${GREEN}Backup location:${NC} $BACKUP_DIR"
 echo -e "${YELLOW}You can safely delete the backup after verifying everything works.${NC}"
 
 echo -e "\n${GREEN}✓ Update complete!${NC}\n"
+
+} # end main
+
+main "$@"

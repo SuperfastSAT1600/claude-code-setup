@@ -14,7 +14,7 @@ Use this command when you've completed a feature or fix and want to create a PR 
 
 You are about to commit changes, push to remote, and create a pull request. Follow these steps:
 
-**IMPORTANT**: After creating the PR or pushing to an existing PR, you MUST send a notification to the Slack channel "개발" with the PR details. Use the Slack MCP to post the message.
+**IMPORTANT**: After creating the PR or pushing to an existing PR, you MUST send a notification to the Slack channel "commit-업데이트" with the PR details. Use the Slack MCP to post the message.
 
 1. **Check Current Status**
    - Run `git status` to see what files have changed
@@ -41,7 +41,9 @@ You are about to commit changes, push to remote, and create a pull request. Foll
    - If already tracking, use: `git push`
 
 5. **Create Pull Request**
-   - Use `gh pr create` command
+   - Check if `develop` branch exists on remote: `git ls-remote --heads origin develop`
+   - If `develop` exists: `gh pr create --base develop`
+   - If `develop` does not exist: `gh pr create --base main`
    - Title should be clear and descriptive
    - Body should include:
      - **Summary**: 1-3 bullet points of what changed
@@ -51,7 +53,7 @@ You are about to commit changes, push to remote, and create a pull request. Foll
 
 6. **Send Slack Notification** (REQUIRED - NO EXCEPTIONS)
    After PR creation or pushing to remote:
-   - **MUST use mcp__slack__slack_post_message tool** with channel_id="개발"
+   - **MUST use mcp__slack__slack_post_message tool** with channel_id="commit-업데이트"
    - This is NOT optional - every PR/push MUST notify the team
    - **IMPORTANT**: Translate all technical content to natural, professional Korean
    - Messages should be easily understandable by non-technical team members
@@ -107,8 +109,9 @@ EOF
 # Push
 git push -u origin feature/button-hover
 
-# Create PR
-gh pr create --title "Add hover animation to Button component" --body "$(cat <<'EOF'
+# Create PR (target develop if it exists, otherwise main)
+git ls-remote --heads origin develop  # check if develop exists
+gh pr create --base develop --title "Add hover animation to Button component" --body "$(cat <<'EOF'
 ## Summary
 - Added CSS transition for hover state
 - Improved accessibility with focus indicators
