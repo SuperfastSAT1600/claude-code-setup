@@ -51,6 +51,10 @@
       "Bash(supabase *)",
       "Bash(docker *)",
       "Bash(docker-compose *)",
+      "Bash(dir *)",
+      "Bash(timeout *)",
+      "Bash(netstat *)",
+      "Bash(pdftotext *)",
       "Bash(for *)",
       "Bash(if *)",
       "Bash(while *)",
@@ -84,17 +88,10 @@
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "filesystem",
+    "slack",
     "github",
     "supabase",
-    "memory",
-    "slack",
-    "render",
-    "cloudflare-docs",
-    "cloudflare-workers-builds",
-    "cloudflare-workers-bindings",
-    "cloudflare-observability",
-    "context7",
-    "magic-ui"
+    "memory"
   ],
   "hooks": {
     "PreToolUse": [
@@ -132,14 +129,10 @@
   "thinkingEnabled": false,
   "autoAcceptEdits": false,
   "disabledMcpServers": [
-    "filesystem",
-    "github",
     "postgres",
     "sqlite",
     "brave-search",
     "google-maps",
-    "slack",
-    "memory",
     "sequential-thinking",
     "vercel",
     "railway",
