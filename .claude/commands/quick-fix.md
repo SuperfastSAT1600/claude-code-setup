@@ -192,7 +192,7 @@ Fixes #456
 
 - Complex bugs requiring investigation (use `/plan` first)
 - Bugs requiring architectural changes
-- Performance issues (use performance-optimizer agent)
+- Performance issues (use frontend-specialist agent)
 - Security vulnerabilities (use `/security-review`)
 
 ---

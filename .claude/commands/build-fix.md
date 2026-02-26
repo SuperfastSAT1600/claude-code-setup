@@ -187,7 +187,7 @@ Great progress! Most errors are resolved.
 
 ## Command Behavior
 
-**Delegates to**: `build-error-resolver` agent
+**Delegates to**: `devops-specialist` agent
 
 **Build Commands Detected**:
 - `npm run build`

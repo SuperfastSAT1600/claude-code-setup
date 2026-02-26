@@ -40,8 +40,8 @@ Security-focused expert in authentication and authorization systems. Design and 
 
 ## Coordination
 
-- Delegate database schema to database-architect
-- Security review by security-reviewer before deployment
+- Delegate database schema to backend-specialist
+- Security review by code-reviewer before deployment
 - Use templates: guard.ts, middleware.ts, service.ts, error-handler.ts
 
 ## Resources

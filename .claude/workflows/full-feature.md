@@ -15,46 +15,64 @@ Complete feature development from planning through deployment-ready PR.
 
 ## Workflow Steps
 
-### Step 1: Planning
-**Agent**: `planner`
+### Step 1: Planning (Spec-Driven)
+**Agent**: `architect`
 **Duration**: 15-30 minutes
 
 **Actions**:
 1. Analyze feature requirements
-2. Identify affected files and modules
-3. Break down into implementable tasks
-4. Identify dependencies and risks
-5. Estimate effort
+2. Create structured spec with REQ-XXX IDs (using `.claude/templates/spec.md.template`)
+3. Tag each requirement with verification method: `(TEST)`, `(BROWSER)`, `(MANUAL)`
+4. Build traceability matrix (REQ → test/check location)
+5. Identify dependencies, risks, and implementation steps
+6. Save plan to `.claude/plans/[feature-name].md`
 
-**Output**: Implementation plan with:
-- Task breakdown
-- File modifications list
-- Dependency list
+**Output**: Structured spec with:
+- Requirements with IDs and verification tags
+- Traceability matrix
+- Implementation steps referencing REQ IDs
+- Testing strategy mapped to REQ IDs
 - Risk assessment
-- Test strategy
 
 **Gate**: ⏸️ **User approval required**
 > Review the plan before proceeding to implementation.
 
 ---
 
+### Step 1.5: Spec Audit
+**Script**: `.claude/scripts/audit-spec.sh`
+
+Validates that the plan from Step 1 has:
+- Requirement IDs on all requirements
+- Verification method tags on all requirements
+- At least one `(TEST)` verification
+- A traceability matrix
+
+**Gate**: ⏸️ **Spec must pass audit before implementation begins**
+
+---
+
 ### Step 2: Test Specification
-**Agent**: `tdd-guide`
+**Agent**: `test-writer`
 **Duration**: 20-40 minutes
 
 **Actions**:
-1. Write acceptance test specifications
-2. Create unit test skeletons
-3. Define edge cases to test
-4. Set up test fixtures
+1. Write tests that map to REQ-XXX IDs from the spec
+2. Test names should include the REQ ID: `test('REQ-001: user can register with email', ...)`
+3. Create unit test skeletons for `(TEST)` tagged requirements
+4. Create E2E test skeletons for `(BROWSER)` tagged requirements
+5. Define edge cases to test
+6. Set up test fixtures
 
 **Output**:
-- Test file(s) with failing tests
+- Test file(s) with failing tests mapped to REQ IDs
 - Test data fixtures
 - Mocked dependencies
 
 **Quality Check**:
-- [ ] Tests cover all acceptance criteria
+- [ ] Every `(TEST)` requirement has a corresponding test
+- [ ] Every `(BROWSER)` requirement has an E2E test skeleton
+- [ ] Test names include REQ IDs
 - [ ] Edge cases identified
 - [ ] Test names describe behavior
 
@@ -63,11 +81,11 @@ Complete feature development from planning through deployment-ready PR.
 ### Step 3: Implementation
 **Agent**: Main agent OR specialist (if complex domain)
 **Duration**: Variable
-**Parallel with**: Can run parallel with `api-designer` (docs) if API feature
+**Parallel with**: Can run parallel with `backend-specialist` (API design docs) if API feature
 
 **Decision**:
 - **Standard feature**: Main agent implements directly
-- **Complex domain**: Delegate to specialist (auth-specialist, database-architect, etc.)
+- **Complex domain**: Delegate to specialist (auth-specialist, backend-specialist, etc.)
 
 **Actions**:
 1. Implement code to pass tests (TDD green phase)
@@ -115,11 +133,11 @@ Complete feature development from planning through deployment-ready PR.
 ---
 
 ### Step 5: Security Review
-**Agent**: `security-reviewer`
+**Agent**: `code-reviewer` (security mode)
 **Duration**: 10-20 minutes
 
 **Actions**:
-1. Check for security vulnerabilities
+1. Check for security vulnerabilities (OWASP Top 10)
 2. Verify input validation
 3. Review authentication/authorization
 4. Check for data exposure risks
@@ -149,25 +167,25 @@ Complete feature development from planning through deployment-ready PR.
 
 ---
 
-### Step 7: Final Checks
-**Agent**: `verify-app` (or orchestrator for simple verification)
-**Duration**: 5-10 minutes
+### Step 7: Checkpoint Gate
+**Command**: `/checkpoint`
+**Script**: `.claude/scripts/checkpoint.sh`
+**Duration**: 1-5 minutes
 
-**Actions**:
-1. Run full test suite
-2. Run linting
-3. Verify build succeeds
-4. Review all changes
-5. Run PR review checklist
+Runs the full automated verification pipeline:
+1. TypeScript type checking
+2. Linting (ESLint, Ruff, etc.)
+3. Format checking (Prettier, Black, etc.)
+4. Tests (vitest, jest, pytest, etc.)
+5. Build verification
+6. Security audit (npm audit, etc.)
+7. Mutation testing (if Stryker configured)
 
-**Checklist** (auto-trigger `.claude/checklists/pr-review.md`):
-- [ ] All tests passing
-- [ ] No lint errors
-- [ ] Build successful
-- [ ] Documentation updated
-- [ ] Changelog entry added
-- [ ] Security review findings addressed
-- [ ] Code review findings addressed
+All checks must pass before proceeding to commit.
+
+**Gate**: **All checks must pass**
+
+**Alternative**: For features with mixed verification methods (TEST/BROWSER/MANUAL), use `/test-ladder` instead for progressive escalation that ties back to the spec.
 
 ---
 
@@ -218,24 +236,26 @@ Closes #123
 ## Parallel Execution Opportunities
 
 ```
-Phase 1: Planning (Optional - for complex features only)
-  planner → creates plan (if needed)
-  ↓ USER APPROVAL GATE (if plan created)
+Phase 1: Planning + Spec Audit
+  architect → creates structured spec with REQ-XXX IDs
+  ↓ SPEC AUDIT GATE (audit-spec.sh)
+  ↓ USER APPROVAL GATE
 
 Phase 2: Test + Implementation
   Main agent OR specialist:
-  - Write tests
+  - Write tests mapped to REQ IDs (test-writer)
   - Implement feature
-  - Can parallel with api-designer (docs) if API feature
+  - Can parallel with backend-specialist (API design docs) if API feature
 
 Phase 3: Review (Parallel)
   ┌─ code-reviewer ────────┐
-  ├─ security-reviewer ────┤ All run in parallel
+  ├─ code-reviewer(security)┤ All run in parallel
   └─ doc-updater ──────────┘
 
-Phase 4: Verification (Sequential)
-  Main agent OR verify-app → final checks
-  ↓ AUTO GATE (checklist)
+Phase 4: Checkpoint Gate
+  /checkpoint → types, lint, format, tests, build, security
+  (or /test-ladder for spec-driven progressive escalation)
+  ↓ ALL CHECKS MUST PASS
 
 Phase 5: Commit (Main Agent)
   Main agent → git operations, PR creation

@@ -19,11 +19,11 @@ Workflows are predefined sequences of agent invocations that automate common dev
 
 | Workflow | Purpose | Steps | Agents |
 |----------|---------|-------|--------|
-| `full-feature.md` | Complete feature development | 6 | planner, tdd-guide, code-reviewer, security-reviewer, doc-updater |
-| `bug-fix.md` | Bug fix cycle | 4 | code-reviewer, unit-test-writer |
-| `refactor.md` | Code refactoring | 5 | tech-debt-analyzer, code-reviewer, unit-test-writer |
-| `release.md` | Release preparation | 6 | security-reviewer, dependency-manager, doc-updater |
-| `security-audit.md` | Security assessment | 5 | security-reviewer |
+| `full-feature.md` | Complete feature development | 8 | architect, test-writer, code-reviewer, doc-updater |
+| `bug-fix.md` | Bug fix cycle | 5 | code-reviewer, test-writer |
+| `refactor.md` | Code refactoring | 7 | code-reviewer, test-writer |
+| `release.md` | Release preparation | 10 | code-reviewer, devops-specialist, doc-updater |
+| `security-audit.md` | Security assessment | 8 | code-reviewer |
 
 ---
 

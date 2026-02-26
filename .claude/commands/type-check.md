@@ -56,7 +56,7 @@ Agent:
 
 ## Agents Used
 
-- `type-safety-enforcer` - Eliminate type errors
+- `code-reviewer` - Eliminate type errors
 - Direct TypeScript compiler usage
 
 ---

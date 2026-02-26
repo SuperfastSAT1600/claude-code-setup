@@ -241,7 +241,7 @@ UserService.ts is now cleaner, more maintainable, and easier to understand!
 
 ## Command Behavior
 
-**Delegates to**: `refactor-cleaner` agent
+**Delegates to**: `code-reviewer` agent
 
 **Safety Checks**:
 - Runs tests after each phase

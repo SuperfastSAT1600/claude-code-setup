@@ -177,7 +177,7 @@ Generates tests for:
 
 ## Command Behavior
 
-**Delegates to**: `e2e-runner` agent
+**Delegates to**: `test-writer` agent
 
 **Provides**:
 - Test file generation

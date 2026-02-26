@@ -16,7 +16,7 @@ Systematic approach to refactoring code while maintaining functionality.
 ## Workflow Steps
 
 ### Step 1: Analyze Technical Debt
-**Agent**: `tech-debt-analyzer`
+**Agent**: `code-reviewer`
 **Duration**: 20-30 minutes
 
 **Actions**:
@@ -64,7 +64,7 @@ Systematic approach to refactoring code while maintaining functionality.
 ---
 
 ### Step 3: Ensure Test Coverage
-**Agent**: `unit-test-writer`
+**Agent**: `test-writer`
 **Duration**: Variable
 
 **Actions**:

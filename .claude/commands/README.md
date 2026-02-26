@@ -17,7 +17,7 @@ Commands differ from agents:
 
 ---
 
-## Available Commands (21 Total)
+## Available Commands (24 Total)
 
 ### Workflow Orchestration
 
@@ -27,7 +27,7 @@ Commands differ from agents:
 **Purpose**: Complete feature development from planning through PR
 
 **Steps**:
-1. Planning with planner agent
+1. Planning with architect agent
 2. Implementation following the plan
 3. Testing with TDD approach
 4. Security and code review
@@ -231,6 +231,54 @@ Commands differ from agents:
 
 ---
 
+### Verification & Quality Gates
+
+#### [`checkpoint.md`](checkpoint.md)
+**Usage**: `/checkpoint`
+
+**Purpose**: Run all automated quality checks as a single unified verification gate
+
+**What It Does**:
+- Auto-detects TypeScript, linters, formatters, test runners, build tools, security scanners
+- Runs all available checks sequentially, reporting PASS/FAIL with timing
+- Provides summary of all results
+- Replaces manual pre-PR checklists
+
+**Duration**: 1-5 minutes
+
+---
+
+#### [`test-ladder.md`](test-ladder.md)
+**Usage**: `/test-ladder`
+
+**Purpose**: Progressive test escalation — each level gates the next
+
+**What It Does**:
+- Phase 1: Unit tests (must pass)
+- Phase 2: Integration tests (must pass)
+- Phase 3: E2E tests (must pass)
+- Phase 4: Manual validation checklist from spec
+- Ties into spec-driven development with REQ-XXX verification tags
+
+**Duration**: 5-30 minutes
+
+---
+
+#### [`session-report.md`](session-report.md)
+**Usage**: `/session-report`
+
+**Purpose**: Summarize agent activity, checkpoint results, and errors
+
+**What It Does**:
+- Reads session event log
+- Reports agent invocations with success/fail rates
+- Shows checkpoint pass/fail history
+- Summarizes error categories
+
+**Duration**: < 1 minute
+
+---
+
 ### Testing & Verification
 
 #### [`tdd.md`](tdd.md)
@@ -425,9 +473,9 @@ Some commands accept arguments:
 
 | Duration | Commands |
 |----------|----------|
-| **Fast** (<1 min) | `/lint-fix`, `/audit-deps`, `/new-component`, `/open-localhost` |
-| **Medium** (5-15 min) | `/quick-fix`, `/create-migration`, `/update-docs`, `/test-coverage` |
-| **Long** (30+ min) | `/full-feature`, `/security-review`, `/e2e` |
+| **Fast** (<1 min) | `/lint-fix`, `/audit-deps`, `/new-component`, `/open-localhost`, `/session-report` |
+| **Medium** (1-15 min) | `/quick-fix`, `/create-migration`, `/update-docs`, `/test-coverage`, `/checkpoint` |
+| **Long** (15+ min) | `/full-feature`, `/security-review`, `/e2e`, `/test-ladder` |
 
 ### By Purpose
 
@@ -436,8 +484,10 @@ Some commands accept arguments:
 | **Feature Development** | `/full-feature`, `/plan`, `/tdd` |
 | **Bug Fixing** | `/quick-fix`, `/build-fix` |
 | **Code Quality** | `/lint-fix`, `/type-check`, `/dead-code`, `/refactor-clean` |
+| **Verification** | `/checkpoint`, `/test-ladder` |
 | **Testing** | `/tdd`, `/test-coverage`, `/e2e`, `/test-and-build` |
 | **Security** | `/security-review`, `/audit-deps` |
+| **Observability** | `/session-report` |
 | **Documentation** | `/update-docs` |
 | **Development Tools** | `/new-component`, `/create-migration`, `/open-localhost` |
 | **Git/CI** | `/commit-push-pr`, `/build-fix` |

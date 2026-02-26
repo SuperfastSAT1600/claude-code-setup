@@ -5,7 +5,7 @@ allowed-tools: Bash(npm audit:*), Bash(npx eslint:*), Read, Grep, Glob
 
 # Security Review Command
 
-Runs a comprehensive security audit on your codebase using the security-reviewer agent.
+Runs a comprehensive security audit on your codebase using the code-reviewer agent.
 
 ---
 
@@ -24,7 +24,7 @@ Or with specific scope:
 
 ## What It Does
 
-1. **Delegates to security-reviewer agent** with focused security context
+1. **Delegates to code-reviewer agent** with focused security context
 2. **Scans for OWASP Top 10 vulnerabilities**:
    - SQL injection
    - XSS
@@ -67,10 +67,10 @@ Or with specific scope:
 
 ### 2. Delegate to Security Agent
 
-You should delegate this task to the `security-reviewer` agent with clear scope:
+You should delegate this task to the `code-reviewer` agent with clear scope:
 
 ```
-"Delegate to the security-reviewer agent to audit [scope].
+"Delegate to the code-reviewer agent to audit [scope].
 
 Focus on:
 - Authentication and authorization
@@ -98,7 +98,7 @@ For each issue, provide:
 
 ### 3. Review Agent Report
 
-The security-reviewer will return a detailed report. Review it carefully:
+The code-reviewer will return a detailed report. Review it carefully:
 
 - **Critical issues**: Fix immediately (within 24 hours)
 - **High severity**: Fix within 1 week
@@ -131,7 +131,7 @@ gh issue create --title "Security: SQL Injection in login endpoint" --label secu
 ```
 User: /security-review src/auth/
 
-Claude: I'll delegate to the security-reviewer agent to audit the authentication module.
+Claude: I'll delegate to the code-reviewer agent to audit the authentication module.
 
 [Agent runs security analysis...]
 
@@ -188,7 +188,7 @@ Claude: I've identified 3 critical/high security issues in your authentication m
 
 ## Output Format
 
-The security-reviewer agent will provide:
+The code-reviewer agent will provide:
 
 ```markdown
 # Security Audit Report
@@ -325,7 +325,7 @@ app.post('/api/login', limiter, loginHandler);
 
 ## Tools Used
 
-The security-reviewer agent uses:
+The code-reviewer agent uses:
 
 1. **Pattern matching** for common vulnerabilities
 2. **npm audit** for dependency vulnerabilities
@@ -384,4 +384,4 @@ The security-reviewer agent uses:
 - OWASP Top 10: https://owasp.org/www-project-top-ten/
 - CWE Top 25: https://cwe.mitre.org/top25/
 - Security Rules: See `.claude/rules/security.md`
-- Security Agent: See `.claude/agents/security-reviewer.md`
+- Security Agent: See `.claude/agents/code-reviewer.md`
