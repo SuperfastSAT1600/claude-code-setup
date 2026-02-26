@@ -1,0 +1,102 @@
+# Spec: {{FEATURE_NAME}}
+
+**Author**: {{AUTHOR}}
+**Date**: {{DATE}}
+**Status**: Draft | Review | Approved | Implemented
+
+---
+
+## Overview
+
+{{Brief description of what this feature does and why it's needed.}}
+
+---
+
+## Requirements
+
+### REQ-001: {{Requirement title}}
+- **Description**: {{What the system should do — observable behavior}}
+- **Verification**: (TEST) | (BROWSER) | (MANUAL)
+- **Priority**: Must | Should | Could
+
+### REQ-002: {{Requirement title}}
+- **Description**: {{What the system should do — observable behavior}}
+- **Verification**: (TEST) | (BROWSER) | (MANUAL)
+- **Priority**: Must | Should | Could
+
+### REQ-003: {{Requirement title}}
+- **Description**: {{What the system should do — observable behavior}}
+- **Verification**: (TEST) | (BROWSER) | (MANUAL)
+- **Priority**: Must | Should | Could
+
+---
+
+## Verification Method Legend
+
+| Tag | Meaning | How |
+|-----|---------|-----|
+| **(TEST)** | Automated test | Unit or integration test asserts behavior |
+| **(BROWSER)** | Visual/DOM check | Playwright or Cypress verifies UI behavior |
+| **(MANUAL)** | Human verification | Requires human review (use sparingly) |
+
+**Rule**: Prefer `(TEST)` — only use `(MANUAL)` when automation is impossible.
+
+---
+
+## Traceability Matrix
+
+| REQ ID | Description | Verification | Test/Check Location |
+|--------|-------------|-------------|-------------------|
+| REQ-001 | {{...}} | (TEST) | `src/__tests__/...` |
+| REQ-002 | {{...}} | (BROWSER) | `e2e/...` |
+| REQ-003 | {{...}} | (MANUAL) | — |
+
+---
+
+## Technical Approach
+
+{{High-level approach and key architectural decisions.}}
+
+---
+
+## Implementation Steps
+
+### Step 1: {{Task Name}}
+- **Files**: {{List files to create/modify}}
+- **Dependencies**: {{What must be done first}}
+- **Description**: {{What to do}}
+- **Satisfies**: REQ-001, REQ-002
+
+### Step 2: {{Task Name}}
+- **Files**: {{List files}}
+- **Dependencies**: Step 1
+- **Description**: {{What to do}}
+- **Satisfies**: REQ-003
+
+---
+
+## Testing Strategy
+
+| REQ ID | Test Type | Test Location | Test Name |
+|--------|-----------|---------------|-----------|
+| REQ-001 | Unit | `src/__tests__/feature.test.ts` | `REQ-001: {{description}}` |
+| REQ-002 | E2E | `e2e/feature.spec.ts` | `REQ-002: {{description}}` |
+| REQ-003 | Manual | — | Checklist item |
+
+---
+
+## Acceptance Criteria
+
+Derived from requirements — all must be verified before feature is complete:
+
+- [ ] REQ-001: {{Observable behavior}}
+- [ ] REQ-002: {{Observable behavior}}
+- [ ] REQ-003: {{Observable behavior}}
+
+---
+
+## Risks & Considerations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| {{Risk description}} | High/Medium/Low | {{How to mitigate}} |

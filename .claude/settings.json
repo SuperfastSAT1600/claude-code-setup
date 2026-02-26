@@ -70,7 +70,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if [ -f \".claude/scripts/require-tests-pass.sh\" ]; then\n  bash ./.claude/scripts/require-tests-pass.sh\nfi || true"
+            "command": "if [ -f \".claude/scripts/checkpoint.sh\" ]; then\n  bash ./.claude/scripts/checkpoint.sh\nelif [ -f \".claude/scripts/require-tests-pass.sh\" ]; then\n  bash ./.claude/scripts/require-tests-pass.sh\nfi || true"
           }
         ]
       },
@@ -118,6 +118,15 @@
           {
             "type": "command",
             "command": "if [ -f \".claude/scripts/log-security-review.sh\" ]; then\n  bash ./.claude/scripts/log-security-review.sh 2>&1 | head -10\nfi || true"
+          }
+        ]
+      },
+      {
+        "matcher": "subagent_name matches \".*\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \".claude/scripts/log-session-event.sh\" ]; then\n  bash ./.claude/scripts/log-session-event.sh agent_completed \"$SUBAGENT_NAME\" \"$SUBAGENT_RESULT\" 2>/dev/null\nfi || true"
           }
         ]
       }

@@ -42,9 +42,8 @@ This document shows which agents use which templates for standardized code gener
 
 **Used By**:
 - **Main Agent** - Custom hook creation
-- **code-simplifier** - Extracting component logic into hooks
-- **refactor-cleaner** - Modernizing class components to hooks
-- **performance-optimizer** - Creating performance hooks (useMemo, useCallback patterns)
+- **code-reviewer** - Extracting component logic into hooks / modernizing patterns
+- **frontend-specialist** - Creating performance hooks (useMemo, useCallback patterns)
 
 **Common Use Cases**:
 - Data fetching hooks (`useUser`, `useProducts`)
@@ -61,9 +60,8 @@ This document shows which agents use which templates for standardized code gener
 **Used By**:
 - **Main Agent** - Global state management
 - **auth-specialist** - Auth context (`AuthProvider`, `useAuth`)
-- **i18n-specialist** - Translation context (`I18nProvider`, `useTranslation`)
-- **code-simplifier** - Consolidating prop drilling into context
-- **refactor-cleaner** - Modernizing state management patterns
+- **frontend-specialist** - Translation context (`I18nProvider`, `useTranslation`)
+- **code-reviewer** - Consolidating prop drilling into context / modernizing state management
 
 **Common Use Cases**:
 - Authentication context (`AuthContext`, `useAuth`)
@@ -81,8 +79,7 @@ This document shows which agents use which templates for standardized code gener
 **Used By**:
 - **Main Agent** - Cross-cutting concerns
 - **auth-specialist** - Auth HOCs (`withAuth`, `withRole`, `withPermission`)
-- **refactor-cleaner** - Refactoring shared logic into HOCs
-- **code-reviewer** - Reviewing HOC patterns
+- **code-reviewer** - Refactoring shared logic into HOCs / reviewing HOC patterns
 
 **Common Use Cases**:
 - Auth guards (`withAuth`, `withRole`, `withPermission`)
@@ -101,7 +98,7 @@ This document shows which agents use which templates for standardized code gener
 
 **Used By**:
 - **auth-specialist** - Creating auth guards and middleware
-- **security-reviewer** - Reviewing security patterns
+- **code-reviewer** - Reviewing security patterns
 
 **Common Use Cases**:
 - Auth guards (`requireAuth`, `requireRole`)
@@ -115,8 +112,8 @@ This document shows which agents use which templates for standardized code gener
 
 **Used By**:
 - **auth-specialist** - Auth middleware
-- **api-designer** - API middleware (CORS, rate limiting)
-- **security-reviewer** - Security middleware
+- **backend-specialist** - API middleware (CORS, rate limiting)
+- **code-reviewer** - Security middleware review
 
 **Common Use Cases**:
 - Authentication middleware
@@ -134,8 +131,8 @@ This document shows which agents use which templates for standardized code gener
 **Used By**:
 - **Main Agent** - Service layer creation
 - **auth-specialist** - Auth services (JWT, OAuth)
-- **api-designer** - Business logic services
-- **code-simplifier** - Extracting business logic
+- **backend-specialist** - Business logic services
+- **code-reviewer** - Extracting business logic
 
 **Common Use Cases**:
 - Auth services (`AuthService`, `JWTService`, `OAuthService`)
@@ -150,8 +147,8 @@ This document shows which agents use which templates for standardized code gener
 
 **Used By**:
 - **Main Agent** - Error handling setup
-- **api-designer** - API error responses
-- **security-reviewer** - Security error handling
+- **backend-specialist** - API error responses
+- **code-reviewer** - Security error handling review
 
 **Common Use Cases**:
 - Custom error classes (`ValidationError`, `AuthError`, `NotFoundError`)
@@ -167,9 +164,7 @@ This document shows which agents use which templates for standardized code gener
 **Purpose**: Unit/integration test with AAA pattern
 
 **Used By**:
-- **unit-test-writer** - Unit test generation
-- **integration-test-writer** - Integration tests
-- **tdd-guide** - TDD workflow
+- **test-writer** - Unit/integration test generation, TDD workflow
 - **test-coverage** - Coverage improvement
 
 **Common Use Cases**:
@@ -186,8 +181,7 @@ This document shows which agents use which templates for standardized code gener
 **Purpose**: Database migration script with rollback
 
 **Used By**:
-- **database-architect** - Schema design
-- **migration-specialist** - Migration generation
+- **backend-specialist** - Schema design and migration generation
 
 **Common Use Cases**:
 - Creating tables
@@ -204,7 +198,7 @@ This document shows which agents use which templates for standardized code gener
 
 **Used By**:
 - **Main Agent** - API endpoint creation
-- **api-designer** - REST API design
+- **backend-specialist** - REST API design
 
 **Common Use Cases**:
 - CRUD endpoints
@@ -218,7 +212,7 @@ This document shows which agents use which templates for standardized code gener
 **Purpose**: GitHub Actions CI/CD pipeline
 
 **Used By**:
-- **ci-cd-specialist** - CI/CD setup
+- **devops-specialist** - CI/CD setup
 
 **Common Use Cases**:
 - Test automation
@@ -232,7 +226,7 @@ This document shows which agents use which templates for standardized code gener
 **Purpose**: Multi-stage Docker build
 
 **Used By**:
-- **docker-specialist** - Containerization
+- **devops-specialist** - Containerization
 
 **Common Use Cases**:
 - Production containers
@@ -261,7 +255,7 @@ This document shows which agents use which templates for standardized code gener
 **Purpose**: API reference documentation
 
 **Used By**:
-- **api-designer** - API documentation
+- **backend-specialist** - API documentation
 - **doc-updater** - Documentation updates
 
 **Common Use Cases**:
@@ -277,20 +271,12 @@ This document shows which agents use which templates for standardized code gener
 |-------|----------------|
 | **Main Agent** | All templates (context-dependent) |
 | **auth-specialist** | guard.ts, middleware.ts, service.ts, context.tsx, hook.ts, hoc.tsx |
-| **api-designer** | api-route.ts, service.ts, middleware.ts, error-handler.ts |
-| **code-simplifier** | hook.ts, context.tsx |
-| **refactor-cleaner** | hook.ts, context.tsx, hoc.tsx |
-| **performance-optimizer** | hook.ts |
-| **i18n-specialist** | context.tsx |
-| **database-architect** | migration.sql |
-| **migration-specialist** | migration.sql |
-| **unit-test-writer** | test.spec.ts |
-| **integration-test-writer** | test.spec.ts |
-| **tdd-guide** | test.spec.ts |
-| **ci-cd-specialist** | github-workflow.yml |
-| **docker-specialist** | Dockerfile.template |
+| **backend-specialist** | api-route.ts, service.ts, middleware.ts, error-handler.ts, migration.sql |
+| **code-reviewer** | hook.ts, context.tsx, hoc.tsx, guard.ts, middleware.ts, error-handler.ts |
+| **frontend-specialist** | hook.ts, context.tsx |
+| **test-writer** | test.spec.ts |
+| **devops-specialist** | github-workflow.yml, Dockerfile.template |
 | **doc-updater** | pr-description.md, api-documentation.md |
-| **security-reviewer** | guard.ts, middleware.ts, error-handler.ts |
 
 ---
 

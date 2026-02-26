@@ -108,7 +108,7 @@ The code is already clean for this simple case. Let's move to the next test...
 
 ## Command Behavior
 
-**Delegates to**: `tdd-guide` agent
+**Delegates to**: `test-writer` agent
 
 **Provides**:
 - Feature breakdown
@@ -170,7 +170,7 @@ The code is already clean for this simple case. Let's move to the next test...
 
 - `/test-coverage` - Analyze test coverage
 - `/refactor-clean` - Clean code with test protection
-- `/review-changes` - Review implementation
+- `/review` - Review implementation
 
 ---
 
@@ -192,7 +192,7 @@ The code is already clean for this simple case. Let's move to the next test...
 
 - Test Template: `.claude/templates/test.spec.ts.template`
 - TDD Workflow Skill: `.claude/skills/tdd-workflow/SKILL.md`
-- TDD Guide Agent: `.claude/agents/tdd-guide.md`
+- TDD Guide Agent: `.claude/agents/test-writer.md`
 
 ---
 

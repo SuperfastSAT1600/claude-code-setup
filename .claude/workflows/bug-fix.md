@@ -39,7 +39,7 @@ Systematic approach to fixing bugs with proper testing and verification.
 ---
 
 ### Step 2: Write Regression Test
-**Agent**: `unit-test-writer`
+**Agent**: `test-writer`
 **Duration**: 10-20 minutes
 
 **Actions**:

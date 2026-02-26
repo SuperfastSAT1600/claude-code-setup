@@ -202,6 +202,67 @@ test('checkout creates order', () => {
 
 ---
 
+## Spec-Driven TDD
+
+When working with a spec (`.claude/templates/spec.md.template`), map tests directly to requirement IDs:
+
+```typescript
+// Test names include REQ ID for traceability
+test('REQ-001: user can register with valid email', () => {
+  const result = register({ email: 'user@example.com', password: 'Str0ng!' });
+  expect(result.success).toBe(true);
+});
+
+test('REQ-002: registration rejects invalid email', () => {
+  const result = register({ email: 'invalid', password: 'Str0ng!' });
+  expect(result.error).toBe('INVALID_EMAIL');
+});
+
+test('REQ-003: confirmation email is sent after registration', () => {
+  register({ email: 'user@example.com', password: 'Str0ng!' });
+  expect(mockMailer.sent).toHaveLength(1);
+});
+```
+
+**Verification tag mapping**:
+- `(TEST)` requirements → Unit/integration tests (Phases 1-2 of test ladder)
+- `(BROWSER)` requirements → Playwright/Cypress E2E tests (Phase 3)
+- `(MANUAL)` requirements → Human checklist (Phase 4)
+
+---
+
+## Mutation Testing
+
+Mutation testing validates that your tests actually catch bugs — not just that they run green.
+
+### What It Does
+A mutation tool (like Stryker) modifies your code (e.g., changes `>` to `>=`, removes a return) and checks if your tests catch the change. If they don't, you have a "surviving mutant" — a gap in your test coverage.
+
+### When to Use
+- Critical business logic (payments, auth, data validation)
+- After achieving high line coverage but wanting confidence
+- Pre-release verification for core modules
+
+### Setup (Stryker for JS/TS)
+```bash
+npx stryker init
+```
+
+### Running
+```bash
+npx stryker run --reporters clear-text
+```
+
+### Target Scores
+- Critical business logic: ≥70% mutation score
+- General code: ≥50% mutation score
+- Configuration/glue code: not required
+
+### Integration with Checkpoint
+When Stryker is configured (`stryker.conf.js` or `stryker.conf.mjs`), the `/checkpoint` command automatically runs mutation testing as an optional step.
+
+---
+
 ## When to Use TDD
 
 ### ✅ Use TDD For:
@@ -223,3 +284,4 @@ test('checkout creates order', () => {
 
 - Test-Driven Development by Kent Beck
 - Growing Object-Oriented Software, Guided by Tests
+- Stryker Mutator: https://stryker-mutator.io

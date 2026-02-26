@@ -192,15 +192,15 @@ Fixes #456
 
 - Complex bugs requiring investigation (use `/plan` first)
 - Bugs requiring architectural changes
-- Performance issues (use performance-optimizer agent)
-- Security vulnerabilities (use `/security-review`)
+- Performance issues (use frontend-specialist agent)
+- Security vulnerabilities (use `/review`)
 
 ---
 
 ## Related Commands
 
 - `/full-feature` - For complex fixes needing planning
-- `/test-and-build` - Just run tests and build
+- `/checkpoint` - Run tests, build, and full verification
 - `/commit-push-pr` - Just create PR
 
 ---

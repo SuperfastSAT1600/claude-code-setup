@@ -1,0 +1,245 @@
+#!/bin/bash
+# =============================================================================
+# Audit Spec
+# Description: Validate spec quality — requirement IDs, verification tags, traceability
+# Usage: ./.claude/scripts/audit-spec.sh [path-to-spec]
+# Exit Codes: 0 = all verified, 1 = warnings, 2 = unverified requirements
+# =============================================================================
+
+set -euo pipefail
+
+# Constants
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+readonly PLANS_DIR="$PROJECT_ROOT/.claude/plans"
+
+# Colors
+if [[ -t 1 ]]; then
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    YELLOW='\033[0;33m'
+    BLUE='\033[0;34m'
+    NC='\033[0m'
+else
+    RED=''
+    GREEN=''
+    YELLOW=''
+    BLUE=''
+    NC=''
+fi
+
+# =============================================================================
+# Helper Functions
+# =============================================================================
+
+log_pass() {
+    echo -e "${GREEN}[PASS]${NC} $*"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $*" >&2
+}
+
+log_fail() {
+    echo -e "${RED}[FAIL]${NC} $*" >&2
+}
+
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $*"
+}
+
+# =============================================================================
+# Find Spec File
+# =============================================================================
+
+find_spec_file() {
+    local spec_path="${1:-}"
+
+    # If path argument provided, use it
+    if [[ -n "$spec_path" ]]; then
+        if [[ -f "$spec_path" ]]; then
+            echo "$spec_path"
+            return 0
+        else
+            log_fail "Spec file not found: $spec_path"
+            return 1
+        fi
+    fi
+
+    # Otherwise, find most recent plan in .claude/plans/
+    if [[ ! -d "$PLANS_DIR" ]]; then
+        log_fail "Plans directory not found: $PLANS_DIR"
+        log_info "Create a plan first with /plan or save a spec to .claude/plans/"
+        return 1
+    fi
+
+    local latest
+    latest=$(find "$PLANS_DIR" -name "*.md" -type f -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -n 1)
+
+    if [[ -z "$latest" ]]; then
+        log_fail "No spec files found in $PLANS_DIR"
+        log_info "Create a plan first with /plan or save a spec to .claude/plans/"
+        return 1
+    fi
+
+    echo "$latest"
+}
+
+# =============================================================================
+# Audit Functions
+# =============================================================================
+
+audit_requirement_ids() {
+    local spec_file="$1"
+    local req_count=0
+
+    # Find all REQ-XXX patterns
+    req_count=$(grep -cE 'REQ-[0-9]{3}' "$spec_file" 2>/dev/null || echo 0)
+
+    # Find unique requirement IDs (defined as headers or list items)
+    local unique_reqs
+    unique_reqs=$(grep -oE 'REQ-[0-9]{3}' "$spec_file" 2>/dev/null | sort -u | wc -l | tr -d ' ')
+
+    echo "$unique_reqs"
+}
+
+audit_verification_tags() {
+    local spec_file="$1"
+    local verified=0
+    local unverified=0
+    local req_ids
+
+    # Get all unique REQ IDs that appear as requirement definitions (### REQ-XXX or REQ-XXX:)
+    req_ids=$(grep -oE 'REQ-[0-9]{3}' "$spec_file" 2>/dev/null | sort -u)
+
+    if [[ -z "$req_ids" ]]; then
+        echo "0 0"
+        return
+    fi
+
+    while IFS= read -r req_id; do
+        # Check if this REQ has a Verification line nearby
+        if grep -A 3 "$req_id" "$spec_file" 2>/dev/null | grep -qE '\*\*Verification\*\*.*\((TEST|BROWSER|MANUAL)\)'; then
+            verified=$((verified + 1))
+        else
+            unverified=$((unverified + 1))
+        fi
+    done <<< "$req_ids"
+
+    echo "$verified $unverified"
+}
+
+audit_test_verification() {
+    local spec_file="$1"
+    local has_test=0
+
+    # Check if at least one (TEST) verification exists
+    if grep -qE '\(TEST\)' "$spec_file" 2>/dev/null; then
+        has_test=1
+    fi
+
+    echo "$has_test"
+}
+
+audit_traceability_matrix() {
+    local spec_file="$1"
+    local has_matrix=0
+
+    # Check for traceability matrix section
+    if grep -qiE '(traceability matrix|traceability|REQ ID.*Description.*Verification)' "$spec_file" 2>/dev/null; then
+        has_matrix=1
+    fi
+
+    echo "$has_matrix"
+}
+
+# =============================================================================
+# Main
+# =============================================================================
+
+main() {
+    echo "=============================================="
+    echo "Spec Audit"
+    echo "=============================================="
+    echo ""
+
+    # Find spec file
+    local spec_file
+    spec_file=$(find_spec_file "${1:-}") || exit 2
+
+    local relpath="${spec_file#$PROJECT_ROOT/}"
+    log_info "Auditing: $relpath"
+    echo ""
+
+    local exit_code=0
+    local total_reqs=0
+    local verified=0
+    local unverified=0
+
+    # 1. Check requirement IDs
+    total_reqs=$(audit_requirement_ids "$spec_file")
+    if [[ "$total_reqs" -eq 0 ]]; then
+        log_fail "No requirement IDs (REQ-XXX) found"
+        exit_code=2
+    else
+        log_pass "$total_reqs unique requirement IDs found"
+    fi
+
+    # 2. Check verification tags
+    read -r verified unverified <<< "$(audit_verification_tags "$spec_file")"
+    if [[ "$unverified" -gt 0 ]]; then
+        log_fail "$unverified requirements missing verification tags"
+        exit_code=2
+    elif [[ "$verified" -gt 0 ]]; then
+        log_pass "All $verified requirements have verification tags"
+    fi
+
+    # 3. Check for at least one (TEST) verification
+    local has_test
+    has_test=$(audit_test_verification "$spec_file")
+    if [[ "$has_test" -eq 0 ]]; then
+        log_warn "No (TEST) verification found — at least one automated test recommended"
+        [[ $exit_code -lt 1 ]] && exit_code=1
+    else
+        log_pass "At least one (TEST) verification exists"
+    fi
+
+    # 4. Check for traceability matrix
+    local has_matrix
+    has_matrix=$(audit_traceability_matrix "$spec_file")
+    if [[ "$has_matrix" -eq 0 ]]; then
+        log_warn "No traceability matrix found"
+        [[ $exit_code -lt 1 ]] && exit_code=1
+    else
+        log_pass "Traceability matrix present"
+    fi
+
+    # Summary
+    echo ""
+    echo "=============================================="
+    echo "Summary"
+    echo "=============================================="
+    echo "  Requirements found: $total_reqs"
+    echo "  With verification:  $verified"
+    echo "  Without verification: $unverified"
+    echo "  Has (TEST) tags: $([ "$has_test" -eq 1 ] && echo 'yes' || echo 'no')"
+    echo "  Has traceability matrix: $([ "$has_matrix" -eq 1 ] && echo 'yes' || echo 'no')"
+    echo ""
+
+    if [[ $exit_code -eq 0 ]]; then
+        echo -e "${GREEN}PASSED: Spec is well-structured${NC}"
+    elif [[ $exit_code -eq 1 ]]; then
+        echo -e "${YELLOW}WARNINGS: Spec has minor issues${NC}"
+    else
+        echo -e "${RED}FAILED: Spec has unverified requirements${NC}"
+        echo ""
+        echo "To fix:"
+        echo "  1. Add REQ-XXX IDs to all requirements"
+        echo "  2. Add Verification: (TEST)|(BROWSER)|(MANUAL) to each"
+        echo "  3. Add a traceability matrix mapping REQs to test files"
+    fi
+
+    exit $exit_code
+}
+
+main "$@"
