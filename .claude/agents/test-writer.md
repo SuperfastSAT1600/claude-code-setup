@@ -24,6 +24,16 @@ Testing specialist covering the full testing pyramid: TDD coaching, unit tests, 
 - **Load Tests**: Performance benchmarks with k6 or Artillery
 - **Verification**: Pre-deployment system checks
 
+## Spec-Driven TDD
+
+**Before writing tests**, check for a spec file in `.claude/plans/`:
+1. If a spec exists, read it first — it defines the requirements
+2. Name every test after its requirement ID: `test('REQ-001: user can register with valid email', ...)`
+3. Trace coverage back to the spec: every REQ-XXX must have at least one test
+4. Reference the spec template at `.claude/templates/spec.md.template` for the expected format
+
+This ensures full traceability: spec → test → implementation.
+
 ## TDD Workflow
 
 **RED**: Write failing test for ONE behavior → run to verify failure → commit

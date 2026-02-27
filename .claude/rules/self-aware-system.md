@@ -62,6 +62,7 @@ Summarize observations grouped by type (heal/evolve/adapt/refactor). Be concise.
 
 **Never auto-modify**:
 - `.claude/settings.json`
+- `.claude/settings.local.json`
 - `.claude/rules/essential-rules.md`
 - `setup.cjs`
 
@@ -108,7 +109,7 @@ Subagent fixes follow the same approval tiers as Resolution above — auto-apply
 - **Primary task first**: Never delay or derail the user's work for self-improvement
 - **Session cap**: Maximum 5 system changes per session (across all four types)
 - **Scope cap**: Maximum 5 files modified per single change action
-- **Immutable files**: Never modify settings.json, essential-rules.md, or setup.cjs
+- **Immutable files**: Never modify settings.json, settings.local.json, essential-rules.md, or setup.cjs
 - **Git discipline**: Every system change gets its own commit with prefix: `heal()`, `evolve()`, `adapt()`, or `refactor()`
 - **No loops**: If the same issue recurs after a fix attempt, escalate to user — do not retry
 - **Observation overflow**: If >10 observations accumulate, suggest running `/health-check` instead of inline resolution

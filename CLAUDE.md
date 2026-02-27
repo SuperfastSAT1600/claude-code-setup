@@ -13,8 +13,8 @@
 
 ## Quick Reference
 
-**Workflow**: Main agent codes standard tasks, delegates to 34 specialized agents for expertise
-**Agents (34)**: See `.claude/agents/` for full list and INDEX.md
+**Workflow**: Main agent codes standard tasks, delegates to 11 specialized agents for expertise
+**Agents (11)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
 - Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
@@ -33,7 +33,7 @@ This setup continuously improves itself. During every task, the system observes 
 - **Rules**: `.claude/rules/self-aware-system.md`
 - **User Data**: `.claude/user/` (changelog, errors, custom content)
 - **Health Check**: Run `/health-check` for a comprehensive audit
-- **Agent count**: 34 (33 specialists + 1 system-health)
+- **Agent count**: 11 specialists
 
 ### Mandatory Checkpoints (Every Task)
 
@@ -57,8 +57,8 @@ Just describe what you want in plain English:
 | "Add a user profile page" | Main agent implements directly |
 | "I want users to log in with OAuth" | Delegates to auth-specialist |
 | "The checkout is broken" | Main agent fixes via quick-fix workflow |
-| "Is this code secure?" | Delegates to security-reviewer |
-| "Make the page faster" | Delegates to performance-optimizer |
+| "Is this code secure?" | Delegates to code-reviewer |
+| "Make the page faster" | Delegates to frontend-specialist |
 
 ### Main Agent Templates
 
@@ -81,7 +81,7 @@ When creating React code, the main agent uses:
 **Documentation**:
 - `docs/PRD.md` - Product requirements, architecture
 - `.claude/rules/` - Mandatory protocols
-- `.claude/agents/INDEX.md` - All 34 specialists
+- `.claude/agents/INDEX.md` - All 11 specialists
 - `.claude/skills/` - Domain patterns
 
 **Configuration**:

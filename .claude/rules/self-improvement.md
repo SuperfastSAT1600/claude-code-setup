@@ -110,7 +110,7 @@ Format:
 
 **Limits**: Primary task first, max 5 changes/session, max 5 files/change, escalate if recurs
 
-**Immutable**: `.claude/settings.json`, `.claude/settings.local.json`, `.claude/rules/coding-standards.md`, `CLAUDE.md`, `setup.cjs`
+**Immutable**: `.claude/settings.json`, `.claude/settings.local.json`, `.claude/rules/essential-rules.md`, `setup.cjs`
 
 **Git**: Every change = own commit (heal/enhance prefix), user features = NO auto-commits
 
