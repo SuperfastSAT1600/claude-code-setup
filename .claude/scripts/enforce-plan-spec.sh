@@ -5,8 +5,7 @@
 # Called by: PreToolUse hook on ExitPlanMode
 # Exit codes:
 #   0 = spec passes audit (allow exit)
-#   1 = no spec found (warn, allow exit — covers research/docs/config exceptions)
-#   2 = spec exists but fails audit (BLOCK exit)
+#   2 = no spec found OR spec fails audit (BLOCK exit)
 # =============================================================================
 
 PLANS_DIR=".claude/plans"
@@ -20,12 +19,16 @@ if [[ -d "$PLANS_DIR" ]]; then
         | head -n 1)
 fi
 
-# No spec found — warn but allow (covers research/docs/config-only exceptions)
+# No spec found — BLOCK
 if [[ -z "$latest" ]]; then
-    echo "[Hook] WARNING: No spec found in .claude/plans/" >&2
-    echo "[Hook] CLAUDE: If this is a feature task, create a spec now using .claude/templates/spec.md.template" >&2
-    echo "[Hook] CLAUDE: If this is research/docs/config only, you may proceed." >&2
-    exit 1
+    echo "[Hook] BLOCKED — no spec found in .claude/plans/" >&2
+    echo "" >&2
+    echo "[Hook] CLAUDE ACTION REQUIRED: Do NOT wait or ask the user." >&2
+    echo "[Hook] CLAUDE: Write the plan to a file now:" >&2
+    echo "[Hook]   1. Create .claude/plans/[feature-name].md using .claude/templates/spec.md.template" >&2
+    echo "[Hook]   2. Add REQ-XXX IDs, (TEST)/(BROWSER)/(MANUAL) tags, and a traceability matrix" >&2
+    echo "[Hook]   3. Then call ExitPlanMode again automatically." >&2
+    exit 2
 fi
 
 # Spec found — run audit
