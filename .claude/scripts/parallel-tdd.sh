@@ -14,7 +14,7 @@
 # Requirements: git, claude CLI
 # Auto-detects launch method per OS:
 #   macOS:   osascript → opens VS Code terminal tabs
-#   Windows: wt.exe (Windows Terminal) → or PowerShell SendKeys into VS Code
+#   Windows: wt.exe (Windows Terminal) → new tabs; else print instructions
 #   Linux:   xdotool → or tmux → or print instructions
 #   --tmux:  force tmux on any OS
 #
@@ -396,50 +396,6 @@ launch_windows_wt() {
 }
 
 # =============================================================================
-# Launch: Windows — PowerShell SendKeys into VS Code
-# =============================================================================
-
-launch_windows_ps() {
-    log_info "Opening VS Code terminal tabs via PowerShell..."
-
-    for ((i=0; i<NUM_AGENTS; i++)); do
-        local agent_n=$((i+1))
-        local startup="$TMP_DIR/agent-${agent_n}.sh"
-        local win_startup
-        win_startup=$(to_win_path "$startup")
-
-        # Escape backslashes for PowerShell string
-        local ps_startup="${win_startup//\\/\\\\}"
-
-        powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type @'
-using System;
-using System.Runtime.InteropServices;
-public class Win32 {
-    [DllImport(\"user32.dll\")] public static extern bool SetForegroundWindow(IntPtr hWnd);
-    [DllImport(\"user32.dll\")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-}
-'@
-\$code = Get-Process 'Code' -ErrorAction SilentlyContinue |
-    Where-Object { \$_.MainWindowHandle -ne [IntPtr]::Zero } |
-    Select-Object -First 1
-if (-not \$code) { Write-Error 'VS Code is not running'; exit 1 }
-[Win32]::ShowWindow(\$code.MainWindowHandle, 9) | Out-Null
-[Win32]::SetForegroundWindow(\$code.MainWindowHandle) | Out-Null
-Start-Sleep -Milliseconds 600
-[System.Windows.Forms.SendKeys]::SendWait('^+\`')
-Start-Sleep -Milliseconds 1400
-[System.Windows.Forms.SendKeys]::SendWait('bash ${ps_startup}{ENTER}')
-Start-Sleep -Milliseconds 2800
-[System.Windows.Forms.SendKeys]::SendWait('Read .claude-task.md and begin implementing your assigned requirements.{ENTER}')
-"
-        log_ok "Agent $agent_n → VS Code terminal (${WORKSTREAMS[$i]})"
-        sleep 0.5
-    done
-}
-
-# =============================================================================
 # Launch: Linux — xdotool into VS Code
 # =============================================================================
 
@@ -586,7 +542,6 @@ main() {
     case "$mode" in
         vscode-mac)   launch_vscode "$feature" ;;
         windows-wt)   launch_windows_wt ;;
-        windows-ps)   launch_windows_ps ;;
         vscode-linux) launch_vscode_linux ;;
         tmux)         launch_tmux "$feature" ;;
         print)        launch_print "$feature" ;;
