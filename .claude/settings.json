@@ -3,6 +3,24 @@
   "hooks": {
     "PreToolUse": [
       {
+        "matcher": "tool == \"EnterPlanMode\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Plan mode: You MUST create a spec in .claude/plans/[feature].md before ExitPlanMode.' >&2 && echo '[Hook] Template: .claude/templates/spec.md.template | Requires: REQ-XXX IDs, verification tags, traceability matrix' >&2"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"ExitPlanMode\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./.claude/scripts/enforce-plan-spec.sh"
+          }
+        ]
+      },
+      {
         "matcher": "tool in [\"Edit\", \"Write\", \"Task\"]",
         "hooks": [
           {
@@ -429,5 +447,8 @@
     }
   ],
   "thinkingEnabled": true,
-  "autoAcceptEdits": false
+  "autoAcceptEdits": false,
+  "permissions": {
+    "defaultMode": "plan"
+  }
 }
