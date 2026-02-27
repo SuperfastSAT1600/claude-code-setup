@@ -151,6 +151,15 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "tool == \"ExitPlanMode\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./.claude/scripts/launch-parallel-tdd.sh"
+          }
+        ]
+      },
+      {
         "matcher": "tool == \"Read\" && tool_input.file_path matches \"errors\\\\.md$\"",
         "hooks": [
           {
