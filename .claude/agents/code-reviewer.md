@@ -96,14 +96,15 @@ function process(data: unknown): string {
 [Organized by severity]
 ```
 
-## Resource Checklist
+## INIT Checklist
 
-- Search Memory for past review patterns before starting
-- Store vulnerability patterns in Memory for cross-audit tracking
+1. **Load skills**: `Skill("coding-standards")` (always), plus context-dependent skills
+2. Search Memory for past review patterns before starting
+3. Store vulnerability patterns in Memory for cross-audit tracking
 
 ## Recommended MCPs
 
-Before starting work, use ToolSearch to load these MCP servers if needed:
+MCP servers available for this domain (use directly — no loading needed):
 
 - **context7**: Query security standards, OWASP documentation, library references
 - **memory**: Retrieve past review patterns and vulnerability findings

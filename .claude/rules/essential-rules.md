@@ -21,7 +21,7 @@ const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ```
 
 ### Authentication
-- Hash passwords with bcrypt (min 10 rounds)
+- Hash passwords with bcrypt (min 12 rounds)
 - JWT: Short expiry (15-30 min), httpOnly cookies
 - Rate limit auth endpoints (5 attempts/15 min)
 

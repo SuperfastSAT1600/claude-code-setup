@@ -1,0 +1,130 @@
+# Spec: {{COMPONENT_NAME}} (UI)
+
+**Author**: {{AUTHOR}}
+**Date**: {{DATE}}
+**Status**: Draft | Review | Approved | Implemented
+
+---
+
+## Overview
+
+{{Brief description of the UI component/page and its purpose.}}
+
+---
+
+## Component States
+
+| State | Description | Visual |
+|-------|-------------|--------|
+| Default | {{Normal appearance}} | — |
+| Loading | {{While data loads}} | Skeleton / spinner |
+| Empty | {{No data to display}} | Empty state message |
+| Error | {{Fetch or validation error}} | Error banner |
+| Disabled | {{When interaction blocked}} | Grayed out |
+
+---
+
+## Interactions
+
+| Action | Trigger | Result |
+|--------|---------|--------|
+| {{Click button}} | User click | {{Navigate / submit / toggle}} |
+| {{Type in field}} | Keystroke | {{Filter / validate / search}} |
+| {{Hover element}} | Mouse enter | {{Show tooltip / highlight}} |
+
+---
+
+## Requirements
+
+### REQ-001: {{Component renders}}
+- **Description**: {{Component renders with expected content in default state}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-002: {{User interaction}}
+- **Description**: {{What happens when user interacts — click, type, etc.}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-003: {{Visual/layout behavior}}
+- **Description**: {{Responsive layout, animation, visual state change}}
+- **Verification**: (BROWSER)
+- **Priority**: Must
+
+### REQ-004: {{Accessibility}}
+- **Description**: {{Keyboard nav, ARIA labels, screen reader, focus management}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-005: {{Error/edge state}}
+- **Description**: {{Empty state, error state, loading state handled}}
+- **Verification**: (TEST)
+- **Priority**: Should
+
+---
+
+## Traceability Matrix
+
+| REQ ID | Description | Verification | Test/Check Location |
+|--------|-------------|-------------|-------------------|
+| REQ-001 | {{...}} | (TEST) | `src/__tests__/{{Component}}.test.tsx` |
+| REQ-002 | {{...}} | (TEST) | `src/__tests__/{{Component}}.test.tsx` |
+| REQ-003 | {{...}} | (BROWSER) | `e2e/{{component}}.spec.ts` |
+| REQ-004 | {{...}} | (TEST) | `src/__tests__/{{Component}}.test.tsx` |
+| REQ-005 | {{...}} | (TEST) | `src/__tests__/{{Component}}.test.tsx` |
+
+---
+
+## Technical Approach
+
+{{Component structure, props API, state management, data fetching.}}
+
+### Props Interface
+
+```typescript
+interface {{Component}}Props {
+  // {{prop}}: {{type}} — {{description}}
+}
+```
+
+---
+
+## Implementation Steps
+
+### Step 1: Component shell + default render
+- **Files**: `src/components/{{Component}}.tsx`
+- **Satisfies**: REQ-001
+
+### Step 2: Interactions + state
+- **Files**: `src/components/{{Component}}.tsx`, `src/hooks/use{{Feature}}.ts`
+- **Satisfies**: REQ-002, REQ-005
+
+### Step 3: Accessibility
+- **Files**: `src/components/{{Component}}.tsx`
+- **Satisfies**: REQ-004
+
+### Step 4: Visual polish + responsive
+- **Files**: `src/components/{{Component}}.tsx`
+- **Satisfies**: REQ-003
+
+---
+
+## Testing Strategy
+
+| REQ ID | Test Type | Test Location | Test Name |
+|--------|-----------|---------------|-----------|
+| REQ-001 | Unit | `src/__tests__/{{Component}}.test.tsx` | `REQ-001: {{description}}` |
+| REQ-002 | Unit | `src/__tests__/{{Component}}.test.tsx` | `REQ-002: {{description}}` |
+| REQ-003 | E2E | `e2e/{{component}}.spec.ts` | `REQ-003: {{description}}` |
+| REQ-004 | Unit | `src/__tests__/{{Component}}.test.tsx` | `REQ-004: {{description}}` |
+| REQ-005 | Unit | `src/__tests__/{{Component}}.test.tsx` | `REQ-005: {{description}}` |
+
+---
+
+## Acceptance Criteria
+
+- [ ] REQ-001: {{Renders correctly}}
+- [ ] REQ-002: {{Interaction works}}
+- [ ] REQ-003: {{Looks correct visually}}
+- [ ] REQ-004: {{Accessible via keyboard + screen reader}}
+- [ ] REQ-005: {{Edge states handled}}

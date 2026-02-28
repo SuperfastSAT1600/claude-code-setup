@@ -8,6 +8,8 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 
 **FIRST ACTION (MANDATORY)**: Use the Read tool to read `.claude/user/errors.md` (main agent) or `.claude/user/agent-errors/{name}.md` (subagent). This MUST be your first task upon loading.
 
+**LOAD SKILLS**: Call `Skill("name")` for each skill relevant to your current task. Skills contain authoritative patterns that override general knowledge. Check your INIT Checklist or the orchestration.md Skills-First table for which skills to load.
+
 **PRD** (core features): `docs/PRD.md` for scope, architecture, metrics
 
 ---
@@ -17,7 +19,7 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 ### Delegation Check
 
 Specialist required? Check `orchestration.md`:
-Database → database-architect, migration-specialist | API → api-designer, graphql-specialist | Auth → auth-specialist | Security → security-reviewer | Testing → unit-test-writer, integration-test-writer, e2e-runner | Infrastructure → docker-specialist, ci-cd-specialist | Code review → code-reviewer | Performance → performance-optimizer
+Database → backend-specialist | API → backend-specialist | Auth → auth-specialist | Security → code-reviewer | Testing → test-writer | Infrastructure → devops-specialist | Code review → code-reviewer | Performance → frontend-specialist | Real-time → realtime-specialist | Mobile → mobile-specialist | Architecture → architect | Docs → doc-updater
 
 **If specialist exists: DELEGATE. Exception**: <10 lines, no domain knowledge, follows patterns, no architecture.
 
@@ -77,7 +79,7 @@ Fixed: [file] - [what]
 ## Quick Reference
 
 ```
-INIT:    Read errors.md FIRST → PRD
+INIT:    Read errors.md FIRST → Load relevant skills → PRD
 PRE:     Delegate? Parallel? Task list?
 DURING:  Error → STOP → LOG → VERIFY → THEN
 POST:    Observations → Heal → Errors → Changelog → DOCS

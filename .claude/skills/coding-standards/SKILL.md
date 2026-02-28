@@ -7,6 +7,8 @@ description: Provides language-agnostic best practices and language-specific cod
 
 Language-agnostic best practices and language-specific patterns.
 
+> **Extends**: `.claude/rules/essential-rules.md` — this skill adds depth to the coding style, TypeScript, and testing sections defined there. For core rules (security, error handling, API design), see `essential-rules.md`.
+
 ---
 
 ## General Principles

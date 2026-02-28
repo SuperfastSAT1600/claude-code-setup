@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Slack PR Notification Script
-# Sends notifications to the 개발 channel when PRs are created or pushed
+# Sends notifications to the commit-업데이트 channel when PRs are created or pushed
 # Messages are in natural Korean for non-technical team members
 #
 # Usage:
@@ -12,12 +12,12 @@
 #   - push: Code was pushed to remote
 #
 # Environment variables:
-#   - SLACK_CHANNEL: Channel name (default: 개발)
+#   - SLACK_CHANNEL: Channel name (default: commit-업데이트)
 
 set -e
 
 EVENT_TYPE="${1:-unknown}"
-SLACK_CHANNEL="${SLACK_CHANNEL:-개발}"
+SLACK_CHANNEL="${SLACK_CHANNEL:-commit-업데이트}"
 
 # Get current branch
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")

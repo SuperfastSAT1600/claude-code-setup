@@ -69,7 +69,9 @@
       "mcp__cloudflare*",
       "mcp__magic-ui__*",
       "Skill(*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(do echo:*)",
+      "Bash(python3:*)"
     ],
     "deny": [
       "Bash(rm -rf /)",

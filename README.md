@@ -32,7 +32,7 @@ The setup wizard will:
 - **Auto-install required dependencies** (`enquirer`) if missing
 - Detect your platform (Windows/macOS/Linux) and configure MCP servers accordingly
 - **Configure MCP servers ONLY** (no CLI tools like GitHub CLI or Supabase CLI)
-- **REQUIRE Slack MCP setup** (mandatory for PR notifications to 개발 channel)
+- **REQUIRE Slack MCP setup** (mandatory for PR notifications to commit-업데이트 channel)
 - Collect API credentials for all enabled MCP servers (GitHub PAT, Supabase project ref, etc.)
 - Store credentials securely in gitignored `.mcp.json`
 - Create your `.env` file from the template
@@ -59,7 +59,7 @@ The setup wizard will:
 
 ### Required MCP Servers
 
-**Slack MCP** (REQUIRED): This template requires Slack MCP for automatic PR notifications to the 개발 channel. You'll need:
+**Slack MCP** (REQUIRED): This template requires Slack MCP for automatic PR notifications to the commit-업데이트 channel. You'll need:
 - Slack Bot Token (from https://api.slack.com/apps)
 - Slack Team ID (starts with T)
 
@@ -92,7 +92,7 @@ cp .claude/templates/.env.example .env
 ### ⚡ Custom Commands (20)
 - `/full-feature` - Complete feature cycle (plan → test → PR)
 - `/quick-fix` - Fast bug fix workflow
-- `/commit-push-pr` - Commit, push, and create PR workflow (auto-notifies 개발 channel in natural Korean)
+- `/commit-push-pr` - Commit, push, and create PR workflow (auto-notifies commit-업데이트 channel in natural Korean)
 - `/review-changes` - Comprehensive code review
 - `/test-and-build` - Run tests and build with auto-fix
 - `/test-coverage` - Analyze and improve test coverage

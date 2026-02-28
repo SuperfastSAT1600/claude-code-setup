@@ -1,198 +1,79 @@
 # Orchestration Rules
 
-**Core principles**: Main agent is both CODER and ORCHESTRATOR. Delegate to specialists when needed. **DEFAULT TO PARALLEL** when there's natural parallel work. Don't force-create work.
+**Core**: Main agent is CODER + ORCHESTRATOR. Two parallel systems: **Subagents** (one-shot specialists) and **Agent Teams** (persistent teammates). Stay active when parallel work exists; wait when it doesn't — don't force-create work.
 
 ---
 
-## Main Agent Priority: DELEGATE CORRECTLY
+## Subagents vs Agent Teams
 
-**Core principle**: Delegate to specialists when needed. Stay active when there's parallel work. Don't force-create work.
+Two distinct parallel systems. **Never mix them up.**
 
-### Delegation Decision Tree
+| | Subagents (Task tool) | Agent Teams (TeamCreate) |
+|---|---|---|
+| **Lifecycle** | Fire-and-forget: run, return result, gone | Persistent: stay alive, claim tasks, message peers |
+| **Communication** | Report back to caller only | Message each other directly |
+| **Coordination** | Caller manages all work | Shared task list with self-coordination |
+| **Best for** | Focused specialist tasks (review, research, one-off) | Parallel implementation, multi-REQ TDD, research debates |
+| **Token cost** | Lower (results summarized back) | Higher (each teammate = separate Claude instance) |
+| **Nesting** | Teammates CAN spawn subagents | Teammates CANNOT spawn teams (no nested teams) |
+
+### When to Use Which
 
 ```
-Does this task need a specialist? (code-reviewer, auth-specialist, etc.)
-├─ YES → Is there natural parallel work for main agent?
+Parallel TDD (2+ REQs)?
+├─ YES → Agent Teams via /parallel-tdd
+└─ NO → Subagents
+     ├─ Specialist needed? → Task(specialist-agent)
+     ├─ Independent parts? → Multiple Task calls in one message
+     └─ Simple task? → Main agent handles directly
+```
+
+### During an Agent Team Session
+
+- **Lead**: Coordinates teammates. May also spawn subagents for one-off specialist tasks (architecture review, security audit) that don't belong on the shared task list.
+- **Teammates**: Prefer messaging each other for coordination (shared interfaces, API contracts). Only spawn subagents for truly isolated specialist work within their own scope (e.g., reviewing their own code for security). Do NOT spawn subagents for tasks that should be on the shared task list.
+- **Token awareness**: A 3-teammate session + subagents can balloon fast. Default to messaging a peer over spawning a new subagent.
+
+---
+
+## Delegation Decision (Subagents)
+
+```
+Specialist needed? (auth, security, devops, etc.)
+├─ YES → Natural parallel work for main agent?
 │  ├─ YES → Delegate + work in parallel (IDEAL)
-│  └─ NO → Delegate + wait (CORRECT - don't force-create work)
+│  └─ NO → Delegate + wait (CORRECT)
 └─ NO → Main agent handles directly
 ```
 
-### Active vs Passive Delegation
+**Delegate when**: Independent parts can run in parallel | Specialized expertise needed | Task splits across agents | Main agent can code other parts
 
-**Active Delegation** (main agent works while specialist runs):
-```
-GOOD:
-User: "Add OAuth login with user profiles"
-1. PARALLEL: auth-specialist + backend-specialist
-2. WHILE THEY RUN: Main agent codes UI, routing, error handling
-3. Integrate specialist outputs
-```
-
-**Passive Delegation** (main agent correctly waits):
-```
-ALSO GOOD:
-User: "Review my code for security issues"
-1. Delegate: code-reviewer
-2. Wait for results (no forced work)
-3. Address findings
-
-User: "Set up CI/CD pipeline"
-1. Delegate: devops-specialist
-2. Wait for config (no forced work)
-3. Review
-```
-
-### When NOT to Force Work
-- Pure review tasks (security, code quality, accessibility)
-- Specialized setup (CI/CD, Docker, infrastructure)
-- Research/exploration with no obvious implementation yet
-- Planning phase (architect output needed first)
+**Main agent stays active**: Delegating everything → work on integration/tests/docs | Delegating parts → code other parts | Delegating review → iterate on findings
 
 ---
 
-## Parallel-First Orchestration
+## Parallel-First Orchestration (Subagents)
 
-**Think**: "What can run in parallel?" + "What can I work on while they run?"
+**CRITICAL**: Launch independent subagents in parallel via ONE message with multiple Task calls. Think: "What can run in parallel?" + "What can I work on while they run?"
 
 ### Decision Matrix
 
 | Scenario | Action |
 |----------|--------|
-| Tasks are independent | **PARALLEL** - single message, multiple Task calls |
-| Multiple exploration tasks | **PARALLEL** - all read-only |
-| Multiple reviews on same code | **PARALLEL** - all read-only |
-| Task B needs output from Task A | **SEQUENTIAL** - wait for A |
-| Task B modifies what Task A reads | **SEQUENTIAL** - conflict |
+| Independent tasks | **PARALLEL** — single message, multiple Task calls |
+| Multiple exploration/review tasks | **PARALLEL** — all read-only |
+| Task B needs Task A output | **SEQUENTIAL** |
+| Task B modifies what Task A reads | **SEQUENTIAL** |
 
-### How to Launch Parallel
+### Common Patterns
 
-```
-CORRECT:
-Send ONE message with multiple Task tool calls:
-- Task(subagent_type="code-reviewer", prompt="...")
-- Task(subagent_type="frontend-specialist", prompt="audit accessibility...")
-- Task(subagent_type="test-writer", prompt="...")
-
-INCORRECT:
-Task(code-reviewer) → wait → Task(frontend-specialist) → wait...
-```
-
----
-
-## When to Delegate
-
-### Delegate for Speed (parallel work)
-- Multiple independent features can be built simultaneously
-- Large task can be split across multiple agents
-- General agents can handle parts while main agent handles others
-
-### Delegate for Expertise (specialized knowledge)
-- **Architecture & Planning**: architect
-- **Auth**: auth-specialist (OAuth, JWT, MFA)
-- **Backend**: backend-specialist (API design, DB schema, migrations)
-- **Real-time & GraphQL & AI**: realtime-specialist
-- **Security & Quality**: code-reviewer
-- **Testing**: test-writer (TDD, unit, integration, E2E, load)
-- **Frontend Quality**: frontend-specialist (accessibility, i18n, performance)
-- **Operations**: devops-specialist (CI/CD, Docker, IaC, monitoring, build errors, deps)
-- **Mobile**: mobile-specialist
-- **Documentation**: doc-updater
-
----
-
-## Skills-First Approach (MANDATORY)
-
-**Before coding or delegating**, check if relevant skills exist.
-
-### Skill Usage Protocol
-
-```
-1. Identify task domain (auth, API, database, frontend, etc.)
-2. Check if skill exists for that domain
-3. Load skill (Skill tool for user-invocable, or reference .claude/skills/)
-4. Apply skill patterns to your work
-5. If pattern doesn't fit → log observation for skill enhancement
-```
-
-### Common Skill Mappings
-
-| Task Type | Load These Skills |
-|-----------|-------------------|
-| Auth implementation | auth-patterns |
-| REST API design | rest-api-design, backend-patterns |
-| GraphQL API | graphql-patterns |
-| React components | react-patterns, frontend-patterns |
-| Next.js pages | nextjs-patterns, react-patterns |
-| Node.js services | nodejs-patterns, backend-patterns |
-| Database schema | database-patterns |
-| Docker setup | docker-patterns |
-| CI/CD pipeline | github-actions |
-| WebSocket setup | websocket-patterns |
-| TDD workflow | tdd-workflow |
-| Documentation | documentation-patterns |
-
-### Error to Log
-
-If you code without checking skills first:
-```
-[context] Error: Didn't check skills before coding | Should have loaded: [skill-name]
-```
-
----
-
-## Common Parallel Patterns
-
-### Quality Gate (all read same codebase)
-```
-code-reviewer + frontend-specialist(accessibility)
-```
-
-### Multi-Domain Research (all read-only)
-```
-Explore(auth) + Explore(database) + Explore(api) + Explore(frontend)
-```
-
-### Full Test Suite (single delegation)
-```
-test-writer (handles unit + integration + E2E)
-```
-
-### Cross-Cutting Feature Design
-```
-backend-specialist(API + schema) + auth-specialist(permissions)
-```
-
-### Infrastructure Setup (single delegation)
-```
-devops-specialist (handles CI/CD + Docker + monitoring)
-```
-
-### Code + Documentation (parallel when possible)
-```
-PARALLEL:
-- [Write feature code]
-- doc-updater(update API docs for feature)
-```
-
----
-
-## Must Be Sequential
-
-**Planning → Implementation**:
-```
-architect → [wait] → main agent implements
-```
-
-**Implementation → Testing**:
-```
-[write code] → [wait] → test-writer
-```
-
-**Schema → Migrations**:
-```
-backend-specialist(schema design) → [wait] → backend-specialist(migration script)
-```
+- **Feature split**: Task(general-purpose, widget1) + Task(general-purpose, widget2) — main codes layout
+- **Domain design**: auth-specialist + backend-specialist — main codes UI
+- **Quality gate**: code-reviewer + frontend-specialist (parallel reviews)
+- **Test suite**: test-writer (handles unit + integration + E2E)
+- **Exploration**: Explore(auth) + Explore(db) + Explore(api)
+- **Infrastructure**: devops-specialist (CI/CD + Docker + monitoring)
+- **Docs**: doc-updater(API) + doc-updater(README)
 
 ---
 
@@ -200,158 +81,91 @@ backend-specialist(schema design) → [wait] → backend-specialist(migration sc
 
 | Agent | Model | Use For |
 |-------|-------|---------|
-| architect | opus | Implementation plans, system design, trade-off analysis |
-| code-reviewer | sonnet | PR reviews, security audits, TypeScript safety, tech debt |
-| test-writer | sonnet | TDD, unit/integration/E2E/load tests, verification |
-| backend-specialist | sonnet | REST API design, DB schema, migrations |
-| auth-specialist | sonnet | OAuth, JWT, MFA, session management |
-| devops-specialist | sonnet | CI/CD, Docker, IaC, monitoring, build errors, deps |
-| frontend-specialist | sonnet | Accessibility, i18n, Core Web Vitals optimization |
-| realtime-specialist | sonnet | WebSockets, GraphQL, AI/ML integration |
-| mobile-specialist | sonnet | React Native, Flutter, mobile apps |
-| doc-updater | haiku | **MANDATORY** after every code change (3+ files) |
+| **architect** | opus | System design, plans, trade-offs |
+| **code-reviewer** | sonnet | PR reviews, security, TypeScript, tech debt |
+| **test-writer** | sonnet | TDD, unit/integration/E2E/load tests |
+| **backend-specialist** | sonnet | REST API, DB schema, migrations |
+| **auth-specialist** | sonnet | OAuth, JWT, MFA, sessions |
+| **devops-specialist** | sonnet | CI/CD, Docker, IaC, monitoring, build errors, deps |
+| **frontend-specialist** | sonnet | Accessibility, i18n, Core Web Vitals |
+| **realtime-specialist** | sonnet | WebSockets, GraphQL, AI/ML |
+| **mobile-specialist** | sonnet | React Native, Flutter |
+| **doc-updater** | haiku | Documentation sync |
+| **general-purpose** | sonnet | Independent parallel features, research |
+
+**Model tiers**: haiku (doc-updater, Explore) | sonnet (most agents, DEFAULT) | opus (architect, critical decisions)
 
 ---
 
-## Workflow Examples
+## Skills-First Protocol (MANDATORY)
 
-### Simple Feature (Main Agent)
-```
-User: "Add a user profile page"
+Before coding: call `Skill("name")` to load relevant domain patterns.
 
-1. Check skills: react-patterns, frontend-patterns
-2. Read existing code, analyze patterns
-3. Create component (following react-patterns)
-4. Add route, wire up data
-5. Write tests (following tdd-workflow if complex)
-6. Update documentation (API docs, README, changelog)
-```
-
-### Specialist-Only Task (Correct to Wait)
-```
-User: "Review my authentication code for security issues"
-
-1. Delegate: code-reviewer (comprehensive audit including security)
-2. Wait for results (no forced work - this is CORRECT)
-3. Review findings
-4. Address vulnerabilities
-```
-
-### Medium Feature (Parallel Delegation)
-```
-User: "Add dashboard with analytics, notifications, and settings"
-
-1. PARALLEL (single message):
-   - Task(general-purpose, "Build analytics widget")
-   - Task(general-purpose, "Build notifications widget")
-2. WHILE THEY RUN: Main agent builds settings widget + layout
-3. Integrate all widgets
-4. Update documentation (README usage, API docs, changelog)
-```
-
-### Feature with Specialized Needs
-```
-User: "Add OAuth login with user profiles"
-
-1. Check skills: auth-patterns, react-patterns, frontend-patterns
-2. PARALLEL (single message):
-   - Task(auth-specialist, "Design OAuth 2.0 PKCE flow, use auth-patterns")
-   - Task(backend-specialist, "Design user profile schema, use database-patterns")
-3. WHILE THEY RUN: Main agent codes UI (react-patterns), error handling, routing
-4. Integrate specialist designs with UI
-5. PARALLEL: code-reviewer + test-writer + doc-updater
-```
-
-### Complex Multi-Part Feature
-```
-User: "Build e-commerce checkout"
-
-1. PARALLEL (single message):
-   - Task(general-purpose, "Build cart management")
-   - Task(general-purpose, "Build order confirmation")
-   - Task(backend-specialist, "Design payment API")
-2. WHILE THEY RUN: Main agent codes checkout flow, validation
-3. Integrate all parts
-4. PARALLEL: test-writer + doc-updater
-```
+| Task Type | Load These Skills |
+|-----------|-------------------|
+| Auth | `Skill("auth-patterns")` |
+| REST API | `Skill("rest-api-design")`, `Skill("backend-patterns")` |
+| GraphQL | `Skill("graphql-patterns")` |
+| React | `Skill("react-patterns")`, `Skill("frontend-patterns")` |
+| Next.js | `Skill("nextjs-patterns")`, `Skill("react-patterns")` |
+| Node.js | `Skill("nodejs-patterns")`, `Skill("backend-patterns")` |
+| Database | `Skill("database-patterns")` |
+| Docker | `Skill("docker-patterns")` |
+| CI/CD | `Skill("github-actions")` |
+| WebSocket | `Skill("websocket-patterns")` |
+| TDD | `Skill("tdd-workflow")` |
+| Code Review | `Skill("coding-standards")` |
 
 ---
 
 ## Intent Routing
 
-| User Says | Strategy |
-|-----------|----------|
-| "Add a login form" | Code directly |
-| "Fix the button styling" | Edit directly |
-| "Fix this bug" | Debug and fix directly |
-| "Review for security" | **DELEGATE**: code-reviewer (wait is correct) |
-| "Check accessibility" | **DELEGATE**: frontend-specialist (wait is correct) |
-| "Set up CI/CD" | **DELEGATE**: devops-specialist (wait is correct) |
-| "Containerize the app" | **DELEGATE**: devops-specialist (wait is correct) |
-| "Add dashboard with widgets" | **PARALLEL**: Delegate widgets, code layout |
-| "Add OAuth login" | **PARALLEL**: auth-specialist + backend-specialist, code UI |
-| "Optimize dashboard" | **PARALLEL**: frontend-specialist + backend-specialist |
-| "Add GraphQL API" | **DELEGATE**: realtime-specialist designs, code resolvers |
-| "Add WebSocket chat" | **PARALLEL**: realtime-specialist + backend-specialist, code UI |
+| User Says | Strategy | System |
+|-----------|----------|--------|
+| "Add a login form" | Code directly | — |
+| "Fix this bug" | Debug and fix directly | — |
+| "Review for security" | **DELEGATE**: code-reviewer (wait) | Subagent |
+| "Check accessibility" | **DELEGATE**: frontend-specialist (wait) | Subagent |
+| "Set up CI/CD" | **DELEGATE**: devops-specialist (wait) | Subagent |
+| "Add dashboard with widgets" | **PARALLEL**: Delegate widgets, code layout | Subagents |
+| "Add OAuth login" | **PARALLEL**: auth-specialist + backend-specialist, code UI | Subagents |
+| "Optimize dashboard" | **PARALLEL**: frontend-specialist + backend-specialist | Subagents |
+| "Build social feed" | **PARALLEL**: Multiple agents for parts, code core | Subagents |
+| `/parallel-tdd` | Spec → team → worktrees → shared task list | Agent Teams |
+| "Investigate from multiple angles" | Spawn teammates with competing hypotheses | Agent Teams |
+| "Review PR from 3 perspectives" | Spawn review teammates (security, perf, tests) | Agent Teams |
+
+---
+
+## Sequential Dependencies
+
+- **Planning → Implementation**: architect → wait → implement
+- **Implementation → Testing**: write code → wait → test-writer
+- **Schema → Migrations**: backend-specialist(schema) → wait → migration script
 
 ---
 
 ## Git Workflow
 
-### Branch Naming
-```
-feature/user-authentication
-fix/login-error
-hotfix/critical-security-patch
-chore/update-dependencies
-```
-
-### Commit Format
-```
-<type>(<scope>): <subject>
-
-feat: add user registration
-fix: resolve timezone bug
-docs: update API docs
-refactor: simplify auth
-test: add checkout tests
-chore: update dependencies
-```
-
-### Rules
-- Subject: max 72 chars, imperative mood
-- No period at end
-- Include "Closes #issue" if applicable
-
-### PR Guidelines
-- Max 400 lines changed
-- Must pass CI (tests, lint, build)
-- Requires 1 approval
-- Delete branch after merge
-
-### Git Safety
-- NEVER force push to main/master
-- NEVER skip hooks (--no-verify)
-- Use `--force-with-lease` on feature branches only
+**Branches**: `feature/...`, `fix/...`, `hotfix/...`, `chore/...`
+**Commits**: `<type>(<scope>): <subject>` — max 72 chars, imperative mood, no period
+**PRs**: <400 lines, pass CI, 1 approval, delete branch after merge
+**Safety**: Never force push main. Never skip hooks. Use `--force-with-lease` on feature branches only.
 
 ---
 
-## Progress Reporting
+## Checklist Gates
 
-Report in plain English:
-```
-Building your feature:
-
-[Done] Step 1: Planning complete
-[Working] Step 2: Writing code...
-[Pending] Step 3: Testing
-```
+| Gate | Checklist |
+|------|-----------|
+| Before PR | pr-review |
+| Before deploy | deployment-checklist |
+| Security changes | security-audit |
+| Build errors | build-errors-checklist |
+| Database migrations | database-migration-review |
 
 ---
 
 ## Subagent Self-Correction
 
-When delegating, expect subagents to fix `.claude/` issues they encounter:
-- Broken references in own agent definition → fix directly
-- Outdated advice in loaded skill → update skill
-- Report all corrections in response for main agent to log
+Subagents fix `.claude/` issues they encounter: broken refs in agent defs, outdated skill advice, inconsistencies. Report corrections for main agent to log to `.claude/health/changelog.md`.

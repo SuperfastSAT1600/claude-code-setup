@@ -11,10 +11,28 @@
 
 ---
 
+## Primary Workflow: Spec-Driven TDD
+
+1. Enter plan mode → discuss approach with user
+2. **Write spec** to `.claude/plans/[feature].md` using `.claude/templates/spec.md.template`
+3. Spec auto-audited when written (blocks coding tools if spec fails validation)
+4. `/tdd` (single agent) or `/parallel-tdd` (multi-agent worktrees)
+5. `/checkpoint` → unified verification gate (types, lint, tests, build, security)
+6. `/commit-push-pr`
+
+**Enforcement**: A SessionStart hook sets a `.plan-active` flag. All coding tools (Edit, Write, Bash, Task) are BLOCKED until a valid spec is written to `.claude/plans/`. Writing the spec clears the flag and runs `audit-spec.sh` automatically.
+
+**Before coding**: Call `Skill("skill-name")` to load domain patterns. See orchestration.md Skills-First table for which skills match your task type.
+
+**Spec template**: `.claude/templates/spec.md.template`
+**REQ format**: Each requirement gets REQ-XXX ID + (TEST)/(BROWSER)/(MANUAL) verification tag
+
+---
+
 ## Quick Reference
 
-**Workflow**: Main agent codes standard tasks, delegates to 11 specialized agents for expertise
-**Agents (11)**: See `.claude/agents/` for full list and INDEX.md
+**Workflow**: Main agent codes standard tasks, delegates to 10 specialized agents for expertise
+**Agents (10)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
 - Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
@@ -29,11 +47,11 @@
 
 This setup continuously improves itself. During every task, the system observes its own configuration and proposes fixes, evolutions, and simplifications after completing your work.
 
-- **Execution Protocol**: `.claude/rules/task-execution-protocol.md` (MANDATORY for all agents)
-- **Rules**: `.claude/rules/self-aware-system.md`
+- **Execution Protocol**: `.claude/rules/task-protocol.md` (MANDATORY for all agents)
+- **Rules**: `.claude/rules/self-improvement.md`
 - **User Data**: `.claude/user/` (changelog, errors, custom content)
 - **Health Check**: Run `/health-check` for a comprehensive audit
-- **Agent count**: 11 specialists
+- **Agent count**: 10 specialists
 
 ### Mandatory Checkpoints (Every Task)
 
@@ -62,12 +80,12 @@ Just describe what you want in plain English:
 
 ### Main Agent Templates
 
-When creating React code, the main agent uses:
-- `variants/react/component.tsx.template` - React components with TypeScript
-- `variants/react/form.tsx.template` - Form components with React Hook Form + Zod
-- `variants/react/hook.ts.template` - Custom React hooks with proper cleanup
-- `variants/react/context.tsx.template` - React Context providers with type safety
-- `variants/react/hoc.tsx.template` - Higher-Order Components with ref forwarding
+When creating React code, the main agent uses templates from the `react-patterns` skill:
+- `react-patterns/templates/component.tsx.template` - React components with TypeScript
+- `react-patterns/templates/form.tsx.template` - Form components with React Hook Form + Zod
+- `react-patterns/templates/hook.ts.template` - Custom React hooks with proper cleanup
+- `react-patterns/templates/context.tsx.template` - React Context providers with type safety
+- `react-patterns/templates/hoc.tsx.template` - Higher-Order Components with ref forwarding
 
 ---
 
@@ -81,7 +99,7 @@ When creating React code, the main agent uses:
 **Documentation**:
 - `docs/PRD.md` - Product requirements, architecture
 - `.claude/rules/` - Mandatory protocols
-- `.claude/agents/INDEX.md` - All 11 specialists
+- `.claude/agents/INDEX.md` - All 10 specialists
 - `.claude/skills/` - Domain patterns
 
 **Configuration**:

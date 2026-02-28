@@ -39,7 +39,7 @@ Claude Code Workflow Template is a ready-to-use development workflow system for 
 The system follows a **main-agent-as-orchestrator** pattern:
 
 - **Main agent** codes directly for standard tasks and orchestrates specialists
-- **34 specialist agents** handle complex domains (auth, database, security, etc.)
+- **10 specialist agents** handle complex domains (auth, database, security, etc.)
 - **Parallel-first orchestration** maximizes throughput by launching independent agents simultaneously
 
 ### 3.2 Knowledge Layers
@@ -65,16 +65,18 @@ The system continuously improves through:
 
 ## 4. Core Features
 
-### 4.1 Specialist Agents (34)
+### 4.1 Specialist Agents (10)
 
 | Category | Agents |
 |----------|--------|
-| Planning & Architecture | planner, architect |
-| Code Quality | code-reviewer, security-reviewer, code-simplifier, refactor-cleaner |
-| Testing | tdd-guide, unit-test-writer, integration-test-writer, e2e-runner, verify-app |
-| Development | api-designer, database-architect, auth-specialist, graphql-specialist, websocket-specialist, ai-integration-specialist |
-| Operations | build-error-resolver, ci-cd-specialist, docker-specialist, migration-specialist, monitoring-architect |
-| Specialized | i18n-specialist, iac-specialist, mobile-specialist, load-test-specialist, accessibility-auditor, dependency-manager, doc-updater, runbook-writer, system-health, tech-debt-analyzer, type-safety-enforcer, performance-optimizer |
+| Planning & Architecture | architect |
+| Code Quality | code-reviewer |
+| Testing | test-writer |
+| Development | backend-specialist, auth-specialist, realtime-specialist |
+| Operations | devops-specialist |
+| Frontend | frontend-specialist |
+| Mobile | mobile-specialist |
+| Documentation | doc-updater |
 
 ### 4.2 Skills Library (20+)
 
@@ -112,9 +114,9 @@ Cross-platform interactive setup (`node setup.cjs`) that:
 
 ### 4.5 Automated Quality Enforcement
 
-- **Rules** (`coding-standards.md`, `task-protocol.md`, `orchestration.md`): Mandatory protocols loaded into every agent context
+- **Rules** (`essential-rules.md`, `task-protocol.md`, `orchestration.md`): Mandatory protocols loaded into every agent context
 - **Hooks**: Pre-commit checks, security review logging, error verification
-- **Checklists**: 13 structured review checklists for PRs, security, accessibility, deployment, etc.
+- **Checklists**: 12 structured review checklists for PRs, security, accessibility, deployment, etc.
 
 ### 4.6 Code Templates
 
@@ -175,9 +177,9 @@ Every task follows a mandatory 4-phase protocol:
 
 | Pattern | Description |
 |---------|-------------|
-| Quality Gates | security-reviewer + code-reviewer + accessibility-auditor (parallel) |
+| Quality Gates | code-reviewer + frontend-specialist (parallel) |
 | Multi-Domain Research | Explore agents across auth + database + API + frontend (parallel) |
-| Test Pyramid | unit-test-writer + integration-test-writer + e2e-runner (parallel) |
+| Test Pyramid | test-writer (unit + integration + E2E in one delegation) |
 | Feature Development | specialist agents + main agent coding (parallel) |
 | Sequential | planning -> implementation -> testing (ordered) |
 

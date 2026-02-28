@@ -105,6 +105,7 @@ Instead of loading all 21 skill directories (~45k tokens), reference this index 
 **Skills with Bundled Resources**:
 - **scripts/** (1 skill): dev-server-autoopen
 - **references/** (8 skills): nodejs-patterns, react-patterns, docker-patterns, backend-patterns, auth-patterns, database-patterns, rest-api-design, graphql-patterns
+- **templates/** (7 skills): backend-patterns, auth-patterns, database-patterns, tdd-workflow, react-patterns, github-actions, nextjs-patterns
 
 ## Skill Selection by Task Type
 
@@ -138,9 +139,10 @@ All skills use directory structure:
 ├── skill-name/
 │   ├── SKILL.md           # Main content (always present)
 │   ├── scripts/           # Optional: Executable scripts
-│   └── references/        # Optional: Examples and documentation
+│   ├── references/        # Optional: Examples and documentation
+│   └── templates/         # Optional: Code templates for this domain
 └── INDEX.md               # This file
 ```
 
-To load a skill: Read `.claude/skills/skill-name/SKILL.md`
-To access resources: Read files in `scripts/` or `references/` subdirectories
+To load a skill: Call `Skill("skill-name")` to load full content
+To access resources: Read files in `scripts/`, `references/`, or `templates/` subdirectories

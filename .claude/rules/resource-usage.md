@@ -28,9 +28,9 @@ Mandatory protocols for MCPs, APIs, and plugins.
 ---
 
 ## Skills
-- **ALWAYS** check relevant skills before coding
-- Skills contain authoritative patterns - use them instead of guessing
-- If pattern doesn't exist → implement + log observation
+- **ALWAYS** call `Skill("name")` to load relevant skills before coding
+- Skills contain authoritative patterns — use them instead of guessing
+- If pattern doesn't exist in a skill → implement and log observation
 
 ---
 

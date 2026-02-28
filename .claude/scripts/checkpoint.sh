@@ -15,10 +15,12 @@ readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # Options
 SKIP_BUILD=false
 SKIP_SECURITY=false
+SKIP_REQ_COVERAGE=false
 for arg in "$@"; do
     case "$arg" in
         --skip-build) SKIP_BUILD=true ;;
         --skip-security) SKIP_SECURITY=true ;;
+        --skip-req-coverage) SKIP_REQ_COVERAGE=true ;;
     esac
 done
 
@@ -100,7 +102,7 @@ skip_step() {
 
 check_typescript() {
     echo ""
-    echo -e "${BLUE}[1/7] TypeScript${NC}"
+    echo -e "${BLUE}[1/9] TypeScript${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -121,7 +123,7 @@ check_typescript() {
 
 check_lint() {
     echo ""
-    echo -e "${BLUE}[2/7] Lint${NC}"
+    echo -e "${BLUE}[2/9] Lint${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -171,7 +173,7 @@ check_lint() {
 
 check_format() {
     echo ""
-    echo -e "${BLUE}[3/7] Format${NC}"
+    echo -e "${BLUE}[3/9] Format${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -221,7 +223,7 @@ check_format() {
 
 check_tests() {
     echo ""
-    echo -e "${BLUE}[4/7] Tests${NC}"
+    echo -e "${BLUE}[4/9] Tests${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -256,7 +258,7 @@ check_tests() {
 
 check_build() {
     echo ""
-    echo -e "${BLUE}[5/7] Build${NC}"
+    echo -e "${BLUE}[5/9] Build${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -288,7 +290,7 @@ check_build() {
 
 check_security() {
     echo ""
-    echo -e "${BLUE}[6/7] Security${NC}"
+    echo -e "${BLUE}[6/9] Security${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -335,7 +337,7 @@ check_security() {
 
 check_mutation() {
     echo ""
-    echo -e "${BLUE}[7/7] Mutation Testing (optional)${NC}"
+    echo -e "${BLUE}[7/9] Mutation Testing (optional)${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -344,6 +346,82 @@ check_mutation() {
     else
         skip_step "Mutation testing" "no Stryker config found (optional)"
     fi
+}
+
+# =============================================================================
+# Step 8: Test Pyramid Check (Optional)
+# =============================================================================
+
+check_test_pyramid() {
+    echo ""
+    echo -e "${BLUE}[8/9] Test Pyramid (advisory)${NC}"
+
+    cd "$PROJECT_ROOT"
+
+    local unit=0
+    local integration=0
+    local e2e=0
+
+    # Count test files by convention
+    unit=$(find . -type f \( -name "*.test.ts" -o -name "*.test.js" -o -name "*.test.tsx" -o -name "*.test.jsx" -o -name "*_test.go" -o -name "*_test.py" \) ! -path "*/e2e/*" ! -path "*/integration/*" 2>/dev/null | wc -l | tr -d ' ')
+    integration=$(find . -type f \( -path "*/integration/*" -o -name "*.integration.*" \) 2>/dev/null | wc -l | tr -d ' ')
+    e2e=$(find . -type f \( -path "*/e2e/*" -o -name "*.e2e.*" -o -name "*.spec.ts" -o -name "*.spec.js" \) -path "*/e2e/*" 2>/dev/null | wc -l | tr -d ' ')
+
+    if [[ $((unit + integration + e2e)) -eq 0 ]]; then
+        skip_step "Test Pyramid" "no test files detected"
+        return
+    fi
+
+    log_info "  Unit: $unit | Integration: $integration | E2E: $e2e"
+
+    if [[ $e2e -gt $unit ]] && [[ $unit -gt 0 ]]; then
+        log_warn "Test Pyramid — inverted: more E2E ($e2e) than unit ($unit) tests"
+        WARNINGS=$((WARNINGS + 1))
+        RESULTS+=("WARN: Test Pyramid inverted")
+    else
+        log_pass "Test Pyramid shape OK"
+        PASSED=$((PASSED + 1))
+        RESULTS+=("PASS: Test Pyramid")
+    fi
+}
+
+# =============================================================================
+# Step 9: REQ Coverage (Optional — runs when spec exists)
+# =============================================================================
+
+check_req_coverage() {
+    echo ""
+    echo -e "${BLUE}[9/9] REQ Coverage (optional)${NC}"
+
+    cd "$PROJECT_ROOT"
+
+    if [[ "$SKIP_REQ_COVERAGE" == "true" ]]; then
+        skip_step "REQ Coverage" "skipped via --skip-req-coverage"
+        return
+    fi
+
+    local plans_dir="$PROJECT_ROOT/.claude/plans"
+    local req_script="$SCRIPT_DIR/req-coverage.sh"
+
+    if [[ ! -f "$req_script" ]]; then
+        skip_step "REQ Coverage" "req-coverage.sh not found"
+        return
+    fi
+
+    if [[ ! -d "$plans_dir" ]]; then
+        skip_step "REQ Coverage" "no .claude/plans/ directory"
+        return
+    fi
+
+    local spec_file
+    spec_file=$(find "$plans_dir" -name "*.md" -type f -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -n 1)
+
+    if [[ -z "$spec_file" ]]; then
+        skip_step "REQ Coverage" "no spec files in .claude/plans/"
+        return
+    fi
+
+    run_step "REQ Coverage ($(basename "$spec_file"))" "bash '$req_script' '$spec_file' 2>&1"
 }
 
 # =============================================================================
@@ -369,6 +447,8 @@ main() {
     check_build
     check_security
     check_mutation
+    check_test_pyramid
+    check_req_coverage
 
     local total_end
     total_end=$(date +%s)

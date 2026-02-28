@@ -1,6 +1,6 @@
 # Self-Improvement System
 
-Continuously improve through aggressive error logging, pattern detection, and proactive enhancement.
+Continuously improve through error logging, pattern detection, observation, and proactive enhancement.
 
 ---
 
@@ -10,20 +10,17 @@ Continuously improve through aggressive error logging, pattern detection, and pr
 
 ### 6 Failure Categories
 
-| Category | Examples | Format |
-|----------|----------|--------|
-| Tool/API | MCP errors, WebFetch fails, API errors, Bash failures | `[tool] Error: [what] \| Expected: [expected]` |
-| Code | Syntax/type/import errors, security vulnerabilities | `[code] Error: [what] \| Correct: [how]` |
-| Command | Wrong syntax, permissions, Git/package manager errors | `[cmd] Error: [failed] \| Correct: [working]` |
-| Context | Misunderstood intent, wrong file, assumptions, didn't use skill | `[context] Error: [assumption] \| Reality: [actual]` |
-| Agent | Wrong agent, unhelpful results, missed parallelization | `[agent] Error: [what] \| Better: [approach]` |
-| Config | Non-existent file, broken refs, outdated patterns | `[config] Error: [broken] \| Fix: [how]` |
+| Category | Format |
+|----------|--------|
+| Tool/API | `[tool] Error: [what] \| Expected: [expected]` |
+| Code | `[code] Error: [what] \| Correct: [how]` |
+| Command | `[cmd] Error: [failed] \| Correct: [working]` |
+| Context | `[context] Error: [assumption] \| Reality: [actual]` |
+| Agent | `[agent] Error: [what] \| Better: [approach]` |
+| Config | `[config] Error: [broken] \| Fix: [how]` |
 
 **Where**: Main → `.claude/user/errors.md`, Subagents → `.claude/user/agent-errors/{agent-name}.md`
-
-**Verification**: Hook blocks Edit/Write/Task/Bash until errors.md read. Timeout: 5 min. See `.claude/docs/error-verification-system.md`.
-
-**When**: Tool error / Code error / Command failed / Wrong assumption / Didn't check skill / Subagent didn't help / Retry / User corrected / Found outdated info / User shared error → **LOG IT**
+**When**: Tool/code/command error, wrong assumption, didn't check skill, subagent didn't help, retry, user corrected, outdated info → **LOG IT**
 
 ---
 
@@ -31,58 +28,55 @@ Continuously improve through aggressive error logging, pattern detection, and pr
 
 Note improvements while working. Report at end. Don't delay user's work.
 
-- **HEAL**: Broken refs, contradictions, invalid paths
-- **EVOLVE**: Missing coverage, new patterns (2+), recurring errors
-- **ADAPT**: Deprecated tech, stack mismatches, preferences
-- **REFACTOR**: Overlaps, bloat (>300 lines), unused components
+- **HEAL**: Broken refs, contradictions, invalid paths, INDEX mismatches, hook script errors
+- **EVOLVE**: Missing coverage, new patterns (2+), recurring errors, requests outside agent/skill coverage
+- **ADAPT**: Deprecated tech, stack mismatches, preferences, divergent user conventions
+- **REFACTOR**: Overlaps, bloat (>300 lines), unused components, duplicate rules
 
 ---
 
 ## 3. Pattern Detection & Auto-Healing
 
 **Threshold**: 2+ occurrences (semantic similarity)
-**Sources**: Error log, agent errors, changelog (heal 2+ times)
+**Sources**: Error log, agent errors, changelog
 
-**Workflow**: Scan → Identify target → Generate fix → Apply → Log (Auto: yes) → Notify
-
----
-
-## 3.5. Single-Error Root Cause Fixing
-
-**Fix immediately if ALL true**:
+**Single-error root cause fixing** — fix immediately if ALL true:
 1. Root cause clear (not speculative)
 2. Localized (1-3 files)
 3. Low-risk (strengthen rules, add checks, fix refs)
 4. Prevents recurrence
 
-**Auto-apply**: Strengthen enforcement, fix broken refs, add validation, update paths, add error handling
-**Propose**: Create components, change core logic, modify API, archive/delete code
+---
+
+## 4. Resolution Tiers
+
+**Auto-apply + notify**: Regenerate INDEX.md, fix broken refs, fix typos, sync refs
+**Propose + wait**: Update skill/agent/rule content, modify templates/checklists/workflows, archive unused, create new components
+
+**Never auto-modify**: `.claude/settings.json`, `.claude/settings.local.json`, `.claude/rules/essential-rules.md`, `setup.cjs`
 
 ---
 
-## 4. Proactive Enhancement
+## 5. Error Correction by Role
 
-Enhancement = improve what works (vs heal = fix broken)
+**Main agent**: Log errors to `.claude/user/errors.md`. Recurring errors (3+) trigger rule/skill update proposal.
+**Subagents**: Fix `.claude/` issues inline (broken refs, outdated skills, inconsistencies). Report corrections for main agent to log to `.claude/health/changelog.md`.
 
-**Triggers** (threshold):
+---
+
+## 6. Proactive Enhancement Triggers
+
 - Same code pattern (2+) → template
 - Same error (2+) → update agent/rule
 - Same knowledge (2+) → skill
 - Same workflow (2+) → command
-- Same validation (2+) → checklist
 - Outside coverage (1) → propose skill/agent
-- Manual work (2+) → automation
-
-**Auto-apply**: Fix refs, regen INDEX, fix typos, sync refs
-**Propose**: Create templates/skills/agents/commands, modify rules, update checklists/workflows, archive
 
 ---
 
-## 5. Changelog Rules
+## 7. Changelog
 
-**ONLY self-initiated** (Claude's ideas, NOT user requests)
-
-Format:
+**ONLY self-initiated** (Claude's ideas, NOT user requests). Format:
 ```markdown
 ## [YYYY-MM-DD] type(scope): description
 - **Type**: heal | enhance
@@ -93,30 +87,17 @@ Format:
 
 ---
 
-## 6. Error Logging Flow
+## 8. Guardrails
 
-| Source | Who Logs | Where |
-|--------|----------|-------|
-| Main agent | Main | `.claude/user/errors.md` |
-| Subagent | Main | `.claude/user/agent-errors/{agent}.md` |
-| Subagent fix | Main | `.claude/user/changelog.md` |
-
-**Main**: Read errors.md, LOG IMMEDIATELY on failure, log subagent errors/fixes
-**Subagents**: Read agent-errors/{name}.md, fix broken refs, report errors/fixes
+- **Primary task first**: Never delay user's work for self-improvement
+- **Session cap**: Max 5 system changes/session, max 5 files/change
+- **Git discipline**: Every change = own commit (heal/enhance prefix)
+- **No loops**: If same issue recurs after fix, escalate to user
+- **Overflow**: >10 observations → suggest `/health-check`
 
 ---
 
-## 7. Guardrails
-
-**Limits**: Primary task first, max 5 changes/session, max 5 files/change, escalate if recurs
-
-**Immutable**: `.claude/settings.json`, `.claude/settings.local.json`, `.claude/rules/essential-rules.md`, `setup.cjs`
-
-**Git**: Every change = own commit (heal/enhance prefix), user features = NO auto-commits
-
----
-
-## 8. Constitutional Invariants
+## 9. Constitutional Invariants
 
 1. **Hybrid agent**: Main codes + specialists handle complex
 2. **Security-first**: Never weaken security/bypass hooks
