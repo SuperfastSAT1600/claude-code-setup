@@ -46,6 +46,9 @@ SKIPPED=0
 WARNINGS=0
 RESULTS=()
 
+# Tracks the spec file used during REQ coverage check (for archiving)
+ACTIVE_SPEC_FILE=""
+
 # =============================================================================
 # Helper Functions
 # =============================================================================
@@ -421,7 +424,34 @@ check_req_coverage() {
         return
     fi
 
+    ACTIVE_SPEC_FILE="$spec_file"
     run_step "REQ Coverage ($(basename "$spec_file"))" "bash '$req_script' '$spec_file' 2>&1"
+}
+
+# =============================================================================
+# Archive Spec
+# =============================================================================
+
+archive_spec() {
+    local spec_file="$1"
+    local archive_dir
+    archive_dir="$(dirname "$spec_file")/archive"
+
+    # Update status to Complete
+    if sed -i '' 's/^\*\*Status\*\*:.*/**Status**: Complete/' "$spec_file" 2>/dev/null; then
+        echo -e "  ${GREEN}INFO${NC} Spec marked Complete: $(basename "$spec_file")"
+    else
+        echo -e "  ${YELLOW}WARN${NC} Could not update spec status (continuing)"
+        return 0
+    fi
+
+    # Move to archive/
+    mkdir -p "$archive_dir" 2>/dev/null || true
+    if mv "$spec_file" "$archive_dir/" 2>/dev/null; then
+        echo -e "  ${GREEN}INFO${NC} Spec archived → .claude/plans/archive/$(basename "$spec_file")"
+    else
+        echo -e "  ${YELLOW}WARN${NC} Could not move spec to archive/ (continuing)"
+    fi
 }
 
 # =============================================================================
@@ -491,6 +521,13 @@ main() {
         exit 1
     else
         echo -e "${GREEN}CHECKPOINT PASSED: $PASSED/$((PASSED + SKIPPED)) checks passed${NC}"
+
+        # Archive the active spec now that all checks pass
+        if [[ -n "$ACTIVE_SPEC_FILE" && -f "$ACTIVE_SPEC_FILE" ]]; then
+            echo ""
+            archive_spec "$ACTIVE_SPEC_FILE"
+        fi
+
         exit 0
     fi
 }
