@@ -88,7 +88,8 @@ Specialist needed? (auth, security, devops, etc.)
 | **auth-specialist** | sonnet | OAuth, JWT, MFA, sessions |
 | **devops-specialist** | sonnet | CI/CD, Docker, IaC, monitoring, build errors, deps |
 | **frontend-specialist** | sonnet | Accessibility, i18n, Core Web Vitals |
-| **realtime-specialist** | sonnet | WebSockets, GraphQL, AI/ML |
+| **realtime-specialist** | sonnet | WebSockets, GraphQL |
+| **ai-specialist** | sonnet | LLM integration, RAG, prompt engineering, embeddings |
 | **mobile-specialist** | sonnet | React Native, Flutter |
 | **doc-updater** | haiku | Documentation sync |
 
@@ -138,6 +139,8 @@ Before coding: call `Skill("name")` to load relevant domain patterns.
 | "Add OAuth login" | **PARALLEL**: auth-specialist + backend-specialist, code UI | Subagents |
 | "Optimize dashboard" | **PARALLEL**: frontend-specialist + backend-specialist | Subagents |
 | "Build social feed" | **PARALLEL**: Multiple agents for parts, code core | Subagents |
+| "Add RAG search" | **DELEGATE**: ai-specialist (wait) | Subagent |
+| "Integrate LLM API" | **DELEGATE**: ai-specialist (wait) | Subagent |
 | `/parallel-tdd` | Spec → team → worktrees → shared task list | Agent Teams |
 | "Investigate from multiple angles" | Spawn teammates with competing hypotheses | Agent Teams |
 | "Review PR from 3 perspectives" | Spawn review teammates (security, perf, tests) | Agent Teams |

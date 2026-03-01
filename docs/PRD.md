@@ -39,7 +39,7 @@ Claude Code Workflow Template is a ready-to-use development workflow system for 
 The system follows a **main-agent-as-orchestrator** pattern:
 
 - **Main agent** codes directly for standard tasks and orchestrates specialists
-- **10 specialist agents** handle complex domains (auth, database, security, etc.)
+- **11 specialist agents** handle complex domains (auth, database, security, AI/ML, etc.)
 - **Parallel-first orchestration** maximizes throughput by launching independent agents simultaneously
 
 ### 3.2 Knowledge Layers
@@ -65,7 +65,7 @@ The system continuously improves through:
 
 ## 4. Core Features
 
-### 4.1 Specialist Agents (10)
+### 4.1 Specialist Agents (11)
 
 | Category | Agents |
 |----------|--------|
@@ -73,6 +73,7 @@ The system continuously improves through:
 | Code Quality | code-reviewer |
 | Testing | test-writer |
 | Development | backend-specialist, auth-specialist, realtime-specialist |
+| AI/ML | ai-specialist |
 | Operations | devops-specialist |
 | Frontend | frontend-specialist |
 | Mobile | mobile-specialist |

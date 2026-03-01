@@ -31,7 +31,7 @@
 
 ## Quick Reference
 
-**Workflow**: Main agent codes standard tasks, delegates to 10 specialized agents for expertise
+**Workflow**: Main agent codes standard tasks, delegates to 11 specialized agents for expertise
 **Agents (10)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
@@ -51,7 +51,7 @@ This setup continuously improves itself. During every task, the system observes 
 - **Rules**: `.claude/rules/self-improvement.md`
 - **User Data**: `.claude/user/` (changelog, errors, custom content)
 - **Health Check**: Run `/health-check` for a comprehensive audit
-- **Agent count**: 10 specialists
+- **Agent count**: 11 specialists
 
 ### Mandatory Checkpoints (Every Task)
 
@@ -99,7 +99,7 @@ When creating React code, the main agent uses templates from the `react-patterns
 **Documentation**:
 - `docs/PRD.md` - Product requirements, architecture
 - `.claude/rules/` - Mandatory protocols
-- `.claude/agents/INDEX.md` - All 10 specialists
+- `.claude/agents/INDEX.md` - All 11 specialists
 - `.claude/skills/` - Domain patterns
 
 **Configuration**:

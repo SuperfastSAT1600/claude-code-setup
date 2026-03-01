@@ -1,6 +1,6 @@
 # Claude Code Workflow Template
 
-A ready-to-use template implementing a spec-driven TDD workflow for Claude Code, featuring **10 specialized agents**, **25 slash commands**, **23 skills**, **2 workflows**, **12 review checklists**, **5 code templates**, and **5 auto-enforced rule files**.
+A ready-to-use template implementing a spec-driven TDD workflow for Claude Code, featuring **11 specialized agents**, **25 slash commands**, **23 skills**, **2 workflows**, **12 review checklists**, **5 code templates**, and **5 auto-enforced rule files**.
 
 **Key Feature**: Main agent codes directly for standard tasks (CRUD, simple features, bug fixes) and delegates to specialized agents for complex domains (auth, databases, performance, security).
 
@@ -37,7 +37,7 @@ Development workflow commands invoked with `/command-name` in Claude Code:
 
 `/full-feature` | `/quick-fix` | `/commit-push-pr` | `/review` | `/tdd` | `/parallel-tdd` | `/checkpoint` | `/plan` | `/spike` | `/build-fix` | `/refactor-clean` | `/test-coverage` | `/test-ladder` | `/type-check` | `/e2e` | `/new-component` | `/create-migration` | `/update-docs` | `/session-report` | `/health-check` | `/req-status` | `/req-coverage` | `/generate-stubs` | `/open-localhost` | `/update-system`
 
-### Specialized Agents (10)
+### Specialized Agents (11)
 
 | Agent | Domain |
 |-------|--------|
@@ -48,7 +48,8 @@ Development workflow commands invoked with `/command-name` in Claude Code:
 | **auth-specialist** | OAuth, JWT, MFA, sessions |
 | **devops-specialist** | CI/CD, Docker, IaC, monitoring, build errors |
 | **frontend-specialist** | Accessibility, i18n, Core Web Vitals |
-| **realtime-specialist** | WebSockets, GraphQL, AI/ML |
+| **realtime-specialist** | WebSockets, GraphQL |
+| **ai-specialist** | LLM integration, RAG, prompt engineering, embeddings |
 | **mobile-specialist** | React Native, Flutter |
 | **doc-updater** | Documentation sync |
 
@@ -88,7 +89,7 @@ Domain pattern libraries loaded on demand via `Skill("name")`:
 ```
 .
 ├── .claude/
-│   ├── agents/          # 10 specialized agents + INDEX.md
+│   ├── agents/          # 11 specialized agents + INDEX.md
 │   ├── commands/        # 25 slash commands
 │   ├── skills/          # 23 skill directories + INDEX.md
 │   ├── workflows/       # 2 orchestrated workflows
@@ -163,5 +164,5 @@ Updates: agents, skills, rules, commands, workflows, templates
 ---
 
 **Template Version**: 3.0
-**Model**: Hybrid agent system (main agent codes + 10 specialists)
+**Model**: Hybrid agent system (main agent codes + 11 specialists)
 **Last Updated**: 2026-03-01
