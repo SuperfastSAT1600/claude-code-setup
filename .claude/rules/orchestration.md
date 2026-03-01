@@ -115,6 +115,12 @@ Before coding: call `Skill("name")` to load relevant domain patterns.
 | WebSocket | `Skill("websocket-patterns")` |
 | TDD | `Skill("tdd-workflow")` |
 | Code Review | `Skill("coding-standards")` |
+| Spec Writing | `Skill("spec-writing")` |
+| Agent Orchestration | `Skill("agent-orchestration")` |
+| LLM/AI Prompts | `Skill("prompt-engineering")` |
+| RAG/Vector Search | `Skill("rag-patterns")` |
+| Intent Routing | `Skill("user-intent-patterns")` |
+| Dev Server Config | `Skill("dev-server-autoopen")` |
 
 ---
 
@@ -168,4 +174,4 @@ Before coding: call `Skill("name")` to load relevant domain patterns.
 
 ## Subagent Self-Correction
 
-Subagents fix `.claude/` issues they encounter: broken refs in agent defs, outdated skill advice, inconsistencies. Report corrections for main agent to log to `.claude/health/changelog.md`.
+Subagents fix `.claude/` issues they encounter: broken refs in agent defs, outdated skill advice, inconsistencies. Report corrections for main agent to log to `.claude/user/changelog.md`.

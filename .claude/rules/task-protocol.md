@@ -44,9 +44,11 @@ Research + implementation? → PARALLEL | Review? → PARALLEL | Single atomic? 
 
 ## Phase 2: DURING
 
-**Error Logging (BLOCKING)**: Error → STOP → LOG → VERIFY → THEN continue
-Log: `.claude/user/errors.md`: `[category] Error: [what] | Correct: [how]`
-Self-check: "Did I log it?" If no → LOG NOW
+**Error Logging (immediate, non-blocking)**: Error → STOP → LOG → THEN continue
+- Log immediately: `.claude/user/errors.md`: `[category] Error: [what] | Correct: [how]`
+- Logging is required but does NOT block user's work — log it and keep going
+- Self-check: "Did I log it?" If no → LOG NOW, then continue
+- Only STOP permanently when the error prevents all meaningful progress (e.g., blocked on missing credentials, broken environment)
 
 **Observations** (note mentally): HEAL (broken refs), EVOLVE (missing coverage), ADAPT (deprecated tech), REFACTOR (bloat)
 
@@ -81,6 +83,6 @@ Fixed: [file] - [what]
 ```
 INIT:    Read errors.md FIRST → Load relevant skills → PRD
 PRE:     Delegate? Parallel? Task list?
-DURING:  Error → STOP → LOG → VERIFY → THEN
+DURING:  Error → LOG (immediate, non-blocking) → continue
 POST:    Observations → Heal → Errors → Changelog → DOCS
 ```

@@ -60,7 +60,7 @@ Note improvements while working. Report at end. Don't delay user's work.
 ## 5. Error Correction by Role
 
 **Main agent**: Log errors to `.claude/user/errors.md`. Recurring errors (3+) trigger rule/skill update proposal.
-**Subagents**: Fix `.claude/` issues inline (broken refs, outdated skills, inconsistencies). Report corrections for main agent to log to `.claude/health/changelog.md`.
+**Subagents**: Fix `.claude/` issues inline (broken refs, outdated skills, inconsistencies). Report corrections for main agent to log to `.claude/user/changelog.md`.
 
 ---
 
@@ -87,17 +87,33 @@ Note improvements while working. Report at end. Don't delay user's work.
 
 ---
 
-## 8. Guardrails
+## 8. Observation Budget (Per Session)
+
+Cap observations to prevent post-task dumps from bloating sessions:
+
+| Type | Max | Action |
+|------|-----|--------|
+| HEAL | 3 | Auto-apply immediately |
+| EVOLVE | 2 | Propose + wait for approval |
+| ADAPT | 2 | Propose + wait |
+| REFACTOR | 1 | Propose + wait |
+| **Total** | **>5** | Defer to `/health-check` instead of inline reporting |
+
+**Rule**: If you accumulate more than 5 observations in a session, stop reporting inline and instead note: "Several observations accumulated — run `/health-check` for a full audit."
+
+---
+
+## 9. Guardrails
 
 - **Primary task first**: Never delay user's work for self-improvement
 - **Session cap**: Max 5 system changes/session, max 5 files/change
 - **Git discipline**: Every change = own commit (heal/enhance prefix)
 - **No loops**: If same issue recurs after fix, escalate to user
-- **Overflow**: >10 observations → suggest `/health-check`
+- **Overflow**: >5 observations → suggest `/health-check` (see §8)
 
 ---
 
-## 9. Constitutional Invariants
+## 10. Constitutional Invariants
 
 1. **Hybrid agent**: Main codes + specialists handle complex
 2. **Security-first**: Never weaken security/bypass hooks
