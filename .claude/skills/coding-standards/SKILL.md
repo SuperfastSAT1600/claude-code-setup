@@ -11,6 +11,48 @@ Language-agnostic best practices and language-specific patterns.
 
 ---
 
+## Coding Style (from essential-rules)
+
+### Immutability
+- Prefer `const` over `let`, never `var`
+- Immutable updates: `setState([...state, item])`
+
+### Early Returns
+```typescript
+// Good: flat structure
+function process(order: Order): Result {
+  if (!order) return { error: 'Order not found' };
+  if (!order.items.length) return { error: 'Empty order' };
+  return processPayment(order);
+}
+```
+
+### Naming
+- Variables/functions: camelCase, descriptive
+- Classes/types: PascalCase
+- Constants: UPPER_SNAKE_CASE
+- Booleans: `isX`, `hasX`, `shouldX`
+
+### No Magic Numbers
+```typescript
+const MAX_RETRY_ATTEMPTS = 3;
+const SECONDS_IN_HOUR = 3600;
+```
+
+### Comments
+- Explain "why", not "what"
+- Document complex business logic
+- No obvious comments
+
+### Inferred Types
+```typescript
+// Let TypeScript infer when obvious
+const count = 5;           // not: const count: number = 5
+const user = new User();   // not: const user: User = new User()
+```
+
+---
+
 ## General Principles
 
 ### SOLID Principles

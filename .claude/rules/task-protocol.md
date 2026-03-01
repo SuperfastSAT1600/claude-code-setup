@@ -8,7 +8,7 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 
 **FIRST ACTION (MANDATORY)**: Use the Read tool to read `.claude/user/errors.md` (main agent) or `.claude/user/agent-errors/{name}.md` (subagent). This MUST be your first task upon loading.
 
-**LOAD SKILLS**: Call `Skill("name")` for each skill relevant to your current task. Skills contain authoritative patterns that override general knowledge. Check your INIT Checklist or the orchestration.md Skills-First table for which skills to load.
+**LOAD SKILLS**: Check orchestration.md Skills-First table for skills to load.
 
 **PRD** (core features): `docs/PRD.md` for scope, architecture, metrics
 

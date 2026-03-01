@@ -76,6 +76,10 @@
           {
             "type": "command",
             "command": "if [ -f \".claude/scripts/pre-commit-checks.sh\" ]; then\n  bash ./.claude/scripts/pre-commit-checks.sh 2>&1 | head -50\nfi"
+          },
+          {
+            "type": "command",
+            "command": "if [ -f \".claude/scripts/req-coverage.sh\" ]; then\n  bash ./.claude/scripts/req-coverage.sh 2>&1 | head -30 || true\nfi"
           }
         ]
       },

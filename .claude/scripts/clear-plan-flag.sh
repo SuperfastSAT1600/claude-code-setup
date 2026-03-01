@@ -32,6 +32,14 @@ echo "" >&2
 if bash "$AUDIT_SCRIPT" "$FILE_PATH" >&2; then
     echo "" >&2
     echo "[Hook] Spec passed audit. Coding tools are now unblocked." >&2
+
+    # Warn if editing spec during active team session
+    if ls ~/.claude/teams/*/config.json 2>/dev/null | head -1 > /dev/null 2>&1; then
+        echo "⚠️  WARNING: Active team session detected." >&2
+        echo "   Spec changes may not be picked up by running teammates." >&2
+        echo "   Consider: /req-status to check coverage, then notify teammates." >&2
+    fi
+
     exit 0
 else
     audit_exit=$?

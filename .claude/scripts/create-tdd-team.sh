@@ -93,10 +93,9 @@ parse_dependencies() {
         # Track current REQ heading
         if [[ "$line" =~ (REQ-[0-9]{3}) ]] && [[ "$line" =~ ^### ]]; then
             current_req="${BASH_REMATCH[1]}"
-            # Extract title: everything after "REQ-XXX: " on the heading line
-            local title="${line#*: }"
-            title="${title#*:}" # Handle "### REQ-001: Title" format
-            title="${title#"${title%%[![:space:]]*}"}" # trim leading whitespace
+            # Extract title: everything after "### REQ-XXX: " prefix
+            local title
+            title=$(echo "$line" | sed "s/^###[[:space:]]*${current_req}:[[:space:]]*//")
             REQ_TITLES["$current_req"]="$title"
         fi
         # Parse "Depends on:" lines
