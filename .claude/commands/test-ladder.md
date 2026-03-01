@@ -142,7 +142,18 @@ Failed tests:
 
 ---
 
+## Script
+
+**Location**: `.claude/scripts/test-ladder.sh`
+
+```bash
+# Run directly:
+bash .claude/scripts/test-ladder.sh
+bash .claude/scripts/test-ladder.sh --spec .claude/plans/auth.md
+```
+
 ## Related Files
 
 - Spec template: `.claude/templates/spec.md.template`
 - Spec audit: `.claude/scripts/audit-spec.sh`
+- Traceability: `.claude/scripts/verify-traceability.sh`

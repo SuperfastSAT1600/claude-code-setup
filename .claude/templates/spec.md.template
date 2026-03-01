@@ -18,16 +18,19 @@
 - **Description**: {{What the system should do — observable behavior}}
 - **Verification**: (TEST) | (BROWSER) | (MANUAL)
 - **Priority**: Must | Should | Could
+- **Depends**: — {{Optional: REQ IDs this depends on, e.g., REQ-002, REQ-003}}
 
 ### REQ-002: {{Requirement title}}
 - **Description**: {{What the system should do — observable behavior}}
 - **Verification**: (TEST) | (BROWSER) | (MANUAL)
 - **Priority**: Must | Should | Could
+- **Depends**: — {{Optional: REQ IDs this depends on}}
 
 ### REQ-003: {{Requirement title}}
 - **Description**: {{What the system should do — observable behavior}}
 - **Verification**: (TEST) | (BROWSER) | (MANUAL)
 - **Priority**: Must | Should | Could
+- **Depends**: — {{Optional: REQ IDs this depends on}}
 
 ---
 

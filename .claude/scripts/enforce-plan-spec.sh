@@ -11,9 +11,20 @@
 PLANS_DIR=".claude/plans"
 AUDIT_SCRIPT="./.claude/scripts/audit-spec.sh"
 
-# Find most recent plan file
+# Find active spec: prefer .active-spec marker, fallback to most recent by mtime
 latest=""
-if [[ -d "$PLANS_DIR" ]]; then
+ACTIVE_SPEC_MARKER=".claude/user/.active-spec"
+
+if [[ -f "$ACTIVE_SPEC_MARKER" ]]; then
+    # Read the marker file for the active spec path
+    marker_path=$(cat "$ACTIVE_SPEC_MARKER" 2>/dev/null | head -1 | tr -d '[:space:]')
+    if [[ -n "$marker_path" ]] && [[ -f "$marker_path" ]]; then
+        latest="$marker_path"
+    fi
+fi
+
+# Fallback: most recent plan file by modification time
+if [[ -z "$latest" ]] && [[ -d "$PLANS_DIR" ]]; then
     latest=$(find "$PLANS_DIR" -name "*.md" -type f -print0 2>/dev/null \
         | xargs -0 ls -t 2>/dev/null \
         | head -n 1)

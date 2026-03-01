@@ -17,7 +17,7 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 ### Delegation Check
 
 Specialist required? Check `orchestration.md`:
-Database → database-architect, migration-specialist | API → api-designer, graphql-specialist | Auth → auth-specialist | Security → security-reviewer | Testing → unit-test-writer, integration-test-writer, e2e-runner | Infrastructure → docker-specialist, ci-cd-specialist | Code review → code-reviewer | Performance → performance-optimizer
+Database → backend-specialist | API → backend-specialist | Auth → auth-specialist | Security → code-reviewer | Testing → test-writer | Infrastructure → devops-specialist | Code review → code-reviewer | Performance → frontend-specialist (frontend) or backend-specialist (backend)
 
 **If specialist exists: DELEGATE. Exception**: <10 lines, no domain knowledge, follows patterns, no architecture.
 

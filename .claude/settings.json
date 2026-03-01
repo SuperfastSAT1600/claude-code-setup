@@ -131,7 +131,7 @@
     ],
     "SubagentStop": [
       {
-        "matcher": "subagent_name == \"security-reviewer\"",
+        "matcher": "subagent_name == \"code-reviewer\"",
         "hooks": [
           {
             "type": "command",

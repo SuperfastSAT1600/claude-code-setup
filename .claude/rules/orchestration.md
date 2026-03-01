@@ -43,11 +43,33 @@ User: "Set up CI/CD pipeline"
 3. Review
 ```
 
+**BAD - Sit idle when parallel work clearly exists**:
+```
+User: "Add OAuth login with user profiles"
+1. Delegate to auth-specialist
+2. Wait... (IDLE — you could be coding the UI!)
+3. Report results
+```
+
 ### When NOT to Force Work
 - Pure review tasks (security, code quality, accessibility)
 - Specialized setup (CI/CD, Docker, infrastructure)
 - Research/exploration with no obvious implementation yet
 - Planning phase (architect output needed first)
+
+### Delegation Guidelines
+
+**Delegate freely when**:
+- Multiple independent parts can be built in parallel (speeds up delivery)
+- Specialized expertise provides better quality (auth, performance, security)
+- Task is large and can be split across multiple agents (faster completion)
+- Main agent can work on other parts while delegation happens
+
+**Main agent always has work (when parallel work exists)**:
+- If delegating everything -> work on integration, testing, or documentation
+- If delegating parts -> work on other parts in parallel
+- If delegating review -> address findings and iterate
+- If delegating research -> start coding based on existing patterns
 
 ---
 
@@ -57,13 +79,15 @@ User: "Set up CI/CD pipeline"
 
 ### Decision Matrix
 
-| Scenario | Action |
-|----------|--------|
-| Tasks are independent | **PARALLEL** - single message, multiple Task calls |
-| Multiple exploration tasks | **PARALLEL** - all read-only |
-| Multiple reviews on same code | **PARALLEL** - all read-only |
-| Task B needs output from Task A | **SEQUENTIAL** - wait for A |
-| Task B modifies what Task A reads | **SEQUENTIAL** - conflict |
+| Scenario | Action | Example |
+|----------|--------|---------|
+| Tasks are independent | **PARALLEL** - single message, multiple Task calls | code-reviewer + frontend-specialist analyzing same codebase |
+| Multiple exploration tasks | **PARALLEL** - all read-only | Research auth patterns + DB schema + API design simultaneously |
+| Multiple reviews on same code | **PARALLEL** - all read-only | frontend-specialist + code-reviewer |
+| Task B needs output from Task A | **SEQUENTIAL** - wait for A | architect completes -> main agent implements using plan |
+| Task B modifies what Task A reads | **SEQUENTIAL** - conflict | |
+| Multiple tests after implementation | **PARALLEL** | test-writer (unit + integration + E2E) |
+| Documentation updates for different areas | **PARALLEL** | API docs + README + architecture docs |
 
 ### How to Launch Parallel
 
@@ -141,6 +165,49 @@ If you code without checking skills first:
 
 ---
 
+## Orchestrating Any Mix of Subagents
+
+**Main agent can launch ANY mix of subagents in parallel** - specialized specialists, general agents, or both:
+
+```
+Example 1: User wants OAuth login with user profiles
+Main agent orchestrates in PARALLEL (single message):
+- Task(subagent_type="auth-specialist", prompt="Design OAuth 2.0 flow...")
+- Task(subagent_type="backend-specialist", prompt="Design user schema...")
+WHILE THEY RUN: Main agent codes UI components and routing
+Then main agent integrates everything
+
+Example 2: User wants dashboard with multiple widgets
+Main agent orchestrates in PARALLEL (single message):
+- Task(subagent_type="general-purpose", prompt="Build analytics widget...")
+- Task(subagent_type="general-purpose", prompt="Build notifications widget...")
+- Task(subagent_type="general-purpose", prompt="Build settings widget...")
+WHILE THEY RUN: Main agent codes dashboard layout and state management
+Then main agent integrates widgets
+
+Example 3: User wants real-time chat with message persistence
+Main agent orchestrates in PARALLEL:
+- Task(subagent_type="realtime-specialist", prompt="Implement Socket.io chat...")
+- Task(subagent_type="backend-specialist", prompt="Design message storage...")
+WHILE THEY RUN: Main agent codes chat UI components
+Then main agent wires everything together
+
+Example 4: User wants to optimize slow dashboard
+Main agent orchestrates in PARALLEL:
+- Task(subagent_type="frontend-specialist", prompt="Profile and optimize frontend...")
+- Task(subagent_type="backend-specialist", prompt="Optimize queries...")
+WHILE THEY RUN: Main agent prepares test scenarios
+Then main agent applies optimizations
+```
+
+### Key Principles
+1. **Delegate freely**: If it speeds things up or improves quality, delegate
+2. **Stay active**: While agents work, main agent codes/integrates/tests
+3. **Parallel by default**: Launch independent work in ONE message with multiple Task calls
+4. **Any mix**: Combine specialized specialists + general agents as needed
+
+---
+
 ## Common Parallel Patterns
 
 ### Quality Gate (all read same codebase)
@@ -210,6 +277,14 @@ backend-specialist(schema design) → [wait] → backend-specialist(migration sc
 | realtime-specialist | sonnet | WebSockets, GraphQL, AI/ML integration |
 | mobile-specialist | sonnet | React Native, Flutter, mobile apps |
 | doc-updater | haiku | **MANDATORY** after every code change (3+ files) |
+| general-purpose | sonnet | Independent parallel features, research, exploration |
+
+### Model Tiers (for Task delegation)
+- **haiku**: doc-updater, Explore tasks
+- **sonnet**: code-reviewer, auth-specialist, most agents (DEFAULT)
+- **opus**: architect (critical decisions only)
+
+**REMINDER**: When launching multiple agents, send ONE message with multiple Task calls, not sequential messages. Model tier doesn't affect parallelization.
 
 ---
 
@@ -275,6 +350,52 @@ User: "Build e-commerce checkout"
 4. PARALLEL: test-writer + doc-updater
 ```
 
+### Large Feature (Maximum Parallelization)
+```
+User: "Build social media feed with posts, comments, likes, real-time updates"
+
+1. Main agent orchestrates PARALLEL (single message):
+   - Task(realtime-specialist, "Real-time updates system")
+   - Task(backend-specialist, "Posts/comments/likes schema")
+   - Task(general-purpose, "Post creation UI")
+   - Task(general-purpose, "Comment system UI")
+2. WHILE THEY RUN: Main agent codes feed layout, infinite scroll, state management
+3. Main agent: Integrate all systems
+4. PARALLEL testing + review: test-writer + frontend-specialist (performance)
+```
+
+### Quick Bug Fix
+```
+User: "Fix the checkout button not working"
+
+Main agent: Read code, identify issue, write test, fix bug, verify, commit
+
+NOTE: Fast enough without delegation
+```
+
+### Performance Investigation
+```
+User: "Dashboard is slow, fix it"
+
+1. Main agent orchestrates PARALLEL:
+   - Task(frontend-specialist, "Profile and identify frontend bottlenecks")
+   - Task(backend-specialist, "Analyze query performance")
+2. WHILE THEY RUN: Main agent reviews code for obvious issues
+3. Main agent: Apply all optimizations
+4. Main agent: Verify improvements
+```
+
+### Post-Task Self-Improvement
+```
+1. Complete user's primary task
+2. If system observations were noted during task:
+   - Report observations grouped by type
+   - Auto-apply trivial fixes (INDEX, references)
+   - Propose significant changes for approval
+3. Log all changes to .claude/health/changelog.md
+4. Commit system changes separately from task changes
+```
+
 ---
 
 ## Intent Routing
@@ -288,11 +409,18 @@ User: "Build e-commerce checkout"
 | "Check accessibility" | **DELEGATE**: frontend-specialist (wait is correct) |
 | "Set up CI/CD" | **DELEGATE**: devops-specialist (wait is correct) |
 | "Containerize the app" | **DELEGATE**: devops-specialist (wait is correct) |
+| "Update the README" | Edit documentation directly |
 | "Add dashboard with widgets" | **PARALLEL**: Delegate widgets, code layout |
+| "Add user profile page" | Code directly OR delegate if part of larger feature |
+| "Build checkout flow" | **PARALLEL**: Delegate parts (cart, payment, confirmation), code integration |
 | "Add OAuth login" | **PARALLEL**: auth-specialist + backend-specialist, code UI |
 | "Optimize dashboard" | **PARALLEL**: frontend-specialist + backend-specialist |
-| "Add GraphQL API" | **DELEGATE**: realtime-specialist designs, code resolvers |
+| "Add GraphQL API" | **PARALLEL**: realtime-specialist designs, main agent codes resolvers |
 | "Add WebSocket chat" | **PARALLEL**: realtime-specialist + backend-specialist, code UI |
+| "Review this large PR" | **PARALLEL**: code-reviewer + frontend-specialist simultaneously |
+| "Build social feed" | **PARALLEL**: Launch multiple agents for different parts, code core |
+
+**Key principle**: Think "What can run in parallel?" and "What can I work on while agents run?"
 
 ---
 
@@ -349,9 +477,41 @@ Building your feature:
 
 ---
 
+## Checklist Gates
+
+| Gate | Run |
+|------|-----|
+| Before PR | pr-review checklist |
+| Before deploy | deployment-checklist |
+| Security changes | security-audit checklist |
+| Build errors | build-errors-checklist |
+| E2E tests | e2e-testing-checklist |
+| Database migrations | database-migration-review |
+| Dependencies | dependency-audit |
+| Hotfixes | hotfix-checklist |
+
+---
+
+## Template Usage
+
+| Task | Template |
+|------|----------|
+| New component | component.tsx.template, form.tsx.template |
+| API route | api-route.ts.template |
+| Tests | test.spec.ts.template |
+| Migrations | migration.sql.template |
+| PRs | pr-description.md.template |
+| Auth guards | guard.ts.template, middleware.ts.template |
+| Services | service.ts.template |
+| Docker | Dockerfile.template |
+| CI/CD | github-workflow.yml |
+| E2E config | playwright.config.ts |
+
+---
+
 ## Subagent Self-Correction
 
 When delegating, expect subagents to fix `.claude/` issues they encounter:
-- Broken references in own agent definition → fix directly
-- Outdated advice in loaded skill → update skill
+- Broken references in own agent definition -> fix directly
+- Outdated advice in loaded skill -> update skill
 - Report all corrections in response for main agent to log

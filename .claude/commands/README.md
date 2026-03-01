@@ -68,6 +68,53 @@ Commands differ from agents:
 | [`commit-push-pr`](commit-push-pr.md) | `/commit-push-pr` | Conventional commit, push, create PR | 2-5min |
 | [`session-report`](session-report.md) | `/session-report` | Agent activity, checkpoint results, error summary | < 1min |
 
+### Parallel TDD
+
+| Command | Usage | Purpose | Duration |
+|---------|-------|---------|----------|
+| [`parallel-tdd`](parallel-tdd.md) | `/parallel-tdd [spec]` | Multi-agent spec-driven TDD (auto-detects local/cloud mode) | Varies |
+
+### System
+
+| Command | Usage | Purpose | Duration |
+|---------|-------|---------|----------|
+| [`health-check`](health-check.md) | `/health-check` | Audit .claude/ configuration integrity | 1-3min |
+| [`update-system`](update-system.md) | `/update-system` | Update .claude/ files from upstream | < 1min |
+
+---
+
+## Which Command Should I Use?
+
+**Quick decision guide — find your intent:**
+
+| I want to... | Use | Why not the others? |
+|---|---|---|
+| **Build a complete feature** | `/full-feature` | Orchestrates the entire workflow: plan → spec → TDD → review → PR |
+| **Create a spec/plan only** | `/plan` | Just the planning phase — use `/full-feature` if you want end-to-end |
+| **Write tests first (TDD)** | `/tdd` | Single-agent Red-Green-Refactor cycle |
+| **Parallelize TDD across agents** | `/parallel-tdd` | Multi-agent TDD: splits REQs across isolated worktrees |
+| **Fix a bug quickly** | `/quick-fix` | Includes regression test — use `/build-fix` for build-specific errors |
+| **Fix build errors** | `/build-fix` | Focused on compilation/bundle errors |
+| **Run all quality checks** | `/checkpoint` | All-at-once: types, lint, tests, build, security |
+| **Progressive test escalation** | `/test-ladder` | unit → integration → E2E → manual (each gates the next) |
+| **Get a code review** | `/review` | Delegates to code-reviewer for quality + security |
+| **Find untested code** | `/test-coverage` | Analyzes coverage gaps and generates missing tests |
+| **Write E2E tests only** | `/e2e` | Playwright/Cypress test generation |
+| **Scaffold a component** | `/new-component` | React component with tests, stories, types |
+| **Create a DB migration** | `/create-migration` | Migration script with rollback |
+| **Research before coding** | `/spike` | Time-boxed exploration — protects against premature implementation |
+
+### Testing Commands — When to Use Which
+
+| Scenario | Command | What it does |
+|----------|---------|-------------|
+| Writing new code test-first | `/tdd` | Guides Red-Green-Refactor for each requirement |
+| Parallelizing TDD with multiple agents | `/parallel-tdd` | Distributes REQs across agents in isolated worktrees |
+| Checking if existing code is well-tested | `/test-coverage` | Analyzes gaps, suggests/generates missing tests |
+| Running all test types progressively | `/test-ladder` | unit → integration → E2E → manual (gated) |
+| Generating E2E tests for user flows | `/e2e` | Playwright/Cypress test creation |
+| Final pre-PR quality gate | `/checkpoint` | Runs everything including tests, lint, build, security |
+
 ---
 
 ## How Commands Work

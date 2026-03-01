@@ -32,9 +32,37 @@ Continuously improve through aggressive error logging, pattern detection, and pr
 Note improvements while working. Report at end. Don't delay user's work.
 
 - **HEAL**: Broken refs, contradictions, invalid paths
+  - Broken skill references in agent frontmatter (skill file doesn't exist)
+  - Broken agent references in workflows/commands
+  - INDEX.md entries that don't match the actual filesystem
+  - Hook scripts referencing invalid paths
+  - Cross-file contradictions (rule A says X, skill B says not-X)
+  - Templates using patterns that contradict current skills
 - **EVOLVE**: Missing coverage, new patterns (2+), recurring errors
+  - User request falls outside any existing agent/skill coverage
+  - Same manual pattern applied 3+ times across sessions (candidate for new skill)
+  - Error log shows recurring issue with no corresponding rule
 - **ADAPT**: Deprecated tech, stack mismatches, preferences
+  - Skill/template references a library or pattern the project no longer uses
+  - Tech stack in CLAUDE.md doesn't match actual project dependencies
+  - User preferences consistently diverge from a documented rule
 - **REFACTOR**: Overlaps, bloat (>300 lines), unused components
+  - Two skills/agents with substantially overlapping content (merge candidate)
+  - A single file exceeding 300 lines (split candidate)
+  - Component not referenced by any other component (archive candidate)
+  - Same rule/guideline duplicated across multiple files (consolidate candidate)
+
+### Resolution (After Primary Task Completes)
+
+After finishing the user's requested task, if you noted any system observations:
+
+1. **Report**: Summarize observations grouped by type (heal/evolve/adapt/refactor). Be concise.
+2. **Act by Tier**:
+   - **Auto-apply + notify** (Minor/structural): Regenerate INDEX.md, fix broken refs in frontmatter, fix obvious typos
+   - **Propose + wait for approval** (Major/content): Update skill/agent/rule content, modify templates/checklists/workflows, archive unused components
+   - **Propose + wait for approval** (Evolution): Create new skill/agent/command/workflow, add new rule/guideline/hook/script
+   - **Never auto-modify**: `.claude/settings.json`, `.claude/settings.local.json`, `.claude/rules/essential-rules.md`, `setup.cjs`
+3. **Log**: Append to `.claude/health/changelog.md` (see Changelog Rules below)
 
 ---
 
@@ -104,6 +132,25 @@ Format:
 **Main**: Read errors.md, LOG IMMEDIATELY on failure, log subagent errors/fixes
 **Subagents**: Read agent-errors/{name}.md, fix broken refs, report errors/fixes
 
+### Error Correction by Role
+
+**Main Agent**: When the main agent makes an error, it must append an entry to the Error Log section of `CLAUDE.md` describing the mistake concisely. Format: `- [short description of what went wrong and the correct approach]`
+
+**Subagents (Specialists)**: When a subagent encounters errors or inconsistencies in `.claude/` files during delegated work, it should fix them inline:
+- **Broken references in its own agent definition**: Fix the frontmatter directly
+- **Outdated advice in a skill it loads**: Update the skill content
+- **Inconsistency between its instructions and project reality**: Correct the agent/skill to match reality
+- **Inefficiency in its own workflow**: Streamline its definition
+
+Subagent fixes follow the same approval tiers (auto-apply minor/structural, propose major content changes).
+
+### Accountability Chain
+1. Subagent discovers issue in `.claude/` config -> fixes it (or proposes fix) as part of task
+2. Subagent reports corrections in its response to the main agent
+3. Main agent logs corrections to `.claude/health/changelog.md`
+4. Main agent makes its own error -> appends to `CLAUDE.md` Error Log immediately
+5. Recurring errors (3+ occurrences in Error Log) -> trigger rule/skill update proposal
+
 ---
 
 ## 7. Guardrails
@@ -112,7 +159,11 @@ Format:
 
 **Immutable**: `.claude/settings.json`, `.claude/settings.local.json`, `.claude/rules/essential-rules.md`, `setup.cjs`
 
-**Git**: Every change = own commit (heal/enhance prefix), user features = NO auto-commits
+**Git**: Every change = own commit with prefix (`heal()`, `evolve()`, `adapt()`, or `refactor()`), user features = NO auto-commits
+
+**No loops**: If the same issue recurs after a fix attempt, escalate to user -- do not retry
+
+**Observation overflow**: If >10 observations accumulate, suggest running `/health-check` instead of inline resolution
 
 ---
 

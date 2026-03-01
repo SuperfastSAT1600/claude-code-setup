@@ -39,7 +39,7 @@ Claude Code Workflow Template is a ready-to-use development workflow system for 
 The system follows a **main-agent-as-orchestrator** pattern:
 
 - **Main agent** codes directly for standard tasks and orchestrates specialists
-- **34 specialist agents** handle complex domains (auth, database, security, etc.)
+- **10 specialist agents** handle complex domains (auth, database, security, etc.)
 - **Parallel-first orchestration** maximizes throughput by launching independent agents simultaneously
 
 ### 3.2 Knowledge Layers
@@ -65,16 +65,19 @@ The system continuously improves through:
 
 ## 4. Core Features
 
-### 4.1 Specialist Agents (34)
+### 4.1 Specialist Agents (10)
 
 | Category | Agents |
 |----------|--------|
-| Planning & Architecture | planner, architect |
-| Code Quality | code-reviewer, security-reviewer, code-simplifier, refactor-cleaner |
-| Testing | tdd-guide, unit-test-writer, integration-test-writer, e2e-runner, verify-app |
-| Development | api-designer, database-architect, auth-specialist, graphql-specialist, websocket-specialist, ai-integration-specialist |
-| Operations | build-error-resolver, ci-cd-specialist, docker-specialist, migration-specialist, monitoring-architect |
-| Specialized | i18n-specialist, iac-specialist, mobile-specialist, load-test-specialist, accessibility-auditor, dependency-manager, doc-updater, runbook-writer, system-health, tech-debt-analyzer, type-safety-enforcer, performance-optimizer |
+| Planning & Architecture | architect |
+| Code Quality | code-reviewer |
+| Testing | test-writer |
+| Backend & Data | backend-specialist, auth-specialist |
+| Frontend | frontend-specialist |
+| Real-time & AI | realtime-specialist |
+| Operations | devops-specialist |
+| Mobile | mobile-specialist |
+| Documentation | doc-updater |
 
 ### 4.2 Skills Library (20+)
 
@@ -175,9 +178,9 @@ Every task follows a mandatory 4-phase protocol:
 
 | Pattern | Description |
 |---------|-------------|
-| Quality Gates | security-reviewer + code-reviewer + accessibility-auditor (parallel) |
+| Quality Gates | code-reviewer + frontend-specialist (parallel) |
 | Multi-Domain Research | Explore agents across auth + database + API + frontend (parallel) |
-| Test Pyramid | unit-test-writer + integration-test-writer + e2e-runner (parallel) |
+| Test Pyramid | test-writer (handles unit + integration + E2E) |
 | Feature Development | specialist agents + main agent coding (parallel) |
 | Sequential | planning -> implementation -> testing (ordered) |
 
@@ -206,6 +209,35 @@ Every task follows a mandatory 4-phase protocol:
 - Windows (MINGW64/Git Bash), macOS, Linux support
 - Platform-specific MCP server paths handled by setup wizard
 - Shell scripts invoke through bash for compatibility
+
+### 7.4 Cloud Session Compatibility
+
+Cloud sessions (e.g., Claude Code on the web) differ from local CLI sessions:
+
+| Capability | Local CLI | Cloud Session |
+|-----------|-----------|---------------|
+| tmux | Available | Not available |
+| `claude` CLI (separate process) | Available | Not available |
+| Git worktrees (manual) | Available | Not available |
+| Agent tool with `isolation: "worktree"` | Available | Available |
+| Subagent orchestration (Task/Agent) | Available | Available |
+| MCP servers | Configured locally | May not be available |
+| Hooks (PreToolUse, PostToolUse) | Available | Available |
+
+**Parallel TDD in Cloud Sessions**:
+- The `launch-parallel-tdd.sh` hook auto-detects the environment
+- When tmux/claude CLI are unavailable, it outputs instructions for subagent worktree orchestration
+- The `/parallel-tdd` command documents both local and cloud workflows
+- Each subagent uses `isolation: "worktree"` for branch-level isolation
+- Main agent works on shared code while subagents implement REQs in parallel
+- After completion, branches are merged via `merge-parallel.sh`
+
+**What works in both modes**:
+- Spec-driven planning with REQ-XXX IDs
+- Spec audit enforcement (`enforce-plan-spec.sh`)
+- Traceability validation (`verify-traceability.sh`)
+- Test-ladder progressive escalation
+- All hooks and quality gates
 
 ---
 

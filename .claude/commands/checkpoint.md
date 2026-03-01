@@ -24,7 +24,8 @@ Runs a progressive pipeline of automated quality checks, auto-detecting availabl
 4. **Tests**: vitest, jest, pytest, go test, cargo test (auto-detected)
 5. **Build**: `npm run build`, `cargo build`, `go build` (auto-detected)
 6. **Security**: `npm audit`, `pip-audit`, `cargo audit` (auto-detected)
-7. **Mutation Testing**: Stryker (if stryker.conf exists — optional)
+7. **Traceability**: `verify-traceability.sh` (if spec exists in `.claude/plans/`)
+8. **Mutation Testing**: Stryker (if stryker.conf exists — optional)
 
 Each step reports PASS/FAIL with timing. All steps run even if earlier ones fail, giving you a complete picture.
 

@@ -13,8 +13,8 @@
 
 ## Quick Reference
 
-**Workflow**: Main agent codes standard tasks, delegates to 11 specialized agents for expertise
-**Agents (11)**: See `.claude/agents/` for full list and INDEX.md
+**Workflow**: Main agent codes standard tasks, delegates to 10 specialized agents for expertise
+**Agents (10)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
 - Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
@@ -33,7 +33,7 @@ This setup continuously improves itself. During every task, the system observes 
 - **Rules**: `.claude/rules/self-aware-system.md`
 - **User Data**: `.claude/user/` (changelog, errors, custom content)
 - **Health Check**: Run `/health-check` for a comprehensive audit
-- **Agent count**: 11 specialists
+- **Agent count**: 10 specialists
 
 ### Mandatory Checkpoints (Every Task)
 
@@ -81,7 +81,7 @@ When creating React code, the main agent uses:
 **Documentation**:
 - `docs/PRD.md` - Product requirements, architecture
 - `.claude/rules/` - Mandatory protocols
-- `.claude/agents/INDEX.md` - All 11 specialists
+- `.claude/agents/INDEX.md` - All 10 specialists
 - `.claude/skills/` - Domain patterns
 
 **Configuration**:
@@ -92,13 +92,13 @@ When creating React code, the main agent uses:
 
 ## Tech Stack
 
-**Frontend**: {{FRONTEND_STACK}}
+**Frontend**: Auto-detected by `node setup.cjs` (or edit manually)
 
-**Backend**: {{BACKEND_STACK}}
+**Backend**: Auto-detected by `node setup.cjs` (or edit manually)
 
 **Database**: Supabase (PostgreSQL)
 
-**Testing**: {{TESTING_STACK}}
+**Testing**: Auto-detected by `node setup.cjs` (or edit manually)
 
 **DevOps**: Docker, GitHub Actions
 
