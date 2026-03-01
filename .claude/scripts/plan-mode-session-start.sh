@@ -29,7 +29,7 @@ if [[ -n "$latest" ]]; then
     echo "[Session] Recent spec found: ${latest##*/} — spec-first gate inactive."
 else
     # No recent spec — set flag
-    touch "$FLAG_FILE"
+    echo "NEEDS_SPEC" > "$FLAG_FILE"
     echo "[Session] Spec-first workflow active. You MUST write a spec to .claude/plans/[feature].md before coding. Use .claude/templates/spec.md.template as the template. Coding tools (Edit, Write, Bash) will be blocked until the spec is written."
 fi
 

@@ -165,8 +165,8 @@ audit_verification_tags() {
     fi
 
     while IFS= read -r req_id; do
-        # Check if this REQ has a Verification line nearby
-        if grep -A 3 "$req_id" "$spec_file" 2>/dev/null | grep -qE '\*\*Verification\*\*.*\((TEST|BROWSER|MANUAL)\)'; then
+        # Check if this REQ has a Verification line nearby (anchor to heading definition)
+        if grep -A 5 "^###.*${req_id}" "$spec_file" 2>/dev/null | grep -qE '\*\*Verification\*\*.*\((TEST|BROWSER|MANUAL)\)'; then
             verified=$((verified + 1))
         else
             unverified=$((unverified + 1))
@@ -355,8 +355,8 @@ main() {
     local empty_count
     empty_count=$(audit_empty_descriptions "$spec_file")
     if [[ "$empty_count" -gt 0 ]]; then
-        log_warn "$empty_count placeholder descriptions ({{...}}) found — fill in before implementation"
-        [[ $exit_code -lt 1 ]] && exit_code=1
+        log_fail "$empty_count placeholder descriptions ({{...}}) found — fill in before implementation"
+        exit_code=2
     else
         log_pass "No placeholder descriptions"
     fi

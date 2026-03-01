@@ -7,12 +7,12 @@
 #
 # How it works:
 #   1. SessionStart hook creates .claude/.plan-active flag (since defaultMode=plan)
-#   2. This script checks: if flag exists AND no spec in .claude/plans/ → BLOCK
-#   3. When a spec IS written to .claude/plans/, the PostToolUse hook clears the flag
+#   2. This script checks: if flag exists → BLOCK (with exceptions for spec-writing and read-only)
+#   3. Flag is ONLY cleared by PostToolUse hook (clear-plan-flag.sh) after spec passes audit
 #
 # Exit codes:
-#   0 = allow (no flag, or spec exists)
-#   2 = BLOCK (flag set, no spec found)
+#   0 = allow (no flag, or allowed tool/path)
+#   2 = BLOCK (flag set, coding tool not targeting spec)
 # =============================================================================
 
 set -euo pipefail
@@ -30,19 +30,7 @@ if [[ ! -f "$FLAG_FILE" ]]; then
     exit 0
 fi
 
-# Flag exists — check if a spec has been written
-latest=""
-if [[ -d "$PLANS_DIR" ]]; then
-    latest=$(find "$PLANS_DIR" -name "*.md" -type f -print0 2>/dev/null \
-        | xargs -0 ls -t 2>/dev/null \
-        | head -n 1)
-fi
-
-# Spec exists → clear flag and allow
-if [[ -n "$latest" ]]; then
-    rm -f "$FLAG_FILE"
-    exit 0
-fi
+# Flag exists — spec gate is active, only cleared by PostToolUse hook (clear-plan-flag.sh)
 
 # --- BLOCK ---
 # Allow some tools through (reading, exploring are OK)

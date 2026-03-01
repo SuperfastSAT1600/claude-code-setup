@@ -153,6 +153,15 @@
         ]
       },
       {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.claude/plans/.*\\.md$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./.claude/scripts/clear-plan-flag.sh"
+          }
+        ]
+      },
+      {
         "matcher": "tool == \"Read\" && tool_input.file_path matches \"errors\\\\.md$\"",
         "hooks": [
           {
@@ -176,15 +185,6 @@
           {
             "type": "command",
             "command": "echo '[Hook] Commit created. Consider running tests before pushing.' >&2"
-          }
-        ]
-      },
-      {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nnpx eslint --fix \"$file_path\" 2>/dev/null || true"
           }
         ]
       },
