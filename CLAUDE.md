@@ -32,7 +32,7 @@
 ## Quick Reference
 
 **Workflow**: Main agent codes standard tasks, delegates to 11 specialized agents for expertise
-**Agents (10)**: See `.claude/agents/` for full list and INDEX.md
+**Agents (11)**: See `.claude/agents/` for full list and INDEX.md
 
 **Resources**:
 - Skills: `.claude/skills/` (react-patterns, rest-api-design, etc.)
