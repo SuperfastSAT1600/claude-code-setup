@@ -33,6 +33,13 @@ if bash "$AUDIT_SCRIPT" "$FILE_PATH" >&2; then
     echo "" >&2
     echo "[Hook] Spec passed audit. Coding tools are now unblocked." >&2
 
+    # Auto-generate test stubs from traceability matrix
+    if [[ -f "$SCRIPT_DIR/generate-test-stubs.sh" ]]; then
+        echo "" >&2
+        echo "[Hook] Auto-generating test stubs from traceability matrix..." >&2
+        bash "$SCRIPT_DIR/generate-test-stubs.sh" "$FILE_PATH" >&2 || true
+    fi
+
     # Warn if editing spec during active team session
     if ls ~/.claude/teams/*/config.json 2>/dev/null | head -1 > /dev/null 2>&1; then
         echo "⚠️  WARNING: Active team session detected." >&2

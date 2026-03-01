@@ -89,6 +89,18 @@ interface {{Component}}Props {
 
 ---
 
+## Open Questions & Assumptions
+
+### Questions (resolve before implementation)
+
+1. {{Question that needs an answer before coding can begin}}
+
+### Assumptions (verify during implementation)
+
+1. {{Assumption that may affect design if proven wrong}}
+
+---
+
 ## Implementation Steps
 
 ### Step 1: Component shell + default render
