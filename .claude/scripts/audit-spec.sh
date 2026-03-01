@@ -260,6 +260,31 @@ audit_priority_coverage() {
     echo "$has_must"
 }
 
+audit_todo_markers() {
+    local spec_file="$1"
+    grep -ciE '\bTODO\b|\bTBD\b|\bFIXME\b|\bHACK\b' "$spec_file" 2>/dev/null || echo 0
+}
+
+audit_dependency_refs() {
+    local spec_file="$1"
+    local invalid=""
+    local all_reqs
+    all_reqs=$(grep -oE 'REQ-[0-9]{3}' "$spec_file" 2>/dev/null | sort -u)
+
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        local dep_refs
+        dep_refs=$(echo "$line" | grep -oE 'REQ-[0-9]{3}')
+        for ref in $dep_refs; do
+            if ! echo "$all_reqs" | grep -q "^${ref}$"; then
+                invalid="${invalid}${ref}, "
+            fi
+        done
+    done <<< "$(grep -iE 'depends on' "$spec_file" 2>/dev/null || true)"
+
+    echo "${invalid%, }"
+}
+
 # =============================================================================
 # Main
 # =============================================================================
@@ -361,7 +386,27 @@ main() {
         log_pass "No placeholder descriptions"
     fi
 
-    # 9. Check priority coverage
+    # 9. Check for TODO/TBD markers
+    local todo_count
+    todo_count=$(audit_todo_markers "$spec_file")
+    if [[ "$todo_count" -gt 0 ]]; then
+        log_fail "$todo_count TODO/TBD/FIXME markers found — resolve before implementation"
+        exit_code=2
+    else
+        log_pass "No TODO/TBD markers"
+    fi
+
+    # 10. Check for invalid dependency references
+    local invalid_deps
+    invalid_deps=$(audit_dependency_refs "$spec_file")
+    if [[ -n "$invalid_deps" ]]; then
+        log_warn "Depends-on references to nonexistent REQs: $invalid_deps"
+        [[ $exit_code -lt 1 ]] && exit_code=1
+    else
+        log_pass "All dependency references are valid"
+    fi
+
+    # 11. Check priority coverage
     local has_must
     has_must=$(audit_priority_coverage "$spec_file")
     if [[ "$has_must" -eq 0 ]]; then
@@ -369,6 +414,12 @@ main() {
         [[ $exit_code -lt 1 ]] && exit_code=1
     else
         log_pass "Must-priority requirements present"
+    fi
+
+    # 12. Check for high REQ count
+    if [[ "$total_reqs" -gt 10 ]]; then
+        log_warn "Spec has $total_reqs requirements — consider splitting into smaller specs for focused TDD"
+        [[ $exit_code -lt 1 ]] && exit_code=1
     fi
 
     # Summary
@@ -382,6 +433,8 @@ main() {
     echo "  Has (TEST) tags: $([ "$has_test" -eq 1 ] && echo 'yes' || echo 'no')"
     echo "  Has traceability matrix: $([ "$has_matrix" -eq 1 ] && echo 'yes' || echo 'no')"
     echo "  Placeholder descriptions: $empty_count"
+    echo "  TODO/TBD markers: $todo_count"
+    echo "  Invalid dependency refs: ${invalid_deps:-none}"
     echo ""
 
     if [[ $exit_code -eq 0 ]]; then
