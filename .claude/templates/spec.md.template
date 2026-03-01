@@ -2,7 +2,7 @@
 
 **Author**: {{AUTHOR}}
 **Date**: {{DATE}}
-**Status**: Draft | Review | Approved | Implemented
+**Status**: Draft | Review | Approved | Implemented | Complete
 
 ---
 
@@ -18,16 +18,19 @@
 - **Description**: {{What the system should do — observable behavior}}
 - **Verification**: (TEST) | (BROWSER) | (MANUAL)
 - **Priority**: Must | Should | Could
+- **Depends on**: — _(optional: REQ-XXX if this depends on another requirement)_
 
 ### REQ-002: {{Requirement title}}
 - **Description**: {{What the system should do — observable behavior}}
 - **Verification**: (TEST) | (BROWSER) | (MANUAL)
 - **Priority**: Must | Should | Could
+- **Depends on**: — _(optional: REQ-XXX if this depends on another requirement)_
 
 ### REQ-003: {{Requirement title}}
 - **Description**: {{What the system should do — observable behavior}}
 - **Verification**: (TEST) | (BROWSER) | (MANUAL)
 - **Priority**: Must | Should | Could
+- **Depends on**: — _(optional: REQ-XXX if this depends on another requirement)_
 
 ---
 
@@ -56,6 +59,18 @@
 ## Technical Approach
 
 {{High-level approach and key architectural decisions.}}
+
+---
+
+## Open Questions & Assumptions
+
+### Questions (resolve before implementation)
+
+1. {{Question that needs an answer before coding can begin}}
+
+### Assumptions (verify during implementation)
+
+1. {{Assumption that may affect design if proven wrong}}
 
 ---
 

@@ -1,0 +1,139 @@
+# Spec: {{FEATURE_NAME}} (API)
+
+**Author**: {{AUTHOR}}
+**Date**: {{DATE}}
+**Status**: Draft | Review | Approved | Implemented | Complete
+
+---
+
+## Overview
+
+{{Brief description of the API endpoint(s) and purpose.}}
+
+---
+
+## Endpoint Definition
+
+| Field | Value |
+|-------|-------|
+| **Method** | GET / POST / PATCH / DELETE |
+| **Path** | `/api/v1/{{resource}}` |
+| **Auth** | Bearer token / API key / Public |
+| **Rate Limit** | {{requests/window}} |
+
+### Request
+
+```typescript
+// Query params (GET) or body (POST/PATCH)
+{
+  // {{field}}: {{type}} — {{description}}
+}
+```
+
+### Response (Success)
+
+```typescript
+// 200 / 201
+{
+  "data": { /* {{shape}} */ },
+  "meta": { "requestId": "..." }
+}
+```
+
+### Response (Error)
+
+```typescript
+// 400 / 401 / 403 / 404 / 500
+{
+  "error": { "code": "{{ERROR_CODE}}", "message": "{{description}}" }
+}
+```
+
+---
+
+## Requirements
+
+### REQ-001: {{Happy path}}
+- **Description**: {{What the endpoint returns on valid input}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-002: {{Input validation}}
+- **Description**: {{How invalid input is rejected}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-003: {{Auth/authz}}
+- **Description**: {{Who can access and what happens without credentials}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-004: {{Edge case or error scenario}}
+- **Description**: {{What happens on not-found, conflict, etc.}}
+- **Verification**: (TEST)
+- **Priority**: Should
+
+---
+
+## Traceability Matrix
+
+| REQ ID | Description | Verification | Test/Check Location |
+|--------|-------------|-------------|-------------------|
+| REQ-001 | {{...}} | (TEST) | `src/__tests__/{{resource}}.test.ts` |
+| REQ-002 | {{...}} | (TEST) | `src/__tests__/{{resource}}.test.ts` |
+| REQ-003 | {{...}} | (TEST) | `src/__tests__/{{resource}}.test.ts` |
+| REQ-004 | {{...}} | (TEST) | `src/__tests__/{{resource}}.test.ts` |
+
+---
+
+## Technical Approach
+
+{{Route handler structure, middleware, service layer, DB queries.}}
+
+---
+
+## Open Questions & Assumptions
+
+### Questions (resolve before implementation)
+
+1. {{Question that needs an answer before coding can begin}}
+
+### Assumptions (verify during implementation)
+
+1. {{Assumption that may affect design if proven wrong}}
+
+---
+
+## Implementation Steps
+
+### Step 1: Route + Validation
+- **Files**: `src/routes/{{resource}}.ts`, `src/validators/{{resource}}.ts`
+- **Satisfies**: REQ-002
+
+### Step 2: Service Logic
+- **Files**: `src/services/{{resource}}Service.ts`
+- **Satisfies**: REQ-001, REQ-004
+
+### Step 3: Auth Middleware
+- **Files**: `src/middleware/auth.ts`
+- **Satisfies**: REQ-003
+
+---
+
+## Testing Strategy
+
+| REQ ID | Test Type | Test Location | Test Name |
+|--------|-----------|---------------|-----------|
+| REQ-001 | Unit | `src/__tests__/{{resource}}.test.ts` | `REQ-001: {{description}}` |
+| REQ-002 | Unit | `src/__tests__/{{resource}}.test.ts` | `REQ-002: {{description}}` |
+| REQ-003 | Unit | `src/__tests__/{{resource}}.test.ts` | `REQ-003: {{description}}` |
+| REQ-004 | Unit | `src/__tests__/{{resource}}.test.ts` | `REQ-004: {{description}}` |
+
+---
+
+## Acceptance Criteria
+
+- [ ] REQ-001: {{Observable behavior}}
+- [ ] REQ-002: {{Observable behavior}}
+- [ ] REQ-003: {{Observable behavior}}
+- [ ] REQ-004: {{Observable behavior}}

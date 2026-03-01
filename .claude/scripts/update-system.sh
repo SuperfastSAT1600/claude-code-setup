@@ -31,14 +31,23 @@ echo -e "${BLUE}[1/6] Validating and updating source...${NC}"
 REPO_DIR="../claude-code-setup"
 
 if [ ! -d "$REPO_DIR" ]; then
-    echo -e "${RED}✗ Error: Repository not found: $REPO_DIR${NC}"
-    echo -e "${YELLOW}Cloning repository...${NC}"
+    REPO_URL="${CLAUDE_CODE_SETUP_REPO:-}"
+    if [ -z "$REPO_URL" ]; then
+        echo -e "${RED}✗ Error: Repository not found: $REPO_DIR${NC}"
+        echo -e "${RED}  No repository URL configured.${NC}"
+        echo -e "${YELLOW}Set the CLAUDE_CODE_SETUP_REPO environment variable or clone manually:${NC}"
+        echo -e "  export CLAUDE_CODE_SETUP_REPO=https://github.com/<your-org>/claude-code-setup.git"
+        echo -e "  # Then re-run this script, or clone directly:"
+        echo -e "  git clone https://github.com/<your-org>/claude-code-setup.git ../claude-code-setup"
+        exit 1
+    fi
+    echo -e "${YELLOW}Cloning repository from $REPO_URL...${NC}"
     cd ..
-    if ! git clone https://github.com/YOUR_REPO/claude-code-setup.git; then
+    if ! git clone "$REPO_URL"; then
         echo -e "${RED}✗ Failed to clone repository${NC}"
         echo -e "${YELLOW}Please clone manually:${NC}"
         echo -e "  cd .."
-        echo -e "  git clone https://github.com/YOUR_REPO/claude-code-setup.git"
+        echo -e "  git clone $REPO_URL"
         exit 1
     fi
     cd - > /dev/null

@@ -10,6 +10,12 @@
 # Claude plans (may contain work-in-progress or sensitive planning)
 .claude/plans/
 
+# Plan mode state flag (session-specific)
+.claude/.plan-active
+
+# Worktrees (created by parallel TDD)
+.worktrees/
+
 # MCP cache
 .mcp/cache/
 .mcp/logs/

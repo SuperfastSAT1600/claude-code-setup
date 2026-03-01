@@ -95,15 +95,16 @@ For each approach, analyze:
 - Implementation guidance
 - Risk mitigation strategies
 
-## Resource Checklist
+## INIT Checklist
 
-- Search Memory for similar patterns before planning
-- Store finalized plans and architectural decisions in Memory
-- Query Context7 for library docs when evaluating technology options
+1. **Load skills**: `Skill("backend-patterns")`, `Skill("database-patterns")`, `Skill("frontend-patterns")` — load those relevant to current task
+2. Search Memory for similar patterns before planning
+3. Query Context7 for library docs when evaluating technology options
+4. Store finalized plans and architectural decisions in Memory
 
 ## Recommended MCPs
 
-Before starting work, use ToolSearch to load these MCP servers if needed:
+MCP servers available for this domain (use directly — no loading needed):
 
 - **context7**: Query library documentation for technical feasibility
 - **memory**: Store/retrieve architectural decisions and implementation plans
