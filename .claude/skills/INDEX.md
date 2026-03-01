@@ -2,7 +2,7 @@
 
 Lightweight directory of all available skills. Load full skill files only when needed for specific tasks.
 
-**Total Skills**: 21 (20 domain patterns + 1 meta-skill)
+**Total Skills**: 23 (22 domain patterns + 1 meta-skill)
 
 **Documentation-Based Skills** (2026-01-23):
 Nine skills are now sourced from authoritative references (OpenAPI Spec, OWASP, GraphQL Spec, PostgreSQL docs, GitHub docs, RFC standards, Anthropic/OpenAI guides, LangChain, academic research). See individual skill files for sources.
@@ -20,6 +20,7 @@ Skills now use directories for bundled resources:
 |-------|----------|-----------|
 | **coding-standards/** | Style, naming, file organization | General coding work |
 | **tdd-workflow/** | Red-Green-Refactor cycle, test patterns | Test-driven development |
+| **spec-writing/** | Spec-driven TDD specs, REQ granularity, verification tags | Writing feature specs |
 | **documentation-patterns/** | Documentation standards and formats (sourced from JSDoc, TSDoc, Keep a Changelog) | Writing documentation |
 
 ## Backend
@@ -63,6 +64,7 @@ Skills now use directories for bundled resources:
 | **dev-server-autoopen/** | Auto-open localhost in browser | Dev server setup | scripts/ |
 | **project-guidelines/** | Project-specific patterns and conventions | Project onboarding | - |
 | **user-intent-patterns/** | Natural language → command routing | Intent classification | - |
+| **agent-orchestration/** | Three-level dispatch, subagent vs team selection, parallel patterns | Orchestration decisions | - |
 
 ## Meta Skills
 
@@ -100,7 +102,7 @@ Task: "Build REST API with Supabase"
 
 ## Usage
 
-Instead of loading all 21 skill directories (~45k tokens), reference this index to identify relevant skills, then load only those needed for the current task.
+Instead of loading all 23 skill directories (~45k tokens), reference this index to identify relevant skills, then load only those needed for the current task.
 
 **Skills with Bundled Resources**:
 - **scripts/** (1 skill): dev-server-autoopen

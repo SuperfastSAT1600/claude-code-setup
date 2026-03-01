@@ -1,8 +1,13 @@
-# Skill: Agent Orchestration
+---
+name: agent-orchestration
+description: Quick-reference guide for the main agent's orchestration decisions. Covers the three-level dispatch framework, all 10 subagents, all 23 skills, parallel launch patterns, team vs. subagent selection, and cloud-session fallbacks.
+---
+
+# Agent Orchestration
 
 Load with: `Skill("agent-orchestration")`
 
-Quick-reference guide for the main agent's orchestration decisions. Covers the three-level dispatch framework, all 10 subagents, all 21+ skills, parallel launch patterns, team vs. subagent selection, and cloud-session fallbacks.
+Quick-reference guide for the main agent's orchestration decisions. Covers the three-level dispatch framework, all 10 subagents, all 23 skills, parallel launch patterns, team vs. subagent selection, and cloud-session fallbacks.
 
 ---
 
@@ -73,7 +78,8 @@ Key properties of teams:
 | **realtime-specialist** | sonnet | WebSockets, GraphQL, AI/ML | Real-time features, GraphQL, RAG |
 | **mobile-specialist** | sonnet | React Native, Flutter | Mobile development |
 | **doc-updater** | haiku | Documentation sync | Any doc update spanning 3+ files |
-| **general-purpose** | sonnet | Independent parallel features, research | Parallel feature work |
+
+> For tasks needing no specialist, use `Task(prompt)` with `subagent_type: general-purpose` directly — no agent definition file needed.
 
 **Model tiers (for custom Task calls):**
 - haiku — doc-updater, Explore tasks

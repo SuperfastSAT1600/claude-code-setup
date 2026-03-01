@@ -91,9 +91,10 @@ Specialist needed? (auth, security, devops, etc.)
 | **realtime-specialist** | sonnet | WebSockets, GraphQL, AI/ML |
 | **mobile-specialist** | sonnet | React Native, Flutter |
 | **doc-updater** | haiku | Documentation sync |
-| **general-purpose** | sonnet | Independent parallel features, research |
 
 **Model tiers**: haiku (doc-updater, Explore) | sonnet (most agents, DEFAULT) | opus (architect, critical decisions)
+
+> For tasks needing no specialist, use `Task(prompt)` with `subagent_type: general-purpose` directly — no agent definition file needed.
 
 ---
 
