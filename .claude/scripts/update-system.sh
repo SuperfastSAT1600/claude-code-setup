@@ -160,16 +160,40 @@ if [ -f "$CLAUDE_DIR/settings.local.json" ]; then
 fi
 
 # Copy system files from source (exclude user directory)
-echo -e "${YELLOW}→ Copying system files from $SOURCE_DIR${NC}"
+# Strategy: remove-then-copy for managed dirs so deletions in source propagate to target.
+# Root-level files are overwritten in place (no deletion needed there).
+echo -e "${YELLOW}→ Syncing system files from $SOURCE_DIR${NC}"
 
-# Copy all directories except user/
+# Managed directories: remove target dir entirely, then copy fresh from source.
+# This guarantees the target exactly mirrors source — no stale files survive.
+MANAGED_DIRS="agents skills rules commands workflows templates scripts checklists"
+
+for managed in $MANAGED_DIRS; do
+    SRC_DIR="$SOURCE_DIR/$managed"
+    TARGET_DIR="$CLAUDE_DIR/$managed"
+
+    if [ -d "$SRC_DIR" ]; then
+        # Remove existing target dir so deleted files don't linger
+        rm -rf "$TARGET_DIR"
+        cp -r "$SRC_DIR" "$CLAUDE_DIR/"
+        echo -e "  ✓ Synced $managed/"
+    elif [ -d "$TARGET_DIR" ]; then
+        # Source no longer has this dir — remove it from target
+        rm -rf "$TARGET_DIR"
+        echo -e "  ${RED}✗ Removed obsolete $managed/ (no longer in source)${NC}"
+    fi
+done
+
+# Copy any remaining non-managed directories from source (except user/)
 for dir in "$SOURCE_DIR"/*; do
     if [ -d "$dir" ]; then
         dirname=$(basename "$dir")
-        if [ "$dirname" != "user" ]; then
-            cp -r "$dir" "$CLAUDE_DIR/"
-            echo -e "  ✓ Updated $dirname/"
-        fi
+        # Skip managed dirs (handled above) and user/
+        case "$dirname" in
+            agents|skills|rules|commands|workflows|templates|scripts|checklists|user) continue ;;
+        esac
+        cp -r "$dir" "$CLAUDE_DIR/"
+        echo -e "  ✓ Updated $dirname/"
     fi
 done
 
@@ -184,65 +208,7 @@ for file in "$SOURCE_DIR"/*; do
     fi
 done
 
-echo -e "${GREEN}✓ System files updated${NC}"
-
-# Remove stale files that no longer exist in source
-echo -e "${YELLOW}→ Removing stale files not in source...${NC}"
-STALE_COUNT=0
-
-# Managed directories that should mirror source (never touch user/)
-MANAGED_DIRS="agents skills rules commands workflows templates scripts checklists"
-
-for managed in $MANAGED_DIRS; do
-    TARGET_DIR="$CLAUDE_DIR/$managed"
-    SRC_DIR="$SOURCE_DIR/$managed"
-
-    # Skip if target doesn't exist locally
-    [ ! -d "$TARGET_DIR" ] && continue
-
-    # Skip if source dir doesn't exist (don't delete entire dirs that source no longer has)
-    if [ ! -d "$SRC_DIR" ]; then
-        echo -e "  ${YELLOW}⚠ $managed/ exists locally but not in source — skipping (delete manually if intended)${NC}"
-        continue
-    fi
-
-    # Find files in target that don't exist in source
-    while IFS= read -r target_file; do
-        # Get relative path from the managed dir
-        rel_path="${target_file#$TARGET_DIR/}"
-        if [ ! -e "$SRC_DIR/$rel_path" ]; then
-            rm "$target_file"
-            echo -e "  ${RED}✗ Removed stale: $managed/$rel_path${NC}"
-            STALE_COUNT=$((STALE_COUNT + 1))
-        fi
-    done < <(find "$TARGET_DIR" -type f 2>/dev/null)
-
-    # Clean up empty directories left behind
-    find "$TARGET_DIR" -type d -empty -delete 2>/dev/null || true
-done
-
-# Remove stale root-level files in .claude/
-# Only remove files that: exist in target, don't exist in source, aren't protected
-while IFS= read -r target_file; do
-    filename=$(basename "$target_file")
-    # Skip protected files
-    case "$filename" in
-        settings.local.json) continue ;;
-    esac
-    # Only consider files that could have come from source (skip if source never had root files)
-    if [ ! -e "$SOURCE_DIR/$filename" ]; then
-        # Only remove if it's a file type we'd have copied (not directories, not settings.local)
-        rm "$target_file"
-        echo -e "  ${RED}✗ Removed stale: $filename${NC}"
-        STALE_COUNT=$((STALE_COUNT + 1))
-    fi
-done < <(find "$CLAUDE_DIR" -maxdepth 1 -type f 2>/dev/null)
-
-if [ "$STALE_COUNT" -eq 0 ]; then
-    echo -e "${GREEN}✓ No stale files found${NC}"
-else
-    echo -e "${GREEN}✓ Removed $STALE_COUNT stale file(s)${NC}"
-fi
+echo -e "${GREEN}✓ System files synced${NC}"
 
 # Restore user data
 if [ "$(ls -A "$TEMP_USER_DIR" 2>/dev/null)" ]; then
