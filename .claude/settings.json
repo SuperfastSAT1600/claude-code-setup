@@ -142,6 +142,17 @@
         ]
       }
     ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "OS=$(uname -s 2>/dev/null); MSG=\"${CLAUDE_NOTIFICATION_MESSAGE:-Claude needs your input}\"; case \"$OS\" in Darwin*) osascript -e \"display notification \\\"$MSG\\\" with title \\\"Claude Code\\\" sound name \\\"Ping\\\"\" 2>/dev/null;; Linux*) command -v notify-send >/dev/null 2>&1 && notify-send \"Claude Code\" \"$MSG\" || printf '\\a';; MINGW*|CYGWIN*|MSYS*) powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -Command \"Add-Type -AssemblyName System.Windows.Forms,System.Drawing; \\$n=New-Object System.Windows.Forms.NotifyIcon; \\$n.Icon=[System.Drawing.SystemIcons]::Information; \\$n.BalloonTipTitle='Claude Code'; \\$n.BalloonTipText='$MSG'; \\$n.Visible=\\$true; \\$n.ShowBalloonTip(8000); Start-Sleep 1; \\$n.Dispose()\" 2>/dev/null || printf '\\a';; *) printf '\\a';; esac"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.claude/plans/.*\\.md$\"",
