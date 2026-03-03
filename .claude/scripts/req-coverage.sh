@@ -122,8 +122,22 @@ main() {
             local browser_file_count
             browser_file_count=$(echo "$browser_files" | grep -c . 2>/dev/null || echo 0)
             if [[ "$browser_file_count" -gt 0 ]]; then
-                log_pass "$req_id  ($browser_file_count e2e/browser file(s))"
-                covered=$((covered + 1))
+                # Verify it's actually a Playwright/Cypress test (not just a unit test referencing the ID)
+                local is_real_e2e=false
+                while IFS= read -r bf; do
+                    [[ -z "$bf" ]] && continue
+                    if grep -qE '@playwright/test|import.*playwright|cy\.|describe\(' "$bf" 2>/dev/null; then
+                        is_real_e2e=true
+                        break
+                    fi
+                done <<< "$browser_files"
+                if [[ "$is_real_e2e" == "true" ]]; then
+                    log_pass "$req_id  ($browser_file_count e2e/browser file(s))"
+                    covered=$((covered + 1))
+                else
+                    echo -e "  ${YELLOW}BROWSER${NC}  $req_id  (test file exists but doesn't use Playwright/Cypress)"
+                    browser_count=$((browser_count + 1))
+                fi
             else
                 echo -e "  ${YELLOW}BROWSER${NC}  $req_id  (needs browser test)"
                 browser_count=$((browser_count + 1))

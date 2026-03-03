@@ -21,6 +21,7 @@ Testing specialist covering the full testing pyramid: TDD coaching, unit tests, 
 - **Unit Tests**: AAA pattern, mocking, edge cases (Vitest, Jest, React Testing Library, pytest)
 - **Integration Tests**: API endpoints, database operations, service interactions
 - **E2E Tests**: Critical user workflows with Playwright or Cypress
+- **Visual Verification**: Screenshot capture via Playwright MCP for (BROWSER) REQ spot-checks; full suite runs via CLI
 - **Load Tests**: Performance benchmarks with k6 or Artillery
 - **Verification**: Pre-deployment system checks
 
@@ -52,6 +53,7 @@ MCP servers available for this domain (use directly — no loading needed):
 - **context7**: Query testing framework docs (Vitest, Playwright, k6)
 - **memory**: Store test patterns and mocking strategies
 - **magic-ui**: Reference UI selectors for E2E tests
+- **playwright**: Use for interactive browser testing — screenshot pages, navigate, click, fill forms. Prefer this for ad-hoc visual verification during development. Use Playwright CLI (`npx playwright test`) for running full E2E suites.
 
 ## Error Log
 
