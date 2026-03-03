@@ -16,6 +16,17 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 
 ## Phase 1: PRE-TASK
 
+### Spec Gate (MANDATORY before coding)
+
+For any task involving a new feature, a bug fix requiring >10 lines, or changes touching 2+ files:
+
+1. Load `Skill("spec-writing")`
+2. Write spec to `.claude/plans/[feature].md` using `.claude/templates/spec.md.template`
+3. Audit runs automatically on save — coding tools unblock when it passes
+4. Implement REQ-by-REQ using Red-Green-Refactor (load `Skill("tdd-workflow")`)
+
+**Skip spec for**: typos, single-line fixes, config tweaks, doc-only updates
+
 ### Delegation Check
 
 Specialist needed? → See **orchestration.md → Intent Routing** for full decision logic and specialist mapping.
@@ -85,7 +96,7 @@ Fixed: [file] - [what]
 
 ```
 INIT:    Read errors.md FIRST → Load relevant skills → PRD
-PRE:     Delegate? Parallel? Task list?  (see orchestration.md)
+PRE:     Spec needed? → write .claude/plans/[feature].md | Delegate? Parallel? Task list?
 DURING:  Error → LOG (immediate, non-blocking) → continue
 POST:    VERIFY → Observations → Heal → Errors → Changelog → DOCS
 ```
