@@ -9,21 +9,6 @@ Generate and run end-to-end tests for user workflows.
 
 ---
 
-## Usage
-
-```
-/e2e [workflow-description]
-```
-
-**Examples:**
-```
-/e2e user login and registration
-/e2e checkout process
-/e2e search functionality
-```
-
----
-
 ## What This Command Does
 
 1. **Analyzes Workflow**: Breaks down user journey into steps

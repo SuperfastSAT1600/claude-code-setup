@@ -25,6 +25,13 @@ Mandatory protocols for MCPs, APIs, and plugins.
 - Use read_multiple_files for batch reads (not sequential Read calls)
 - Use directory_tree for structure, search_files for patterns
 
+## Playwright
+- **MCP**: Use for ad-hoc visual inspection, accessibility checks, debugging layout issues during development
+- **CLI** (`npx playwright test`): Use for running E2E suites in checkpoint, CI, and batch validation
+- Always prefer CLI for repeatable test execution (checkpoint.sh, req-coverage.sh)
+- Use MCP when you need to see and interact with a page interactively
+- For (BROWSER) REQs: write a Playwright test file for req-coverage.sh, use MCP for spot-checks
+
 ---
 
 ## Priority Order

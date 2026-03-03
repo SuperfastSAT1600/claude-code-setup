@@ -105,7 +105,7 @@ skip_step() {
 
 check_typescript() {
     echo ""
-    echo -e "${BLUE}[1/9] TypeScript${NC}"
+    echo -e "${BLUE}[1/10] TypeScript${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -126,7 +126,7 @@ check_typescript() {
 
 check_lint() {
     echo ""
-    echo -e "${BLUE}[2/9] Lint${NC}"
+    echo -e "${BLUE}[2/10] Lint${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -176,7 +176,7 @@ check_lint() {
 
 check_format() {
     echo ""
-    echo -e "${BLUE}[3/9] Format${NC}"
+    echo -e "${BLUE}[3/10] Format${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -226,7 +226,7 @@ check_format() {
 
 check_tests() {
     echo ""
-    echo -e "${BLUE}[4/9] Tests${NC}"
+    echo -e "${BLUE}[4/10] Tests${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -256,12 +256,37 @@ check_tests() {
 }
 
 # =============================================================================
-# Step 5: Build
+# Step 5: E2E / Browser Tests
+# =============================================================================
+
+check_e2e() {
+    echo ""
+    echo -e "${BLUE}[5/10] E2E / Browser Tests${NC}"
+
+    cd "$PROJECT_ROOT"
+
+    # Check if Playwright is installed
+    if [[ -f "playwright.config.ts" ]] || [[ -f "playwright.config.js" ]]; then
+        run_step "Playwright E2E" "npx playwright test 2>&1"
+    elif [[ -f "cypress.config.ts" ]] || [[ -f "cypress.config.js" ]]; then
+        run_step "Cypress E2E" "npx cypress run 2>&1"
+    elif [[ -d "e2e" ]] || [[ -d "tests/e2e" ]]; then
+        # e2e directory exists but no config — warn
+        log_warn "E2E test directory found but no Playwright/Cypress config"
+        WARNINGS=$((WARNINGS + 1))
+        RESULTS+=("WARN: E2E tests unconfigured")
+    else
+        skip_step "E2E Tests" "no Playwright/Cypress config found"
+    fi
+}
+
+# =============================================================================
+# Step 6: Build
 # =============================================================================
 
 check_build() {
     echo ""
-    echo -e "${BLUE}[5/9] Build${NC}"
+    echo -e "${BLUE}[6/10] Build${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -288,12 +313,12 @@ check_build() {
 }
 
 # =============================================================================
-# Step 6: Security Audit
+# Step 7: Security Audit
 # =============================================================================
 
 check_security() {
     echo ""
-    echo -e "${BLUE}[6/9] Security${NC}"
+    echo -e "${BLUE}[7/10] Security${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -335,12 +360,12 @@ check_security() {
 }
 
 # =============================================================================
-# Step 7: Mutation Testing (Optional)
+# Step 8: Mutation Testing (Optional)
 # =============================================================================
 
 check_mutation() {
     echo ""
-    echo -e "${BLUE}[7/9] Mutation Testing (optional)${NC}"
+    echo -e "${BLUE}[8/10] Mutation Testing (optional)${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -352,12 +377,12 @@ check_mutation() {
 }
 
 # =============================================================================
-# Step 8: Test Pyramid Check (Optional)
+# Step 9: Test Pyramid Check (Optional)
 # =============================================================================
 
 check_test_pyramid() {
     echo ""
-    echo -e "${BLUE}[8/9] Test Pyramid (advisory)${NC}"
+    echo -e "${BLUE}[9/10] Test Pyramid (advisory)${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -389,12 +414,12 @@ check_test_pyramid() {
 }
 
 # =============================================================================
-# Step 9: REQ Coverage (Optional — runs when spec exists)
+# Step 10: REQ Coverage (Optional — runs when spec exists)
 # =============================================================================
 
 check_req_coverage() {
     echo ""
-    echo -e "${BLUE}[9/9] REQ Coverage (optional)${NC}"
+    echo -e "${BLUE}[10/10] REQ Coverage (optional)${NC}"
 
     cd "$PROJECT_ROOT"
 
@@ -474,6 +499,7 @@ main() {
     check_lint
     check_format
     check_tests
+    check_e2e
     check_build
     check_security
     check_mutation

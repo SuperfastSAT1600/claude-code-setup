@@ -18,15 +18,13 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 
 ### Delegation Check
 
-Specialist required? Check `orchestration.md`:
-Database → backend-specialist | API → backend-specialist | Auth → auth-specialist | Security → code-reviewer | Testing → test-writer | Infrastructure → devops-specialist | Code review → code-reviewer | Performance → frontend-specialist | Real-time → realtime-specialist | AI/ML → ai-specialist | Mobile → mobile-specialist | Architecture → architect | Docs → doc-updater
+Specialist needed? → See **orchestration.md → Intent Routing** for full decision logic and specialist mapping.
 
-**If specialist exists: DELEGATE. Exception**: <10 lines, no domain knowledge, follows patterns, no architecture.
+**Exception** (handle directly): <10 lines, no domain knowledge, follows an existing pattern, no architecture involved.
 
 ### Parallelization
 
-Independent files/features/domains? → PARALLEL (one message, multiple Tasks)
-Research + implementation? → PARALLEL | Review? → PARALLEL | Single atomic? → SEQUENTIAL
+See **orchestration.md → Intent Routing** for full parallel/sequential decision logic.
 
 ### Task List (MANDATORY)
 
@@ -56,15 +54,20 @@ Research + implementation? → PARALLEL | Review? → PARALLEL | Single atomic? 
 
 ## Phase 3: POST-TASK
 
-1. **Report**: `OBSERVATIONS: [items or "none"]`
-2. **Auto-heal**: Auto (INDEX, refs, typos) or Propose (content, components)
-3. **Verify errors logged** (from immediate logging)
-4. **Changelog** (self-initiated only)
-5. **Docs** (MANDATORY for code): Feature → README/API/changelog | API change → docs/examples/changelog | Bug → changelog/examples | Refactor → affected docs | Small (1-2 files) = direct, Large (3+) = doc-updater
+1. **Verify** (MANDATORY before anything else): Close the verification loop — see **orchestration.md → Verification Loop**. Do not proceed to step 2 until the work is confirmed working.
+2. **Report**: `OBSERVATIONS: [items or "none"]`
+3. **Auto-heal**: Auto (INDEX, refs, typos) or Propose (content, components)
+4. **Verify errors logged** (from immediate logging)
+5. **Changelog** (self-initiated only)
+6. **Docs** (MANDATORY for code): Feature → README/API/changelog | API change → docs/examples/changelog | Bug → changelog/examples | Refactor → affected docs | Small (1-2 files) = direct, Large (3+) = doc-updater
 
 ---
 
 ## Subagent Protocol
+
+**Before returning results**: Verify your own workstream — run your piece's tests, confirm your endpoint responds, check your migration applied. Do not return until your scope is confirmed working.
+
+**Self-correction**: Fix any `.claude/` issues you encounter (broken refs, outdated skill advice, inconsistencies). Report corrections in your result for the main agent to log to `.claude/user/changelog.md`.
 
 Report (main logs):
 ```
@@ -82,7 +85,7 @@ Fixed: [file] - [what]
 
 ```
 INIT:    Read errors.md FIRST → Load relevant skills → PRD
-PRE:     Delegate? Parallel? Task list?
+PRE:     Delegate? Parallel? Task list?  (see orchestration.md)
 DURING:  Error → LOG (immediate, non-blocking) → continue
-POST:    Observations → Heal → Errors → Changelog → DOCS
+POST:    VERIFY → Observations → Heal → Errors → Changelog → DOCS
 ```

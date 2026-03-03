@@ -20,13 +20,17 @@ Two distinct parallel systems. **Never mix them up.**
 ### When to Use Which
 
 ```
-Parallel TDD (2+ REQs)?
-├─ YES → Agent Teams via /parallel-tdd
-└─ NO → Subagents
-     ├─ Specialist needed? → Task(specialist-agent)
-     ├─ Independent parts? → Multiple Task calls in one message
-     └─ Simple task? → Main agent handles directly
+Task scope?
+├─ Simple (< ~10 lines, no specialist) → Main agent directly
+├─ Needs specialist OR 2–3 independent parts → Subagents (default)
+│    ├─ Specialist review/audit/research? → 1 subagent (wait)
+│    └─ Independent parallel parts? → Multiple Task calls in one message
+└─ Large-scale (4+ workstreams, workers need ongoing coordination) → Agent Team
+     ├─ "Build a complete X" spanning 3+ domains → Team
+     └─ Spec with 5+ Must-priority REQs across domains → Team via /parallel-tdd
 ```
+
+**Default to subagents.** Agent Teams only when the coordination overhead is justified by genuine parallel build complexity.
 
 ### During an Agent Team Session
 
@@ -118,7 +122,6 @@ Before coding: call `Skill("name")` to load relevant domain patterns.
 | TDD | `Skill("tdd-workflow")` |
 | Code Review | `Skill("coding-standards")` |
 | Spec Writing | `Skill("spec-writing")` |
-| Agent Orchestration | `Skill("agent-orchestration")` |
 | LLM/AI Prompts | `Skill("prompt-engineering")` |
 | RAG/Vector Search | `Skill("rag-patterns")` |
 | Intent Routing | `Skill("user-intent-patterns")` |
@@ -128,22 +131,103 @@ Before coding: call `Skill("name")` to load relevant domain patterns.
 
 ## Intent Routing
 
-| User Says | Strategy | System |
-|-----------|----------|--------|
-| "Add a login form" | Code directly | — |
-| "Fix this bug" | Debug and fix directly | — |
-| "Review for security" | **DELEGATE**: code-reviewer (wait) | Subagent |
-| "Check accessibility" | **DELEGATE**: frontend-specialist (wait) | Subagent |
-| "Set up CI/CD" | **DELEGATE**: devops-specialist (wait) | Subagent |
-| "Add dashboard with widgets" | **PARALLEL**: Delegate widgets, code layout | Subagents |
-| "Add OAuth login" | **PARALLEL**: auth-specialist + backend-specialist, code UI | Subagents |
-| "Optimize dashboard" | **PARALLEL**: frontend-specialist + backend-specialist | Subagents |
-| "Build social feed" | **PARALLEL**: Multiple agents for parts, code core | Subagents |
-| "Add RAG search" | **DELEGATE**: ai-specialist (wait) | Subagent |
-| "Integrate LLM API" | **DELEGATE**: ai-specialist (wait) | Subagent |
-| `/parallel-tdd` | Spec → team → worktrees → shared task list | Agent Teams |
-| "Investigate from multiple angles" | Spawn teammates with competing hypotheses | Agent Teams |
-| "Review PR from 3 perspectives" | Spawn review teammates (security, perf, tests) | Agent Teams |
+**Do not wait for explicit commands or special user phrasing.** Read the task, analyze its scope, and apply the decision logic below automatically.
+
+### Decision Logic
+
+**Main agent handles directly:**
+- Fewer than ~10 lines changed, single domain, clear pattern, no specialist needed
+
+**Subagents (default parallel system):**
+- Specialist expertise needed (auth, devops, DB schema, security audit, etc.)
+- 2–3 independent workstreams that can run simultaneously
+- Each workstream is self-contained — no ongoing back-and-forth between workers needed
+- Reviews, audits, research spikes, schema design, CI config (always subagents — fire-and-forget)
+
+**Agent Teams (reserve for genuinely large parallel work):**
+- 4+ concurrent implementation workstreams across distinct domains
+- Workers need to negotiate shared interfaces or API contracts *as they build*, not just upfront
+- Greenfield or near-greenfield feature spanning 3+ domains (auth + backend + frontend + DB + tests) simultaneously
+- Spec with 5+ Must-priority REQs distributed across domains
+
+### Auto-Detection Signals
+
+**Signals → Agent Teams:**
+- "Build a complete X" / "Build the entire X" / "Full [system/feature]"
+- Multiple services mentioned together: "users, orders, payments, notifications"
+- Task explicitly touches auth + API + frontend + DB all at once
+- Spec has 5+ Must-priority REQs across different domains
+
+**Signals → Subagents (default):**
+- "Add X" / "Fix X" / "Review X" / "Set up X" / "Optimize X"
+- Additive work on existing code (not greenfield)
+- 1–2 specialist areas (auth + backend, frontend + performance)
+- Review, audit, research, documentation — always subagents
+
+### Routing Table
+
+| Task | Strategy | System |
+|------|----------|--------|
+| "Fix this bug" | Main agent | — |
+| "Add a settings form" | Main agent | — |
+| "Review for security" | Subagent: code-reviewer | Wait |
+| "Check accessibility" | Subagent: frontend-specialist | Wait |
+| "Set up CI/CD" | Subagent: devops-specialist | Wait |
+| "Add OAuth login" | Parallel subagents: auth-specialist + backend-specialist; main codes UI | Subagents |
+| "Add a dashboard with 3 widgets" | Parallel subagents per widget; main codes layout | Subagents |
+| "Optimize slow dashboard" | Parallel subagents: frontend-specialist + backend-specialist | Subagents |
+| "Add RAG search" / "Integrate LLM" | Subagent: ai-specialist | Wait |
+| "Build a complete checkout / auth system / social feed / CMS" | Agent Team — frontend, backend, auth, DB, tests in parallel worktrees | Team |
+| Spec with 5+ Must-priority REQs across domains | Agent Team via `/parallel-tdd` | Team |
+| "Refactor [large cross-cutting system]" | Assess file isolation: isolated → parallel subagents; shared interfaces evolving → Team | Either |
+
+---
+
+## Verification Loop (All Routes)
+
+**Writing code is not done. Done means confirmed working.**
+
+After any implementation — regardless of which route was used — verify the output actually works before reporting completion. If verification fails, fix and re-verify. Only stop when everything passes.
+
+### When a Spec Is Active
+
+Spec verification tags are authoritative. Use them, not the heuristic table below.
+
+| Tag | What "verified" means |
+|-----|-----------------------|
+| **(TEST)** | The REQ's test passes. TDD's Green phase is the verification — no extra step. |
+| **(BROWSER)** | The Playwright E2E test passes. Use Playwright MCP for diagnosis during development, not as the gate. |
+| **(MANUAL)** | Flag for the user and continue. Do not block completion on it. |
+
+### What to Verify (No Spec — Ad-Hoc Tasks)
+
+When there is no active spec, use these heuristics:
+
+| Work Type | Verification Steps |
+|-----------|-------------------|
+| **UI / frontend** | Run tests → Playwright MCP spot-check in browser → check for console errors |
+| **Backend / API** | Run tests → call the endpoint (curl/fetch) and inspect the real response |
+| **Database / migrations** | Run migration → query the table → confirm schema matches intent |
+| **DevOps / CI / config** | Run the pipeline/script → read actual output → check for errors or warnings |
+| **Auth** | Run tests → exercise the full login/logout flow in a real request |
+| **Any code change** | At minimum: run the relevant test suite and confirm it passes |
+
+### Per-Route Responsibility
+
+**Main agent (direct):** Verify in the same context. Run tests, use Playwright MCP for UI, call APIs with curl. If something fails, fix it and re-run before considering the task done.
+
+**Subagents:** Each subagent verifies its own workstream before returning results (run its piece's tests, confirm its endpoint responds, etc.). After all subagents complete, the main agent runs an integration verification pass — tests, a smoke check, or `/checkpoint`. If anything is off, fix it directly or re-delegate the failing piece.
+
+**Agent Teams:** Each teammate verifies their own REQs before marking the task complete on the shared list. The team lead runs `/checkpoint` as the final gate before closing the session. If checkpoint fails, the lead re-assigns failing items.
+
+### The Loop
+
+```
+implement → verify → pass? → done
+                   → fail? → fix → verify again
+```
+
+Never report "done" after implement. Always close the loop.
 
 ---
 
@@ -174,8 +258,3 @@ Before coding: call `Skill("name")` to load relevant domain patterns.
 | Build errors | build-errors-checklist |
 | Database migrations | database-migration-review |
 
----
-
-## Subagent Self-Correction
-
-Subagents fix `.claude/` issues they encounter: broken refs in agent defs, outdated skill advice, inconsistencies. Report corrections for main agent to log to `.claude/user/changelog.md`.

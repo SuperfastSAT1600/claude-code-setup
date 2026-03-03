@@ -78,6 +78,30 @@ Every REQ must have exactly one verification tag on its `**Verification**` line.
 
 The audit script warns when zero `(TEST)` tags are present. Having only `(BROWSER)` and `(MANUAL)` tags is a red flag.
 
+### Playwright Tools for (BROWSER) Verification
+
+When a REQ has `(BROWSER)` tag, the test should use Playwright. Two approaches:
+
+**E2E test file (preferred for repeatable checks):**
+```typescript
+// tests/e2e/registration.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('REQ-002: Invalid email shows inline error', async ({ page }) => {
+  await page.goto('/register');
+  await page.fill('[name="email"]', 'not-an-email');
+  await page.click('button[type="submit"]');
+  await expect(page.locator('.error')).toContainText('valid email');
+});
+```
+
+**Playwright MCP (preferred for ad-hoc diagnosis):**
+Claude can use MCP tools directly during development:
+- `navigate` → go to the page
+- `screenshot` → capture current visual state
+- `click` / `fill` → interact with elements
+- Use this for quick visual checks, not as a substitute for test files
+
 ---
 
 ## 3. Good vs Bad Spec Examples

@@ -2,7 +2,7 @@
 
 Lightweight directory of all available skills. Load full skill files only when needed for specific tasks.
 
-**Total Skills**: 23 (22 domain patterns + 1 meta-skill)
+**Total Skills**: 22 (21 domain patterns + 1 meta-skill)
 
 **Documentation-Based Skills** (2026-01-23):
 Nine skills are now sourced from authoritative references (OpenAPI Spec, OWASP, GraphQL Spec, PostgreSQL docs, GitHub docs, RFC standards, Anthropic/OpenAI guides, LangChain, academic research). See individual skill files for sources.
@@ -64,7 +64,6 @@ Skills now use directories for bundled resources:
 | **dev-server-autoopen/** | Auto-open localhost in browser | Dev server setup | scripts/ |
 | **project-guidelines/** | Project-specific patterns and conventions | Project onboarding | - |
 | **user-intent-patterns/** | Natural language → command routing | Intent classification | - |
-| **agent-orchestration/** | Three-level dispatch, subagent vs team selection, parallel patterns | Orchestration decisions | - |
 
 ## Meta Skills
 

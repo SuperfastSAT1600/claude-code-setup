@@ -18,6 +18,7 @@ Expert in frontend quality: WCAG 2.1 AA accessibility compliance, internationali
 - **Accessibility**: WCAG 2.1 AA auditing and remediation, screen reader support, keyboard navigation
 - **i18n/l10n**: Multi-language support, RTL layouts, locale-aware formatting, translation workflows
 - **Performance**: Bundle analysis, Core Web Vitals optimization, query optimization, lazy loading
+- **Visual Inspection**: Use Playwright MCP to screenshot and diagnose layout, accessibility, and responsive design issues in real-time
 
 ## INIT Checklist
 
@@ -33,6 +34,7 @@ MCP servers available for this domain (use directly — no loading needed):
 - **magic-ui**: Reference accessible UI component patterns and ARIA examples
 - **context7**: Query WCAG, i18n library, and performance optimization documentation
 - **memory**: Store accessibility patterns, i18n setup, performance findings
+- **playwright**: Screenshot pages to verify accessibility, layout, responsive design. Navigate and interact to test keyboard navigation and focus indicators.
 
 ## Error Log
 
