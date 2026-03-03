@@ -1,11 +1,11 @@
 ---
-description: Split a spec into parallel workstreams, create isolated git worktrees, and launch Claude in tmux windows for parallel spec-driven TDD
-allowed-tools: Bash(./.claude/scripts/parallel-tdd.sh *), Bash(git worktree *), Bash(tmux *)
+description: Run spec-driven parallel TDD using Agent Teams with shared task list, inter-agent messaging, and quality gate hooks
+allowed-tools: Bash(./.claude/scripts/create-tdd-team.sh *), Bash(git worktree *), Bash(git merge *), Bash(git checkout *), TaskCreate, TaskUpdate, TaskList, TaskGet, TeamCreate, TeamDelete, SendMessage
 ---
 
-# Parallel TDD Command
+# Parallel TDD
 
-Run spec-driven TDD across multiple isolated git worktrees, each in its own tmux window with its own Claude session — no context overflow, no file conflicts.
+Run spec-driven TDD across multiple teammates using Agent Teams. Each teammate works in its own git worktree with its own context window. Tasks are coordinated through a shared task list with dependency management.
 
 ---
 
@@ -27,116 +27,103 @@ Run spec-driven TDD across multiple isolated git worktrees, each in its own tmux
 ## Prerequisites
 
 - A valid spec file in `.claude/plans/` (create one with `/plan`)
-- `tmux` installed (`brew install tmux`)
 - `claude` CLI available in PATH
 
 ---
 
 ## What This Command Does
 
-1. **Parses the spec** — extracts all `REQ-XXX` IDs
-2. **Distributes REQs** — splits them evenly across N agents (round-robin)
-3. **Creates git worktrees** — one isolated branch + directory per agent
-4. **Launches tmux session** — one window per agent + one integration window
-5. **Starts Claude** in each window with a focused task file (`.claude-task.md`)
+1. **Parses the spec** — extracts all `REQ-XXX` IDs and their dependencies
+2. **Creates git worktrees** — one isolated branch + directory per teammate
+3. **Creates an agent team** — with shared task list
+4. **Creates tasks** — one per REQ, with `blockedBy` for dependency chains
+5. **Spawns teammates** — each assigned to a worktree, each following strict TDD
+6. **Enforces quality gates** — `TaskCompleted` hook requires passing tests, `TeammateIdle` hook checks clean state
 
-Each agent works in complete isolation:
-- Its own filesystem (worktree)
-- Its own context window (separate `claude` process)
-- Its own branch
+---
+
+## How It Works
+
+### Step 1: Run create-tdd-team.sh
+
+```bash
+bash ./.claude/scripts/create-tdd-team.sh [spec-file]
+```
+
+This outputs structured data describing REQs, dependencies, worktree paths, and spawn prompts.
+
+### Step 2: Create the agent team
+
+Use `TeamCreate` to create a team named after the feature (e.g., `tdd-auth`).
+
+### Step 3: Create tasks from REQs
+
+For each REQ in the spec, create a task using `TaskCreate`:
+- **Subject**: `REQ-XXX: requirement title` (MUST follow this format — the TaskCompleted hook parses it)
+- **Description**: Full requirement + TDD instructions
+- **blockedBy**: Dependencies from the spec's `Depends on:` declarations
+
+### Step 4: Spawn teammates
+
+Spawn N teammates (one per worktree). Each teammate's spawn prompt should include:
+- The worktree path they must work in
+- The spec file path for full context
+- Instruction to claim tasks from the shared task list
+- TDD instructions: failing test first, then minimal code, then refactor
+
+### Step 5: Monitor and coordinate
+
+- Check task progress with `TaskList`
+- Message teammates directly if needed
+- When all tasks complete, coordinate the merge
+
+### Step 6: Merge and verify
+
+```bash
+git checkout main
+git merge --no-ff feat/feature-agent-1
+git merge --no-ff feat/feature-agent-2
+git merge --no-ff feat/feature-agent-3
+bash ./.claude/scripts/verify-merge.sh
+```
 
 ---
 
 ## Architecture
 
 ```
-spec.md  (REQ-001 to REQ-009, 3 agents)
+spec.md (REQ-001 to REQ-009, 3 teammates)
     │
-    ├── .worktrees/auth-agent-1   → tmux: agent-1 → Claude (REQ-001, 002, 003)
-    ├── .worktrees/auth-agent-2   → tmux: agent-2 → Claude (REQ-004, 005, 006)
-    └── .worktrees/auth-agent-3   → tmux: agent-3 → Claude (REQ-007, 008, 009)
+    ├── .worktrees/auth-agent-1  → Teammate 1 (claims tasks from shared list)
+    ├── .worktrees/auth-agent-2  → Teammate 2 (claims tasks from shared list)
+    └── .worktrees/auth-agent-3  → Teammate 3 (claims tasks from shared list)
 
-tmux session: tdd-auth
-    ├── window: integration   (merge controller, stays on main branch)
-    ├── window: agent-1       (Claude implementing REQ-001, 002, 003)
-    ├── window: agent-2       (Claude implementing REQ-004, 005, 006)
-    └── window: agent-3       (Claude implementing REQ-007, 008, 009)
+Shared task list: ~/.claude/tasks/tdd-auth/
+    ├── Task: REQ-001 (no deps)         → claimed by Teammate 1
+    ├── Task: REQ-002 (no deps)         → claimed by Teammate 2
+    ├── Task: REQ-003 (no deps)         → claimed by Teammate 3
+    ├── Task: REQ-004 (blocked by 001)  → auto-unblocks when 001 completes
+    ├── Task: REQ-005 (blocked by 001)  → auto-unblocks when 001 completes
+    └── Task: REQ-006 (blocked by 004)  → auto-unblocks when 004 completes
 ```
 
 ---
 
-## Why Worktrees + tmux?
+## Quality Gate Hooks
 
-| Problem | Solution |
-|---------|----------|
-| Context overflow with parallel Task agents | Each tmux window = separate `claude` process = separate context |
-| File write conflicts between parallel agents | Each worktree = isolated filesystem on its own branch |
-| Hard to monitor multiple agents | tmux windows — switch between agents anytime |
+### TaskCompleted
+When a task is marked complete:
+1. Extracts REQ-XXX from task subject
+2. Verifies a test file references that REQ ID
+3. Runs the test suite
+4. Blocks completion if no test found or tests fail
 
----
-
-## TDD Flow Per Agent
-
-Each agent receives a `.claude-task.md` with its specific REQ assignment and follows:
-
-1. Read the full spec for context
-2. For each assigned REQ:
-   - Write failing test: `test('REQ-XXX: observable behavior', () => { ... })`
-   - Implement minimal code to pass
-   - Refactor
-3. Commit when all assigned REQs are green
-
----
-
-## After Agents Finish
-
-Merge worktree branches back to main, one at a time:
-
-```bash
-git checkout main
-git merge --no-ff feat/auth-agent-1
-git merge --no-ff feat/auth-agent-2
-git merge --no-ff feat/auth-agent-3
-```
-
-Clean up:
-```bash
-git worktree prune
-git branch -d feat/auth-agent-1 feat/auth-agent-2 feat/auth-agent-3
-```
-
----
-
-## Command Behavior
-
-**Runs**: `.claude/scripts/parallel-tdd.sh <spec> <num-agents>`
-
-**Creates**:
-- `.worktrees/<feature>-agent-N/` — git worktree per agent
-- `.worktrees/<feature>-agent-N/.claude-task.md` — focused task per agent
-- tmux session `tdd-<feature>`
-
-**Does not**:
-- Modify the main branch during execution
-- Run tests itself (agents do that)
-- Auto-merge (you control when/how to merge)
-
----
-
-## Tips
-
-**Start with `/plan`** to create a well-structured spec with clear REQ IDs before running this.
-
-**Check audit first**:
-```bash
-./.claude/scripts/audit-spec.sh .claude/plans/your-spec.md
-```
-
-**Monitor agents**: Switch between tmux windows with `Ctrl+b <window-number>` or `Ctrl+b n/p`
-
-**Interrupt an agent**: Switch to its window and `Ctrl+c` to stop Claude
-
-**Resume a session**: `tmux attach -t tdd-<feature>`
+### TeammateIdle
+When a teammate is about to go idle:
+1. Checks for uncommitted changes
+2. Runs the test suite
+3. Runs lint (if configured)
+4. Blocks idle if any checks fail
 
 ---
 
@@ -144,4 +131,5 @@ git branch -d feat/auth-agent-1 feat/auth-agent-2 feat/auth-agent-3
 
 - `/plan` — create the spec this command consumes
 - `/tdd` — single-agent TDD (no parallelism)
+- `/checkpoint` — unified verification gate after merge
 - `/review` — review implementation after merging

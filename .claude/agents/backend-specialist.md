@@ -22,73 +22,15 @@ Expert in backend systems: REST API design with OpenAPI specs, database schema d
 - **Query Optimization**: EXPLAIN ANALYZE, index strategies (B-tree, GIN, partial, covering)
 - **Migrations**: Zero-downtime scripts, rollback strategies, dual-write patterns
 
-## API Design Standards
+## INIT Checklist
 
-**REST Principles**:
-- Plural nouns: `/api/users`, `/api/orders`
-- Correct HTTP methods: GET (read), POST (create), PATCH (update), DELETE (remove)
-- Status codes: 200/201/204 success, 400 validation, 401 auth, 403 forbidden, 404 not found, 409 conflict, 500 server error
-- Versioning: `/v1/users`, `/v2/users`
-
-**Response Format**:
-```typescript
-// Success
-{ "data": { ... }, "meta": { "requestId": "...", "total": 100 } }
-
-// Error
-{ "error": { "code": "VALIDATION_ERROR", "message": "...", "details": [...] } }
-```
-
-**Pagination**: Cursor-based for performance, include `meta.cursor`, `meta.hasMore`
-
-## Database Schema Patterns
-
-**Schema Defaults**:
-```sql
-CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now(),
-  deleted_at TIMESTAMPTZ  -- soft deletes
-);
-```
-
-**Index Strategy**:
-- B-tree: equality/range queries
-- GIN: full-text search, JSONB
-- Partial: filtered queries (`WHERE deleted_at IS NULL`)
-- Covering: include columns to avoid table lookup
-
-**Supabase RLS**:
-```sql
-ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "users_own_posts" ON posts
-  FOR ALL USING (auth.uid() = user_id);
-```
-
-## Migration Patterns
-
-**Zero-downtime column add**: Add nullable → backfill → add NOT NULL constraint
-**Column rename**: Dual-write to old+new → migrate reads → drop old column
-**Always include**: Up + down migrations, data validation queries, rollback plan
-
-## OpenAPI Generation
-
-After implementation, generate spec from code:
-- Define schemas/components for all types
-- Document each endpoint with request/response examples
-- Create error catalog with all error codes
-- Add code examples (cURL, JavaScript, Python)
-
-## Resource Checklist
-
-- Query Context7 for framework docs (Express, Fastify, NestJS, Prisma, Drizzle) before design
-- Store API design decisions and schema choices in Memory
+1. **Load skills**: `Skill("rest-api-design")`, `Skill("database-patterns")`, `Skill("backend-patterns")` — load those relevant to current task
+2. Query Context7 for framework docs (Express, Fastify, NestJS, Prisma, Drizzle) before design
+3. Search Memory for similar API design decisions and schema choices
 
 ## Recommended MCPs
 
-Before starting work, use ToolSearch to load these MCP servers if needed:
+MCP servers available for this domain (use directly — no loading needed):
 
 - **context7**: Query API framework and database library documentation
 - **memory**: Store API design decisions, schema patterns, migration strategies

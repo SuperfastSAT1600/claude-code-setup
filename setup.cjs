@@ -78,7 +78,7 @@ const { setupClaudeCode } = require('./lib/claude-code.cjs');
 const { configureAutoOpenLocalhost } = require('./lib/localhost.cjs');
 const { configureMcpServers } = require('./lib/mcp.cjs');
 const { setupEnvironmentFiles } = require('./lib/env.cjs');
-const { createDirectories, createConfigFiles, updateGitignore } = require('./lib/files.cjs');
+const { createDirectories, createSeedFiles, createConfigFiles, updateGitignore } = require('./lib/files.cjs');
 const { setupPackageJson, installDependencies } = require('./lib/dependencies.cjs');
 const { showSummary } = require('./lib/summary.cjs');
 const { setupClaudeMd } = require('./lib/claude-md.cjs');
@@ -108,21 +108,9 @@ function displayPrerequisiteIssues(prereqs, platformInfo) {
 }
 
 async function attemptAutoInstall(prereqs, platformInfo) {
-  console.log('');
-  const tryAutoInstall = await askYesNo(
-    null,
-    'Would you like to attempt automatic installation of missing dependencies?',
-    true
-  );
-
-  if (!tryAutoInstall) {
-    return false;
-  }
-
-  let installedSomething = false;
-  // Auto-install logic would go here
-  // For now, return false
-  return installedSomething;
+  // Auto-install is not implemented — display the prerequisite issues
+  // and let the user resolve them manually before re-running setup.
+  return false;
 }
 
 async function continueSetup(platformInfo, prereqs, results) {
@@ -155,6 +143,9 @@ async function continueSetup(platformInfo, prereqs, results) {
 
   // Step 6: Create Directories
   results.directories = createDirectories();
+
+  // Step 6b: Create Seed Files (errors.md, changelog.md, etc.)
+  results.seedFiles = createSeedFiles();
 
   // Step 7: Create Config Files
   results.configFiles = createConfigFiles();

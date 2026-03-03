@@ -1,20 +1,12 @@
 # Claude Code Workflow Template
 
-A ready-to-use template implementing a hybrid coding workflow for Claude Code, featuring **33 specialized agents**, **20 powerful commands**, **5 orchestrated workflows**, **13 review checklists**, **16 code templates**, **20 skill references**, and **2 auto-enforced rule files**.
+A ready-to-use template implementing a spec-driven TDD workflow for Claude Code, featuring **11 specialized agents**, **25 slash commands**, **23 skills**, **2 workflows**, **12 review checklists**, **5 code templates**, and **5 auto-enforced rule files**.
 
 **Key Feature**: Main agent codes directly for standard tasks (CRUD, simple features, bug fixes) and delegates to specialized agents for complex domains (auth, databases, performance, security).
 
 ---
 
-## 🎯 Using This Template
-
-This template provides a complete development workflow setup that can be applied to:
-- **New projects**: Use as a starting point with all configurations ready
-- **Existing projects**: Integrate seamlessly without disrupting your current setup
-- **Solo developers**: Comprehensive workflow automation
-- **Teams**: Shared standards and knowledge base
-
-### Quick Start (All Platforms)
+## Quick Start
 
 ```bash
 # 1. Clone the repository
@@ -29,207 +21,66 @@ claude
 ```
 
 The setup wizard will:
-- **Auto-install required dependencies** (`enquirer`) if missing
-- Detect your platform (Windows/macOS/Linux) and configure MCP servers accordingly
-- **Configure MCP servers ONLY** (no CLI tools like GitHub CLI or Supabase CLI)
-- **REQUIRE Slack MCP setup** (mandatory for PR notifications to 개발 channel)
-- Collect API credentials for all enabled MCP servers (GitHub PAT, Supabase project ref, etc.)
+- Auto-install required dependencies (`enquirer`) if missing
+- Detect your platform (Windows/macOS/Linux) and configure MCP servers
+- Collect API credentials for enabled MCP servers (GitHub PAT, etc.)
 - Store credentials securely in gitignored `.mcp.json`
 - Create your `.env` file from the template
-- Optionally install dependencies
-
-**🎯 MCP-Only Approach**: This template uses ONLY Model Context Protocol (MCP) servers. You don't need to install GitHub CLI, Supabase CLI, or any other CLI tools. All interactions happen through MCP servers, making setup faster and more consistent across platforms.
-
-### MCP-Only Architecture
-
-**No CLI Tools Required**: This template uses ONLY Model Context Protocol (MCP) servers for all integrations:
-
-| Service | Traditional Approach | MCP-Only Approach |
-|---------|---------------------|-------------------|
-| **GitHub** | Requires GitHub CLI (`gh`) | GitHub MCP with Personal Access Token |
-| **Supabase** | Requires Supabase CLI | Supabase HTTP MCP with project reference |
-| **Slack** | Requires Slack CLI | Slack MCP with bot token |
-
-**Benefits**:
-- ✅ Faster setup (no CLI installations)
-- ✅ Cross-platform consistency (same setup on Windows/macOS/Linux)
-- ✅ No PATH configuration needed
-- ✅ All credentials in one place (`.mcp.json`)
-- ✅ Automatic authentication via `claude /mcp`
-
-### Required MCP Servers
-
-**Slack MCP** (REQUIRED): This template requires Slack MCP for automatic PR notifications to the 개발 channel. You'll need:
-- Slack Bot Token (from https://api.slack.com/apps)
-- Slack Team ID (starts with T)
-
-The setup wizard will prompt you for these credentials.
-
-### Manual Setup (Alternative)
-
-**For New Projects**:
-```bash
-git clone <this-repo> my-project
-cd my-project
-rm -rf .git && git init
-cp .claude/templates/mcp.template.json .mcp.json
-cp .claude/templates/.env.example .env
-# Edit .mcp.json and .env with your API keys
-```
-
-**For Existing Projects**:
-```bash
-# Copy template files into your existing project
-# See .claude/docs/getting-started/INTEGRATION.md and .claude/docs/guides/WORKFLOW.md Section 7 for integration guide
-```
-
-📖 **Full Setup Instructions**: See [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) for 5-minute setup, or [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) Section 7 for comprehensive customization guide
 
 ---
 
 ## What's Included
 
-### ⚡ Custom Commands (20)
-- `/full-feature` - Complete feature cycle (plan → test → PR)
-- `/quick-fix` - Fast bug fix workflow
-- `/commit-push-pr` - Commit, push, and create PR workflow (auto-notifies 개발 channel in natural Korean)
-- `/review-changes` - Comprehensive code review
-- `/test-and-build` - Run tests and build with auto-fix
-- `/test-coverage` - Analyze and improve test coverage
-- `/lint-fix` - ESLint + Prettier + TypeScript
-- `/type-check` - Strict TypeScript checking
-- `/build-fix` - Automatically fix build errors
-- `/refactor-clean` - Remove dead code, modernize patterns
-- `/spike` - Time-boxed technical research
-- `/plan` - Create detailed implementation plans
-- `/tdd` - Test-Driven Development workflow
-- `/new-component` - Scaffold React component + tests + stories
-- `/dead-code` - Find unused code/exports/dependencies
-- `/audit-deps` - Dependency security audit
-- `/create-migration` - Generate database migration with rollback
-- `/e2e` - Generate and run end-to-end tests
-- `/security-review` - Comprehensive security audit
-- `/update-docs` - Sync documentation with code changes
+### Slash Commands (25)
 
-### 🤖 Custom Agents (33 Specialists)
+Development workflow commands invoked with `/command-name` in Claude Code:
 
-**Philosophy**: Main agent handles standard development directly. Specialized agents provide expert guidance for complex domains.
+`/full-feature` | `/quick-fix` | `/commit-push-pr` | `/review` | `/tdd` | `/parallel-tdd` | `/checkpoint` | `/plan` | `/spike` | `/build-fix` | `/refactor-clean` | `/test-coverage` | `/test-ladder` | `/type-check` | `/e2e` | `/new-component` | `/create-migration` | `/update-docs` | `/session-report` | `/health-check` | `/req-status` | `/req-coverage` | `/generate-stubs` | `/open-localhost` | `/update-system`
 
-**Core Workflow:**
-- **planner** - Implementation planning and task breakdown (optional for complex features)
-- **architect** - System design and architectural decisions
-- **code-reviewer** - Comprehensive code quality review
-- **security-reviewer** - OWASP security audits
-- **verify-app** - End-to-end application verification
+### Specialized Agents (11)
 
-**Code Quality:**
-- **code-simplifier** - Remove unnecessary complexity
-- **refactor-cleaner** - Modernize legacy code, remove dead code
-- **tech-debt-analyzer** - Technical debt prioritization
-- **type-safety-enforcer** - Eliminate `any` types
+| Agent | Domain |
+|-------|--------|
+| **architect** | System design, plans, trade-offs |
+| **code-reviewer** | PR reviews, security, TypeScript, tech debt |
+| **test-writer** | TDD, unit/integration/E2E/load tests |
+| **backend-specialist** | REST API, DB schema, migrations |
+| **auth-specialist** | OAuth, JWT, MFA, sessions |
+| **devops-specialist** | CI/CD, Docker, IaC, monitoring, build errors |
+| **frontend-specialist** | Accessibility, i18n, Core Web Vitals |
+| **realtime-specialist** | WebSockets, GraphQL |
+| **ai-specialist** | LLM integration, RAG, prompt engineering, embeddings |
+| **mobile-specialist** | React Native, Flutter |
+| **doc-updater** | Documentation sync |
 
-**Testing:**
-- **tdd-guide** - Test-Driven Development workflow
-- **unit-test-writer** - Unit tests with AAA pattern
-- **integration-test-writer** - API/service integration tests
-- **e2e-runner** - Playwright/Cypress E2E tests
-- **load-test-specialist** - k6/Artillery performance testing
+### Skills (23)
 
-**Development:**
-- **api-designer** - REST/GraphQL API design and documentation
-- **database-architect** - Schema design & optimization
-- **auth-specialist** - OAuth, JWT, MFA implementation
-- **graphql-specialist** - GraphQL schema and resolvers
-- **websocket-specialist** - Real-time Socket.io patterns
+Domain pattern libraries loaded on demand via `Skill("name")`:
 
-**Operations:**
-- **build-error-resolver** - Fix build errors iteratively
-- **ci-cd-specialist** - GitHub Actions pipelines
-- **docker-specialist** - Containerization & optimization
-- **migration-specialist** - Zero-downtime database migrations
-- **dependency-manager** - Package management & audits
+**Core**: coding-standards, tdd-workflow, documentation-patterns, spec-writing, skill-creator
+**Backend**: backend-patterns, nodejs-patterns, rest-api-design, database-patterns
+**Frontend**: frontend-patterns, react-patterns, nextjs-patterns
+**Specialized**: auth-patterns, graphql-patterns, websocket-patterns, prompt-engineering, rag-patterns
+**DevOps**: docker-patterns, github-actions
+**Utilities**: dev-server-autoopen, project-guidelines, user-intent-patterns, agent-orchestration
 
-**Specialized:**
-- **accessibility-auditor** - WCAG 2.1 AA compliance
-- **i18n-specialist** - Internationalization support
-- **doc-updater** - Sync documentation with code
-- **performance-optimizer** - Profile and optimize bottlenecks
-- **monitoring-architect** - Logging, metrics, and alerting
-- **runbook-writer** - Deployment and troubleshooting guides
-- **mobile-specialist** - React Native/Flutter development
-- **ai-integration-specialist** - LLM APIs, RAG, prompt engineering
-- **iac-specialist** - Terraform, CloudFormation infrastructure
+### Other Resources
 
-### 📂 Organization
-- **5 Orchestrated Workflows** - full-feature, bug-fix, refactor, release, security-audit
-- **13 Review Checklists** - PR review, security, performance, accessibility, pre-release, onboarding, ai-code-review, database-migration, dependency-audit, deployment, hotfix, build-errors, e2e-testing
-- **16 Code Templates** - component, API route, test, migration, PR description, error-handler, form, guard, hook, middleware, service, API documentation, GitHub workflow, Dockerfile, Playwright config, README
-- **20 Skill References** - React, Next.js, REST API, GraphQL, WebSocket, TDD, backend patterns, frontend patterns, coding standards, Node.js, Prisma, GitHub Actions, project guidelines, user intent, prompt engineering, RAG patterns, auth patterns, database patterns, Docker patterns, documentation patterns
-- **Hybrid Agent Rules** - Main agent codes standard tasks, delegates specialized work for efficiency and expertise
-
-### 📚 Documentation
-- [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) - Daily workflow quick reference (5-minute setup)
-- [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) - **Complete workflow guide (1500+ lines)** with decision trees and real-world examples
-- [CLAUDE.md](CLAUDE.md) - Team guidelines (customize for your project)
-- `.claude/rules/` - Auto-enforced guidelines (2 rule files)
-- `.claude/skills/` - Pattern references (20 skill files)
-
-### ⚙️ Configuration
-- `.claude/settings.json` - Shared team settings (49 pre-approved operations, hooks)
-- `.mcp.template.json` - MCP server template (27 servers, cross-platform)
-- `.env.example` - Environment variables template
-- `setup.cjs` - Cross-platform setup wizard
-- `.gitignore` - Sensible defaults for various project types
+- **2 Workflows**: release, security-audit
+- **12 Checklists**: PR review, security audit, deployment, build errors, database migration, and more
+- **5 Code Templates**: spec, API spec, bugfix spec, UI spec, PR description
+- **5 Rule Files**: essential-rules, orchestration, self-improvement, task-protocol, resource-usage
 
 ---
 
-## Getting Started
+## Core Workflow: Spec-Driven TDD
 
-1. **Quick Start**: [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) - Get started in 5 minutes
-2. **Master the Workflow**: [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) - **Complete 1500+ line guide** with:
-   - Decision trees for "I need to..." scenarios
-   - Command and agent selection matrices
-   - Real-world authentication implementation example
-   - MCP server integration guide
-   - Progressive adoption roadmap
-3. **Customize Guidelines**: Edit [CLAUDE.md](CLAUDE.md) for your project specifics
-4. **Explore Resources**: Check `.claude/rules/` and `.claude/skills/` for patterns
-5. **Try a Command**: Run `/full-feature` or `/commit-push-pr` in Claude Code
-
----
-
-## Workflow Overview
-
-### Basic Development Flow
-1. Start Claude Code in your project: `claude`
-2. Describe what you want to build
-3. Review and approve the plan
-4. Let Claude implement with custom commands
-5. Use `/commit-push-pr` when done
-
-### Key Features
-- **Parallel Sessions**: Run up to 5 simultaneous Claude sessions
-- **Model Selection**: Automatic model switching (Sonnet for most, Haiku for simple, Opus for complex)
-- **Pre-approved Commands**: Common bash operations pre-approved for speed
-- **Custom Hooks**: Automated quality checks and formatting
-
----
-
-## Customization
-
-### Essential Customization (Do First)
-- [ ] Update this README with your project details
-- [ ] Edit [CLAUDE.md](CLAUDE.md) with your tech stack
-- [ ] Add your project structure to [CLAUDE.md](CLAUDE.md)
-- [ ] Configure git: `git config user.name` and `git config user.email`
-
-### Optional Customization
-- [ ] Add project-specific rules to [CLAUDE.md](CLAUDE.md)
-- [ ] Create custom commands for your workflows
-- [ ] Build custom agents for domain-specific tasks
-- [ ] Adjust model preferences in `.claude/settings.json`
-
-See [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) Section 7 for the complete customization roadmap.
+1. Enter plan mode — discuss approach
+2. Write spec to `.claude/plans/[feature].md`
+3. Spec auto-audited (blocks coding if validation fails)
+4. `/tdd` (single agent) or `/parallel-tdd` (multi-agent worktrees)
+5. `/checkpoint` — unified verification gate
+6. `/commit-push-pr`
 
 ---
 
@@ -238,118 +89,71 @@ See [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) Section 7
 ```
 .
 ├── .claude/
-│   ├── agents/               # 33 specialized agents
-│   │   ├── planner.md
-│   │   ├── architect.md
-│   │   ├── code-reviewer.md
-│   │   ├── auth-specialist.md
-│   │   └── ... (29 more)
-│   ├── commands/             # 20 slash commands
-│   │   ├── full-feature.md
-│   │   ├── quick-fix.md
-│   │   ├── commit-push-pr.md
-│   │   └── ... (17 more)
-│   ├── workflows/            # 5 orchestrated agent sequences
-│   │   ├── full-feature.md
-│   │   ├── bug-fix.md
-│   │   └── ... (3 more)
-│   ├── checklists/           # 13 review checklists
-│   │   ├── pr-review.md
-│   │   ├── security-audit.md
-│   │   ├── build-errors-checklist.md
-│   │   └── ... (10 more)
-│   ├── templates/            # Templates for code, config, and environment
-│   │   ├── mcp.template.json # MCP server template (27 servers, committed)
-│   │   ├── .env.example      # Application environment template
-│   │   ├── *.template        # Working templates (8 generic templates)
-│   │   └── variants/         # Organized source templates
-│   │       ├── generic/      # Framework-agnostic (8 templates)
-│   │       ├── react/        # React-specific (2 templates)
-│   │       ├── nextjs/       # Next.js-specific (1 template)
-│   │       └── vue/          # Vue-specific (add your own)
-│   ├── rules/                # Core guidelines
-│   │   ├── essential-rules.md
-│   │   ├── agent-workflow.md (hybrid model)
-│   │   └── self-aware-system.md
-│   ├── skills/               # 20 reference knowledge files
-│   │   ├── react-patterns.md
-│   │   ├── auth-patterns.md
-│   │   ├── database-patterns.md
-│   │   └── ... (17 more)
-│   ├── settings.json         # Shared settings (hooks, pre-approved ops)
-│   └── settings.local.json   # Local overrides (gitignored)
-├── lib/                      # Setup wizard modules
-│   ├── techstack.cjs         # Auto-detect framework/backend/database
-│   ├── claude-md.cjs         # Generate CLAUDE.md from detected stack
-│   └── ... (other modules)
-│   ├── docs/                 # System documentation
-│   │   ├── README.md         # Documentation index
-│   │   ├── getting-started/  # Integration guides
-│   │   │   ├── INTEGRATION.md    # Add to existing projects
-│   │   │   └── INTEGRATION.ko.md # 통합 가이드 (한국어)
-│   │   ├── guides/           # Comprehensive guides
-│   │   │   ├── WORKFLOW.md       # Complete workflow guide (1500+ lines)
-│   │   │   └── WORKFLOW.ko.md    # 워크플로우 가이드 (한국어)
-│   │   └── system/           # Internal documentation
-│   │       ├── error-verification-system.md
-│   │       └── slack-notifications.md
-├── .mcp.json                 # MCP config with keys (gitignored, generated)
-├── .env                      # Your secrets (gitignored, generated)
-├── setup.cjs                 # Cross-platform setup wizard
-├── CLAUDE.md                 # Team guidelines ⚠️ CUSTOMIZE
-└── README.md                 # This file
+│   ├── agents/          # 11 specialized agents + INDEX.md
+│   ├── commands/        # 25 slash commands
+│   ├── skills/          # 23 skill directories + INDEX.md
+│   ├── workflows/       # 2 orchestrated workflows
+│   ├── checklists/      # 12 review checklists
+│   ├── templates/       # Code and config templates
+│   ├── rules/           # 5 auto-enforced rule files
+│   ├── scripts/         # Helper scripts
+│   ├── plans/           # Spec files (created per feature)
+│   ├── user/            # User data (gitignored)
+│   ├── settings.json    # Shared settings (hooks, pre-approved ops)
+│   └── settings.local.json  # Local overrides (gitignored)
+├── docs/                # Project documentation
+├── setup.cjs            # Cross-platform setup wizard
+├── CLAUDE.md            # Team guidelines (customize for your project)
+└── README.md            # This file
 ```
+
+---
+
+## Customization
+
+### Essential (Do First)
+- [ ] Edit [CLAUDE.md](CLAUDE.md) with your tech stack and project structure
+- [ ] Configure git: `git config user.name` and `git config user.email`
+- [ ] Run `node setup.cjs` to configure MCP servers
+
+### Optional
+- [ ] Add project-specific rules to [CLAUDE.md](CLAUDE.md)
+- [ ] Create custom commands in `.claude/commands/`
+- [ ] Build custom agents for domain-specific tasks
+- [ ] Adjust model preferences in `.claude/settings.json`
 
 ---
 
 ## Daily Usage
 
-### Starting a Session
 ```bash
+# Start Claude Code
 cd your-project
 claude
+
+# Common tasks (just describe what you want):
+"Add a user profile page"           # Main agent implements directly
+"I want users to log in with OAuth" # Delegates to auth-specialist
+"Fix the checkout bug"              # Main agent fixes directly
+"Is this code secure?"              # Delegates to code-reviewer
+
+# Use slash commands:
+/tdd                                # Test-Driven Development
+/commit-push-pr                     # Commit and create PR
+/review                             # Code review
+/health-check                       # System health audit
 ```
 
-### Common Tasks
+---
+
+## Updating
+
 ```bash
-# In Claude Code:
-"Help me implement user authentication"
-"Fix the bug in checkout.ts"
-"Add tests for the payment module"
-"/review-changes"              # Review before committing
-"/commit-push-pr"              # Commit and create PR
+./.claude/scripts/update-system.sh
 ```
 
-### Tips
-- Use `/` to see all custom commands
-- Reference files with [filename.ts:42](src/filename.ts#L42) syntax
-- Run up to 5 parallel sessions for different features
-- See [.claude/docs/](.claude/docs/) for complete documentation
-
----
-
-## Support & Resources
-
-- **Documentation Index**: [.claude/docs/README.md](.claude/docs/README.md) - Complete guide navigation
-- **Integration Guide**: [.claude/docs/getting-started/INTEGRATION.md](.claude/docs/getting-started/INTEGRATION.md) - Add to existing projects
-- **Complete Workflow Guide (1500+ lines)**: [.claude/docs/guides/WORKFLOW.md](.claude/docs/guides/WORKFLOW.md) - Decision trees, examples, and integration patterns
-- **Changelog**: [CHANGELOG.md](CHANGELOG.md) - Track system updates and migration guides
-- **Claude Code Help**: Run `/help` in Claude or visit https://claude.com/claude-code
-
----
-
-## Maintenance
-
-### Keep It Current
-- Update [CLAUDE.md](CLAUDE.md) when Claude makes mistakes
-- Add new rules as patterns emerge
-- Review weekly and remove outdated guidelines
-- Tag `@.claude` in PRs to suggest updates
-
-### Version Control
-- Commit template updates: `git add .claude/ CLAUDE.md`
-- Share with team: Guidelines in CLAUDE.md apply to all
-- Keep synchronized: Pull template updates regularly
+Preserves: `.claude/user/`, `settings.local.json`, `CLAUDE.md`
+Updates: agents, skills, rules, commands, workflows, templates
 
 ---
 
@@ -359,6 +163,6 @@ claude
 
 ---
 
-**Template Version**: 2.1
-**Model**: Hybrid agent system (main agent codes + specialists)
-**Last Updated**: 2026-01-26
+**Template Version**: 3.0
+**Model**: Hybrid agent system (main agent codes + 11 specialists)
+**Last Updated**: 2026-03-01

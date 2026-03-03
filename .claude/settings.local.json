@@ -69,7 +69,10 @@
       "mcp__cloudflare*",
       "mcp__magic-ui__*",
       "Skill(*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(do echo:*)",
+      "Bash(python3:*)",
+      "Bash(GIT_CONFIG_NOSYSTEM=1 /usr/bin/git branch:*)"
     ],
     "deny": [
       "Bash(rm -rf /)",
@@ -93,40 +96,7 @@
     "supabase",
     "memory"
   ],
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "tool == \"Bash\" && tool_input.command matches \"git push.*(main|master)\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] Pushing to main/master branch - ensure tests pass and code is reviewed!' >&2"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|json|css|scss|md)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nnpx prettier --write \"$file_path\" 2>/dev/null || true"
-          }
-        ]
-      },
-      {
-        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "#!/bin/bash\nnpx eslint --fix \"$file_path\" 2>/dev/null || true"
-          }
-        ]
-      }
-    ]
-  },
-  "thinkingEnabled": false,
+  "thinkingEnabled": true,
   "autoAcceptEdits": false,
   "disabledMcpServers": [
     "postgres",
@@ -142,7 +112,6 @@
     "cloudflare-workers-bindings",
     "cloudflare-observability",
     "clickhouse",
-    "context7",
     "magic"
   ]
 }

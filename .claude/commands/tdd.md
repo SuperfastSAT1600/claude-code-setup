@@ -209,7 +209,7 @@ The code is already clean for this simple case. Let's move to the next test...
 
 ## Resources
 
-- Test Template: `.claude/templates/test.spec.ts.template`
+- Test Template: `.claude/skills/tdd-workflow/templates/test.spec.ts.template`
 - TDD Workflow Skill: `.claude/skills/tdd-workflow/SKILL.md`
 - TDD Guide Agent: `.claude/agents/test-writer.md`
 

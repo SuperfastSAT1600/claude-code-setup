@@ -262,6 +262,12 @@ Complexity: Low
 **Files**:
 Plans are saved to `.claude/plans/[feature-name].md`
 
+**Spec Template Variants** (choose the best fit):
+- `spec.md.template` — Full-featured (default, use for general features)
+- `spec-api.md.template` — API endpoints (method/path/auth/validation)
+- `spec-bugfix.md.template` — Bug fixes (repro steps/root cause/regression guard)
+- `spec-ui.md.template` — UI components (states/interactions/accessibility)
+
 **Benefits**:
 - Reference during implementation
 - Share with team for review

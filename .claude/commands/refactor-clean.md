@@ -358,9 +358,7 @@ UserService.ts is now cleaner, more maintainable, and easier to understand!
 
 | Resource | Location | When to Use |
 |----------|----------|-------------|
-| Refactor Workflow | `.claude/workflows/refactor.md` | Multi-step refactoring process |
-| Code Style Rules | `.claude/rules/coding-style.md` | Target code patterns |
-| AI Code Detection | `.claude/checklists/ai-code-review.md` | Detect inconsistencies |
+| Essential Rules | `.claude/rules/essential-rules.md` | Coding standards and target patterns |
 | Tech Debt Skills | `.claude/skills/coding-standards/SKILL.md` | Best practices reference |
 
 ---

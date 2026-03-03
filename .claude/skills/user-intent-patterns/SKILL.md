@@ -50,7 +50,7 @@ Users describe what they want in plain English. Classify intent, select appropri
 **Route to**: `frontend-specialist` agent
 **Examples**:
 - "Make the page faster" → frontend-specialist
-- "Optimize database queries" → frontend-specialist
+- "Optimize database queries" → backend-specialist
 - "Speed up the app" → frontend-specialist
 
 ### Testing

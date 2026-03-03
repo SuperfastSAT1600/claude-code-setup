@@ -8,6 +8,8 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 
 **FIRST ACTION (MANDATORY)**: Use the Read tool to read `.claude/user/errors.md` (main agent) or `.claude/user/agent-errors/{name}.md` (subagent). This MUST be your first task upon loading.
 
+**LOAD SKILLS**: Check orchestration.md Skills-First table for skills to load.
+
 **PRD** (core features): `docs/PRD.md` for scope, architecture, metrics
 
 ---
@@ -17,7 +19,7 @@ Every agent MUST follow this protocol. See `self-improvement.md` for error categ
 ### Delegation Check
 
 Specialist required? Check `orchestration.md`:
-Database → database-architect, migration-specialist | API → api-designer, graphql-specialist | Auth → auth-specialist | Security → security-reviewer | Testing → unit-test-writer, integration-test-writer, e2e-runner | Infrastructure → docker-specialist, ci-cd-specialist | Code review → code-reviewer | Performance → performance-optimizer
+Database → backend-specialist | API → backend-specialist | Auth → auth-specialist | Security → code-reviewer | Testing → test-writer | Infrastructure → devops-specialist | Code review → code-reviewer | Performance → frontend-specialist | Real-time → realtime-specialist | AI/ML → ai-specialist | Mobile → mobile-specialist | Architecture → architect | Docs → doc-updater
 
 **If specialist exists: DELEGATE. Exception**: <10 lines, no domain knowledge, follows patterns, no architecture.
 
@@ -42,9 +44,11 @@ Research + implementation? → PARALLEL | Review? → PARALLEL | Single atomic? 
 
 ## Phase 2: DURING
 
-**Error Logging (BLOCKING)**: Error → STOP → LOG → VERIFY → THEN continue
-Log: `.claude/user/errors.md`: `[category] Error: [what] | Correct: [how]`
-Self-check: "Did I log it?" If no → LOG NOW
+**Error Logging (immediate, non-blocking)**: Error → STOP → LOG → THEN continue
+- Log immediately: `.claude/user/errors.md`: `[category] Error: [what] | Correct: [how]`
+- Logging is required but does NOT block user's work — log it and keep going
+- Self-check: "Did I log it?" If no → LOG NOW, then continue
+- Only STOP permanently when the error prevents all meaningful progress (e.g., blocked on missing credentials, broken environment)
 
 **Observations** (note mentally): HEAL (broken refs), EVOLVE (missing coverage), ADAPT (deprecated tech), REFACTOR (bloat)
 
@@ -77,8 +81,8 @@ Fixed: [file] - [what]
 ## Quick Reference
 
 ```
-INIT:    Read errors.md FIRST → PRD
+INIT:    Read errors.md FIRST → Load relevant skills → PRD
 PRE:     Delegate? Parallel? Task list?
-DURING:  Error → STOP → LOG → VERIFY → THEN
+DURING:  Error → LOG (immediate, non-blocking) → continue
 POST:    Observations → Heal → Errors → Changelog → DOCS
 ```

@@ -27,16 +27,8 @@ Mandatory protocols for MCPs, APIs, and plugins.
 
 ---
 
-## Skills
-- **ALWAYS** check relevant skills before coding
-- Skills contain authoritative patterns - use them instead of guessing
-- If pattern doesn't exist → implement + log observation
-
----
-
 ## Priority Order
-1. Check Skills for domain patterns
-2. Check Memory for past patterns
-3. Query Context7 for library docs
-4. Check Magic UI for components
-5. Write custom code as last resort
+1. Check Memory for past patterns
+2. Query Context7 for library docs
+3. Check Magic UI for components
+4. Write custom code as last resort

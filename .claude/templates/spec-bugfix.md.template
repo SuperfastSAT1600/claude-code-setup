@@ -1,0 +1,120 @@
+# Spec: {{BUG_TITLE}} (Bug Fix)
+
+**Author**: {{AUTHOR}}
+**Date**: {{DATE}}
+**Status**: Draft | Review | Approved | Implemented | Complete
+
+---
+
+## Bug Summary
+
+{{One-sentence description of the bug.}}
+
+**Severity**: Critical | High | Medium | Low
+**Reported by**: {{source — user report, monitoring, test failure}}
+**Affected area**: {{module/page/endpoint}}
+
+---
+
+## Reproduction Steps
+
+1. {{Step 1}}
+2. {{Step 2}}
+3. {{Step 3}}
+
+**Expected**: {{What should happen}}
+**Actual**: {{What happens instead}}
+
+---
+
+## Root Cause
+
+{{Explain why the bug occurs — code path, data condition, race condition, etc.}}
+
+**Root cause file(s)**: `{{path/to/file.ts}}` (line ~{{N}})
+
+---
+
+## Requirements
+
+### REQ-001: {{Fix the core bug}}
+- **Description**: {{The corrected behavior — observable and testable}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-002: {{Regression guard}}
+- **Description**: {{Test that the original bug cannot recur}}
+- **Verification**: (TEST)
+- **Priority**: Must
+
+### REQ-003: {{Related edge case}}
+- **Description**: {{Nearby edge case found during investigation}}
+- **Verification**: (TEST)
+- **Priority**: Should
+- **Depends on**: REQ-001
+
+---
+
+## Traceability Matrix
+
+| REQ ID | Description | Verification | Test/Check Location |
+|--------|-------------|-------------|-------------------|
+| REQ-001 | {{...}} | (TEST) | `src/__tests__/{{module}}.test.ts` |
+| REQ-002 | {{...}} | (TEST) | `src/__tests__/{{module}}.test.ts` |
+| REQ-003 | {{...}} | (TEST) | `src/__tests__/{{module}}.test.ts` |
+
+---
+
+## Fix Approach
+
+{{What to change and why. Keep it minimal — fix the bug, don't refactor.}}
+
+---
+
+## Open Questions & Assumptions
+
+### Questions (resolve before implementation)
+
+1. {{Question that needs an answer before coding can begin}}
+
+### Assumptions (verify during implementation)
+
+1. {{Assumption that may affect design if proven wrong}}
+
+---
+
+## Implementation Steps
+
+### Step 1: Write failing regression test
+- **Files**: `src/__tests__/{{module}}.test.ts`
+- **Satisfies**: REQ-002
+- **Description**: Reproduce bug in test (RED)
+
+### Step 2: Apply fix
+- **Files**: `{{path/to/file.ts}}`
+- **Satisfies**: REQ-001
+- **Description**: Minimal code change to pass test (GREEN)
+
+### Step 3: Edge case coverage
+- **Files**: `src/__tests__/{{module}}.test.ts`
+- **Satisfies**: REQ-003
+- **Description**: Add test for related edge case
+
+---
+
+## Testing Strategy
+
+| REQ ID | Test Type | Test Location | Test Name |
+|--------|-----------|---------------|-----------|
+| REQ-001 | Unit | `src/__tests__/{{module}}.test.ts` | `REQ-001: {{description}}` |
+| REQ-002 | Unit | `src/__tests__/{{module}}.test.ts` | `REQ-002: {{description}}` |
+| REQ-003 | Unit | `src/__tests__/{{module}}.test.ts` | `REQ-003: {{description}}` |
+
+---
+
+## Acceptance Criteria
+
+- [ ] REQ-001: {{Corrected behavior}}
+- [ ] REQ-002: {{Regression test passes}}
+- [ ] REQ-003: {{Edge case handled}}
+- [ ] No existing tests broken
