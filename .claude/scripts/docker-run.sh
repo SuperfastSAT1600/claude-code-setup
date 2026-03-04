@@ -51,12 +51,13 @@ if [ ! -f "$HOST_CLAUDE_DIR/.credentials.json" ]; then
 fi
 
 # ── Common docker args ────────────────────────────────────
-# Mounts your host ~/.claude (read-only) for credentials
-# Entrypoint starts as root to fix permissions, then drops to claude user
+# Mounts host ~/.claude READ-ONLY to a staging path.
+# Entrypoint copies credentials to a container-local dir so
+# multiple containers never conflict with each other.
 DOCKER_ARGS=(
     --rm -it
     -v "$PROJECT_ROOT:/workspace"
-    -v "$HOST_CLAUDE_DIR:/home/claude/.claude"
+    -v "$HOST_CLAUDE_DIR:/host-claude:ro"
     --memory=4g
     --cpus=2
     "$IMAGE_NAME"
