@@ -16,8 +16,12 @@ chown -R claude:claude /home/claude/.claude 2>/dev/null || true
 # Fix ownership of workspace so claude user can edit project files
 chown -R claude:claude /workspace 2>/dev/null || true
 
-# Mark workspace as safe for git
+# Mark workspace as safe for git (and main-git for worktrees)
 gosu claude git config --global --add safe.directory /workspace 2>/dev/null || true
+if [ -d /main-git ]; then
+    chown -R claude:claude /main-git 2>/dev/null || true
+    gosu claude git config --global --add safe.directory /main-git 2>/dev/null || true
+fi
 
 # Patch .mcp.json for Linux: replace Windows "cmd /c npx" → "npx"
 if [ -f /workspace/.mcp.json ]; then

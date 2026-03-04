@@ -9,6 +9,8 @@
 #   ./docker-run.sh --tmux      ← for agent teams
 #   ./docker-run.sh --build     ← rebuild after Dockerfile changes
 #
+# Supports regular repos AND git worktrees automatically.
+#
 # ============================================================
 
 set -e
@@ -60,8 +62,66 @@ DOCKER_ARGS=(
     -v "$HOST_CLAUDE_DIR:/host-claude:ro"
     --memory=4g
     --cpus=2
-    "$IMAGE_NAME"
 )
+
+# ── Git worktree support ─────────────────────────────────
+# If this project is a git worktree (.git is a file, not a dir),
+# we mount the main repo's .git and patch paths so git works
+# inside the container. Paths are restored on exit.
+IS_WORKTREE=false
+WORKTREE_NAME=""
+MAIN_GIT_DIR=""
+GITDIR_BACKUP=""
+BACKREF_BACKUP=""
+
+if [ -f "$PROJECT_ROOT/.git" ]; then
+    # Parse: "gitdir: /path/to/.git/worktrees/<name>"
+    GITDIR_TARGET=$(sed 's/^gitdir: //' "$PROJECT_ROOT/.git")
+
+    # Resolve to absolute path
+    GITDIR_ABS=$(cd "$PROJECT_ROOT" && cd "$GITDIR_TARGET" && pwd)
+    WORKTREE_NAME=$(basename "$GITDIR_ABS")
+
+    # Main .git is two levels up from worktrees/<name>
+    MAIN_GIT_DIR=$(cd "$GITDIR_ABS/../.." && pwd)
+
+    if [ -d "$MAIN_GIT_DIR/worktrees/$WORKTREE_NAME" ]; then
+        IS_WORKTREE=true
+        DOCKER_ARGS+=(-v "$MAIN_GIT_DIR:/main-git")
+
+        echo -e "${YELLOW}Git worktree detected${NC} (main repo: $(basename "$(dirname "$MAIN_GIT_DIR")"))"
+    fi
+fi
+
+# Patch worktree paths for container, restore on exit
+worktree_patch() {
+    # Backup originals
+    cp "$PROJECT_ROOT/.git" "$PROJECT_ROOT/.git.docker-backup"
+    cp "$MAIN_GIT_DIR/worktrees/$WORKTREE_NAME/gitdir" \
+       "$MAIN_GIT_DIR/worktrees/$WORKTREE_NAME/gitdir.docker-backup"
+
+    # Patch: point to container paths
+    echo "gitdir: /main-git/worktrees/$WORKTREE_NAME" > "$PROJECT_ROOT/.git"
+    echo "/workspace/.git" > "$MAIN_GIT_DIR/worktrees/$WORKTREE_NAME/gitdir"
+}
+
+worktree_restore() {
+    if [ -f "$PROJECT_ROOT/.git.docker-backup" ]; then
+        mv "$PROJECT_ROOT/.git.docker-backup" "$PROJECT_ROOT/.git"
+    fi
+    if [ -f "$MAIN_GIT_DIR/worktrees/$WORKTREE_NAME/gitdir.docker-backup" ]; then
+        mv "$MAIN_GIT_DIR/worktrees/$WORKTREE_NAME/gitdir.docker-backup" \
+           "$MAIN_GIT_DIR/worktrees/$WORKTREE_NAME/gitdir"
+    fi
+}
+
+if [ "$IS_WORKTREE" = true ]; then
+    worktree_patch
+    trap worktree_restore EXIT
+fi
+
+# Add image name (must be last before the command)
+DOCKER_ARGS+=("$IMAGE_NAME")
 
 # ── Start container ───────────────────────────────────────
 echo ""
