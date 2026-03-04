@@ -41,7 +41,18 @@ if ! docker image inspect "$IMAGE_NAME" > /dev/null 2>&1; then
 fi
 
 # ── Find host credentials ────────────────────────────────
+# In WSL, $HOME is /home/<user> but credentials live in the Windows home.
+# Detect WSL and use the Windows user profile path instead.
 HOST_CLAUDE_DIR="$HOME/.claude"
+if [ -d "/mnt/c" ] && [ -f "/mnt/c/Users/$USER/.claude/.credentials.json" ]; then
+    HOST_CLAUDE_DIR="/mnt/c/Users/$USER/.claude"
+elif [ -d "/mnt/c" ] && [ -n "$WSLENV" ] || grep -qi microsoft /proc/version 2>/dev/null; then
+    # WSL detected but credentials not at expected Windows path — try USERPROFILE
+    WIN_HOME=$(wslpath "$(cmd.exe /C 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')" 2>/dev/null || true)
+    if [ -n "$WIN_HOME" ] && [ -f "$WIN_HOME/.claude/.credentials.json" ]; then
+        HOST_CLAUDE_DIR="$WIN_HOME/.claude"
+    fi
+fi
 
 if [ ! -f "$HOST_CLAUDE_DIR/.credentials.json" ]; then
     echo ""
