@@ -210,6 +210,21 @@ done
 
 echo -e "${GREEN}✓ System files synced${NC}"
 
+# Step 4b: Sync root-level managed directories (outside .claude/)
+REPO_ROOT="$(dirname "$SOURCE_DIR")"
+ROOT_MANAGED_DIRS=".devcontainer"
+
+for managed in $ROOT_MANAGED_DIRS; do
+    SRC="$REPO_ROOT/$managed"
+    TARGET="$managed"
+
+    if [ -d "$SRC" ]; then
+        rm -rf "$TARGET"
+        cp -r "$SRC" "$TARGET"
+        echo -e "  ✓ Synced $managed/ (root)"
+    fi
+done
+
 # Restore user data
 if [ "$(ls -A "$TEMP_USER_DIR" 2>/dev/null)" ]; then
     mkdir -p "$USER_DIR"
@@ -263,6 +278,7 @@ echo "  - .claude/rules/ (system rules)"
 echo "  - .claude/commands/ (system commands)"
 echo "  - .claude/workflows/ (system workflows)"
 echo "  - .claude/templates/ (system templates)"
+echo "  - .devcontainer/ (Docker YOLO setup)"
 
 echo -e "\n${GREEN}Preserved:${NC}"
 if [ -f "$USER_DIR/changelog.md" ]; then
