@@ -10,6 +10,17 @@ if [ -d /host-claude ]; then
     cp -a /host-claude/. /home/claude/.claude/ 2>/dev/null || true
 fi
 
+# Auto-restore .claude.json from backup if missing
+# Claude Code moves this file during startup, which can leave it missing
+CLAUDE_HOME="/home/claude/.claude"
+if [ ! -f "$CLAUDE_HOME/.claude.json" ]; then
+    LATEST_BACKUP=$(ls -t "$CLAUDE_HOME/backups/.claude.json.backup."* 2>/dev/null | head -1)
+    if [ -n "$LATEST_BACKUP" ]; then
+        cp "$LATEST_BACKUP" "$CLAUDE_HOME/.claude.json"
+        echo "Restored .claude.json from backup"
+    fi
+fi
+
 # Fix ownership so claude user can read/write
 chown -R claude:claude /home/claude/.claude 2>/dev/null || true
 
