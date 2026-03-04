@@ -1,7 +1,16 @@
 #!/bin/bash
 # Start as root, fix permissions on mounted volumes, then drop to claude user
 
-# Fix ownership of the credentials volume so claude user can read/write
+# ── Copy host credentials to container-local dir ────────
+# Host ~/.claude is mounted READ-ONLY at /host-claude.
+# We copy it to /home/claude/.claude so each container gets
+# its own mutable copy — no conflicts between containers.
+if [ -d /host-claude ]; then
+    mkdir -p /home/claude/.claude
+    cp -a /host-claude/. /home/claude/.claude/ 2>/dev/null || true
+fi
+
+# Fix ownership so claude user can read/write
 chown -R claude:claude /home/claude/.claude 2>/dev/null || true
 
 # Fix ownership of workspace so claude user can edit project files
