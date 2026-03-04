@@ -78,6 +78,13 @@ if [ -f "$PROJECT_ROOT/.git" ]; then
     # Parse: "gitdir: /path/to/.git/worktrees/<name>"
     GITDIR_TARGET=$(sed 's/^gitdir: //' "$PROJECT_ROOT/.git")
 
+    # Convert Windows paths (C:/...) to current shell style if needed
+    if [[ "$GITDIR_TARGET" =~ ^[A-Z]:/ ]] && [ -d "/mnt/c" ]; then
+        # WSL: convert C:/Users/... → /mnt/c/Users/...
+        DRIVE_LETTER=$(echo "${GITDIR_TARGET:0:1}" | tr 'A-Z' 'a-z')
+        GITDIR_TARGET="/mnt/$DRIVE_LETTER/${GITDIR_TARGET:3}"
+    fi
+
     # Resolve to absolute path
     GITDIR_ABS=$(cd "$PROJECT_ROOT" && cd "$GITDIR_TARGET" && pwd)
     WORKTREE_NAME=$(basename "$GITDIR_ABS")
