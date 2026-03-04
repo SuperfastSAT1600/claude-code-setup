@@ -5,9 +5,8 @@
   },
   "mounts": [
     "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-    "source=claude-credentials,target=/root/.claude,type=volume"
+    "source=claude-credentials,target=/home/claude/.claude,type=volume"
   ],
-  "postCreateCommand": "git config --global --add safe.directory /workspace",
   "customizations": {
     "vscode": {
       "settings": {

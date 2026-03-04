@@ -210,18 +210,21 @@ done
 
 echo -e "${GREEN}✓ System files synced${NC}"
 
-# Step 4b: Sync root-level managed directories (outside .claude/)
+# Step 4b: Seed root-level directories (outside .claude/)
+# These are only copied if they DON'T already exist in the target project.
+# Projects customize these for their own needs (e.g. Playwright deps in Dockerfile).
 REPO_ROOT="$(dirname "$SOURCE_DIR")"
-ROOT_MANAGED_DIRS=".devcontainer"
+ROOT_SEED_DIRS=".devcontainer"
 
-for managed in $ROOT_MANAGED_DIRS; do
-    SRC="$REPO_ROOT/$managed"
-    TARGET="$managed"
+for seed in $ROOT_SEED_DIRS; do
+    SRC="$REPO_ROOT/$seed"
+    TARGET="$seed"
 
-    if [ -d "$SRC" ]; then
-        rm -rf "$TARGET"
+    if [ -d "$SRC" ] && [ ! -d "$TARGET" ]; then
         cp -r "$SRC" "$TARGET"
-        echo -e "  ✓ Synced $managed/ (root)"
+        echo -e "  ✓ Seeded $seed/ (new project)"
+    elif [ -d "$TARGET" ]; then
+        echo -e "  ⊘ Skipped $seed/ (already customized)"
     fi
 done
 
@@ -278,7 +281,7 @@ echo "  - .claude/rules/ (system rules)"
 echo "  - .claude/commands/ (system commands)"
 echo "  - .claude/workflows/ (system workflows)"
 echo "  - .claude/templates/ (system templates)"
-echo "  - .devcontainer/ (Docker YOLO setup)"
+echo "  - .devcontainer/ (seeded if missing, never overwritten)"
 
 echo -e "\n${GREEN}Preserved:${NC}"
 if [ -f "$USER_DIR/changelog.md" ]; then
