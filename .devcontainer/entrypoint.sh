@@ -16,11 +16,21 @@ chown -R claude:claude /home/claude/.claude 2>/dev/null || true
 # Fix ownership of workspace so claude user can edit project files
 chown -R claude:claude /workspace 2>/dev/null || true
 
-# Mark workspace as safe for git (and main-git for worktrees)
+# Mark workspace as safe for git
 gosu claude git config --global --add safe.directory /workspace 2>/dev/null || true
-if [ -d /main-git ]; then
+
+# ── Git worktree support ────────────────────────────────
+# If WORKTREE_NAME is set (by docker-run.sh), the main repo's .git
+# is mounted at /main-git. We set GIT_DIR and GIT_WORK_TREE env vars
+# so git works without modifying any files on the host.
+if [ -n "$WORKTREE_NAME" ] && [ -d /main-git ]; then
     chown -R claude:claude /main-git 2>/dev/null || true
     gosu claude git config --global --add safe.directory /main-git 2>/dev/null || true
+
+    export GIT_DIR="/main-git/worktrees/$WORKTREE_NAME"
+    export GIT_WORK_TREE="/workspace"
+
+    echo "Git worktree configured for container (env vars)"
 fi
 
 # Patch .mcp.json for Linux: replace Windows "cmd /c npx" → "npx"
