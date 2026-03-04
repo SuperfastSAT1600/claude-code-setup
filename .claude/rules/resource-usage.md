@@ -17,6 +17,7 @@
 **Filesystem MCP**: Use `read_multiple_files` for batch reads. Use `directory_tree` for structure, `search_files` for patterns.
 
 **Playwright**:
-- MCP (`mcp__playwright__*`): ad-hoc visual inspection, accessibility checks, debugging during development
+- MCP (MANDATORY during UI dev): After implementing any UI change, navigate to localhost and take a screenshot to verify visually — do not skip this step
+- MCP: Also use for accessibility checks, layout debugging, and interactive inspection during development
 - CLI (`npx playwright test`): repeatable E2E suites in checkpoint, CI, batch validation
-- `(BROWSER)` REQs: write a Playwright test file for `req-coverage.sh`; use MCP for spot-checks
+- `(BROWSER)` REQs: write a Playwright test file for `req-coverage.sh`; use MCP for spot-checks during dev

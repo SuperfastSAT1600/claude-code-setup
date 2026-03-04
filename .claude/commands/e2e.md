@@ -12,10 +12,11 @@ Generate and run end-to-end tests for user workflows.
 ## What This Command Does
 
 1. **Analyzes Workflow**: Breaks down user journey into steps
-2. **Generates Tests**: Creates Playwright or Cypress tests
-3. **Runs Tests**: Executes E2E test suite
-4. **Reports Results**: Shows pass/fail with screenshots
-5. **Suggests Improvements**: Identifies flaky tests or missing coverage
+2. **Visual Inspection** (MANDATORY): Use Playwright MCP to navigate to the app, screenshot each step of the workflow, and visually verify the UI before writing tests
+3. **Generates Tests**: Creates Playwright or Cypress tests based on observed behavior
+4. **Runs Tests**: Executes E2E test suite
+5. **Reports Results**: Shows pass/fail with screenshots
+6. **Suggests Improvements**: Identifies flaky tests or missing coverage
 
 ---
 
@@ -259,10 +260,11 @@ await page.route('**/api/user', route => {
 
 When tests fail, the command:
 
-1. **Captures Screenshots**: Saved to `test-results/`
-2. **Records Videos**: Replay failed test execution
-3. **Shows Error Details**: Stack traces and assertion failures
-4. **Suggests Fixes**: Common issues and solutions
+1. **Playwright MCP Live Debug** (MANDATORY): Navigate to the failing page with MCP, interact with it, and take screenshots to understand the actual state — do not guess from logs alone
+2. **Captures Screenshots**: Saved to `test-results/`
+3. **Records Videos**: Replay failed test execution
+4. **Shows Error Details**: Stack traces and assertion failures
+5. **Suggests Fixes**: Common issues and solutions
 
 **Example Debug Output:**
 ```
