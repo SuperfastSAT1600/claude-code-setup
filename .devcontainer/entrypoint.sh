@@ -82,18 +82,14 @@ if [ -n "$GH_TOKEN" ]; then
 fi
 
 # ── Project dependency + Playwright setup ──────────────
-# Auto-install project deps and Playwright browser on first run
-if [ -f /workspace/package.json ]; then
-    MARKER="/home/claude/.deps-installed"
-    if [ ! -f "$MARKER" ]; then
-        echo "Installing project dependencies..."
-        gosu claude bash -c 'cd /workspace && npm install 2>/dev/null' || true
-        echo "Installing Playwright browsers..."
-        gosu claude bash -c 'cd /workspace && npx playwright install chromium 2>/dev/null' || true
-        touch "$MARKER"
-        chown claude:claude "$MARKER"
-        echo "Project setup complete."
-    fi
+# Auto-install project deps if node_modules is missing.
+# node_modules persists across runs via the workspace bind mount.
+# Playwright browsers are in the Docker image (npx playwright install chromium
+# runs at build time in Dockerfile), so no re-install needed here.
+if [ -f /workspace/package.json ] && [ ! -d /workspace/node_modules ]; then
+    echo "Installing project dependencies..."
+    gosu claude bash -c 'cd /workspace && npm install 2>/dev/null' || true
+    echo "Project setup complete."
 fi
 
 # Drop to claude user and run whatever command was passed
