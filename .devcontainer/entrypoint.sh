@@ -76,5 +76,10 @@ if (patched) {
 ' 2>/dev/null || true
 fi
 
+# ── GitHub CLI auth ─────────────────────────────────────
+if [ -n "$GH_TOKEN" ]; then
+    echo "$GH_TOKEN" | gosu claude gh auth login --with-token 2>/dev/null || true
+fi
+
 # Drop to claude user and run whatever command was passed
 exec gosu claude "$@"

@@ -9,6 +9,14 @@ RUN apt-get update && apt-get install -y \
     gosu \
     zsh \
     gnupg \
+    wget \
+    vim \
+    ripgrep \
+    sudo \
+    # Native module compilation (node-gyp / @rollup/rollup-linux-x64-gnu)
+    python3 \
+    make \
+    g++ \
     # Playwright Chromium dependencies
     libnss3 \
     libnspr4 \
@@ -49,7 +57,9 @@ RUN npm install -g @anthropic-ai/claude-code \
     @magicuidesign/mcp
 
 # ── Non-root user (reuse node UID 1000) ──────────────────
-RUN usermod -l claude -d /home/claude -m node && groupmod -n claude node
+RUN usermod -l claude -d /home/claude -m node && groupmod -n claude node \
+    && echo "claude ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/claude \
+    && chmod 0440 /etc/sudoers.d/claude
 
 # ── Shell config ──────────────────────────────────────────
 # Simple alias — credential restoration is handled by entrypoint.sh
