@@ -1,28 +1,39 @@
 #!/bin/bash
 # Start as root, fix permissions on mounted volumes, then drop to claude user
 
+CLAUDE_HOME="/home/claude/.claude"
+
 # ── Copy host credentials to container-local dir ────────
 # Host ~/.claude is mounted READ-ONLY at /host-claude.
 # We copy it to /home/claude/.claude so each container gets
 # its own mutable copy — no conflicts between containers.
 if [ -d /host-claude ]; then
-    mkdir -p /home/claude/.claude
-    cp -a /host-claude/. /home/claude/.claude/ 2>/dev/null || true
+    mkdir -p "$CLAUDE_HOME"
+    cp -a /host-claude/. "$CLAUDE_HOME/" 2>/dev/null || true
 fi
 
-# Auto-restore .claude.json from backup if missing
-# Claude Code moves this file during startup, which can leave it missing
-CLAUDE_HOME="/home/claude/.claude"
-if [ ! -f "$CLAUDE_HOME/.claude.json" ]; then
+# ── Ensure ~/.claude.json exists at HOME root ────────────
+# Claude Code requires BOTH ~/.claude/.credentials.json (tokens)
+# AND ~/.claude.json (onboarding state). Without the latter,
+# every new terminal triggers re-login.
+if [ ! -f /home/claude/.claude.json ]; then
+    # Try restoring from backup first
     LATEST_BACKUP=$(ls -t "$CLAUDE_HOME/backups/.claude.json.backup."* 2>/dev/null | head -1)
     if [ -n "$LATEST_BACKUP" ]; then
-        cp "$LATEST_BACKUP" "$CLAUDE_HOME/.claude.json"
+        cp "$LATEST_BACKUP" /home/claude/.claude.json
         echo "Restored .claude.json from backup"
+    else
+        # Create minimal stub so Claude Code skips onboarding
+        echo '{"hasCompletedOnboarding":true,"installMethod":"native"}' > /home/claude/.claude.json
+        echo "Created .claude.json stub"
     fi
 fi
 
+# Also keep a copy inside .claude/ for backup restoration logic
+cp /home/claude/.claude.json "$CLAUDE_HOME/.claude.json" 2>/dev/null || true
+
 # Fix ownership so claude user can read/write
-chown -R claude:claude /home/claude/.claude 2>/dev/null || true
+chown -R claude:claude "$CLAUDE_HOME" /home/claude/.claude.json 2>/dev/null || true
 
 # Fix ownership of workspace so claude user can edit project files
 chown -R claude:claude /workspace 2>/dev/null || true
