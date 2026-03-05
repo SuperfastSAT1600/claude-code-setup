@@ -72,6 +72,7 @@ DOCKER_ARGS=(
     --rm -it
     -v "$PROJECT_ROOT:/workspace"
     -v "$HOST_CLAUDE_DIR:/host-claude:ro"
+    -e "CLAUDE_CONFIG_DIR=/home/claude/.claude"
     --memory=4g
     --cpus=2
 )
