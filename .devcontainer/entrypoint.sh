@@ -84,12 +84,11 @@ fi
 # ── Project dependency + Playwright setup ──────────────
 # Auto-install project deps if node_modules is missing.
 # node_modules persists across runs via the workspace bind mount.
-# Playwright browsers are in the Docker image (npx playwright install chromium
-# runs at build time in Dockerfile), so no re-install needed here.
+# Playwright browsers are in the Docker image (built in Dockerfile).
 if [ -f /workspace/package.json ] && [ ! -d /workspace/node_modules ]; then
-    echo "Installing project dependencies..."
-    gosu claude bash -c 'cd /workspace && npm install 2>/dev/null' || true
-    echo "Project setup complete."
+    echo -e "\033[1;33m📦 Installing project dependencies (first run)...\033[0m"
+    gosu claude bash -c 'cd /workspace && npm install' || true
+    echo -e "\033[1;32m✅ Project setup complete.\033[0m"
 fi
 
 # Drop to claude user and run whatever command was passed
