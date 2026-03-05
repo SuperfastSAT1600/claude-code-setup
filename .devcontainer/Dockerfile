@@ -47,6 +47,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     && apt-get update && apt-get install -y gh \
     && rm -rf /var/lib/apt/lists/*
 
+# ── Supabase CLI ──────────────────────────────────────────
+RUN curl -fsSL https://raw.githubusercontent.com/supabase/cli/main/install.sh | bash
+
 # ── Claude Code + MCP servers (pre-cached for fast startup) ─
 RUN npm install -g @anthropic-ai/claude-code \
     @modelcontextprotocol/server-filesystem \

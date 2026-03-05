@@ -99,6 +99,17 @@ else
     echo -e "  GitHub CLI: ${YELLOW}no token found${NC} (set GH_TOKEN on host to enable)"
 fi
 
+# ── Pass Supabase access token ────────────────────────────
+# Supabase CLI uses SUPABASE_ACCESS_TOKEN env var for auth.
+# Set it on your host (e.g. in .env or ~/.bashrc):
+#   SUPABASE_ACCESS_TOKEN=sbp_xxx ./docker-run.sh
+if [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
+    DOCKER_ARGS+=(-e "SUPABASE_ACCESS_TOKEN=$SUPABASE_ACCESS_TOKEN")
+    echo -e "  Supabase CLI: ${GREEN}authenticated via SUPABASE_ACCESS_TOKEN${NC}"
+else
+    echo -e "  Supabase CLI: ${YELLOW}no token found${NC} (set SUPABASE_ACCESS_TOKEN on host to enable)"
+fi
+
 # ── Git worktree support ─────────────────────────────────
 # If this project is a git worktree (.git is a file, not a dir),
 # mount the main repo's .git and pass env vars so git works
