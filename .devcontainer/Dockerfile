@@ -15,8 +15,16 @@ RUN npm install -g @anthropic-ai/claude-code
 # Use the existing node user (UID 1000) but rename for clarity
 RUN usermod -l claude -d /home/claude -m node && groupmod -n claude node
 
-# Alias so you just type "claude" and get YOLO mode automatically
-RUN echo 'alias claude="claude --dangerously-skip-permissions"' >> /home/claude/.bashrc
+# Wrapper: restore .claude.json if missing, then run YOLO mode
+RUN cat >> /home/claude/.bashrc <<'BASH'
+claude() {
+  if [ ! -f ~/.claude/.claude.json ]; then
+    local backup=$(ls -t ~/.claude/backups/.claude.json.backup.* 2>/dev/null | head -1)
+    [ -n "$backup" ] && cp "$backup" ~/.claude/.claude.json
+  fi
+  command claude --dangerously-skip-permissions "$@"
+}
+BASH
 
 # Tmux config: mouse support + nice defaults
 RUN echo 'set -g mouse on' > /home/claude/.tmux.conf && \
