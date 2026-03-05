@@ -11,7 +11,7 @@
     "CLAUDE_CONFIG_DIR": "/home/claude/.claude",
     "GH_TOKEN": "${localEnv:GH_TOKEN}"
   },
-"customizations": {
+  "customizations": {
     "vscode": {
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh"
