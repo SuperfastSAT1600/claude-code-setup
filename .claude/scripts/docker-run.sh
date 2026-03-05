@@ -19,6 +19,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 IMAGE_NAME="claude-code-yolo"
 
+# ── Load .env from project root ───────────────────────────
+if [ -f "$PROJECT_ROOT/.env" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "$PROJECT_ROOT/.env"
+    set +a
+fi
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -76,6 +84,20 @@ DOCKER_ARGS=(
     --memory=4g
     --cpus=2
 )
+
+# ── Pass GitHub token for gh CLI ─────────────────────────
+# gh CLI automatically uses GH_TOKEN env var for auth.
+# Set GH_TOKEN on your host (e.g. in ~/.bashrc) or pass it directly:
+#   GH_TOKEN=ghp_xxx ./docker-run.sh
+if [ -n "$GH_TOKEN" ]; then
+    DOCKER_ARGS+=(-e "GH_TOKEN=$GH_TOKEN")
+    echo -e "  GitHub CLI: ${GREEN}authenticated via GH_TOKEN${NC}"
+elif [ -n "$GITHUB_TOKEN" ]; then
+    DOCKER_ARGS+=(-e "GH_TOKEN=$GITHUB_TOKEN")
+    echo -e "  GitHub CLI: ${GREEN}authenticated via GITHUB_TOKEN${NC}"
+else
+    echo -e "  GitHub CLI: ${YELLOW}no token found${NC} (set GH_TOKEN on host to enable)"
+fi
 
 # ── Git worktree support ─────────────────────────────────
 # If this project is a git worktree (.git is a file, not a dir),
