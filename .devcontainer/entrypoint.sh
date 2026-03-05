@@ -81,6 +81,11 @@ if [ -n "$GH_TOKEN" ]; then
     echo "$GH_TOKEN" | gosu claude gh auth login --with-token 2>/dev/null || true
 fi
 
+# ── Supabase CLI auth ──────────────────────────────────
+if [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
+    gosu claude supabase login --token "$SUPABASE_ACCESS_TOKEN" 2>/dev/null || true
+fi
+
 # ── Project dependency + Playwright setup ──────────────
 # Auto-install project deps if node_modules is missing.
 # node_modules persists across runs via the workspace bind mount.
