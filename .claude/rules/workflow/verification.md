@@ -40,15 +40,12 @@ After writing any source code file, the `set-needs-verification.sh` hook sets a 
 When verification reveals a problem:
 
 1. **Do NOT report the failure to the user and stop.** Fix it yourself.
-2. Fix the root cause
+2. **Find the root cause.** Do not apply surface-level patches or workarounds. Trace the error to its fundamental source and fix that.
 3. Run verification again
 4. Repeat until everything passes
 5. Only then report completion
 
-The ONLY time you stop and ask the user is when:
-- The fix requires a design decision you can't make
-- You've tried 3+ different approaches and none work
-- The issue is in external infrastructure you can't control
+**Never ask the user for help fixing code.** You are the engineer. Diagnose the root cause, fix it, verify it works. If a fix doesn't work, that means you fixed the wrong thing — dig deeper, don't try random variations. The goal is always the simplest, most efficient code that solves the actual problem.
 
 ---
 
