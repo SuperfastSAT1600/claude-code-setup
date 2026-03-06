@@ -1,30 +1,54 @@
-# Verification Rules
+# Verification Rules (ENFORCED BY HOOKS)
 
-**Done means confirmed working — not just implemented.** Always close the loop before reporting complete.
+**NEVER declare done without verification. NEVER leave broken code for the user to find.**
+
+Writing code is only half the job. The other half is proving it works. If you write code and stop, you have not completed the task.
 
 ```
 implement → verify → pass? → done
-                   → fail? → fix → verify again
+                   → fail? → fix → verify again (loop until green)
 ```
 
 ---
 
-## When a Spec Is Active
+## Hook Enforcement
 
-REQ verification tags are authoritative — see `workflow/testing-rules.md` for tag definitions (`TEST` / `BROWSER` / `MANUAL`).
+After writing any source code file, the `set-needs-verification.sh` hook sets a `.needs-verification` flag. This flag **blocks `git commit`** until you run verification (tests, build, Playwright, curl, etc.). The flag is cleared by `clear-verification.sh` when you run a verification command.
+
+**You cannot skip verification.** The commit will be blocked.
 
 ---
 
-## Ad-Hoc Verification (No Spec)
+## What Counts as Verification
 
-| Work Type | Steps |
-|-----------|-------|
-| UI / frontend | Run tests → Playwright MCP spot-check → check console errors |
-| Backend / API | Run tests → call endpoint (curl/fetch) → inspect real response |
-| Database / migrations | Run migration → query table → confirm schema |
-| DevOps / CI / config | Run pipeline/script → read actual output → check for errors |
-| Auth | Run tests → exercise full login/logout flow in a real request |
+| Work Type | MINIMUM Verification Required |
+|-----------|-------------------------------|
+| UI / frontend | Run tests AND Playwright MCP spot-check (navigate, screenshot, check console) |
+| Backend / API | Run tests AND call the endpoint (curl/fetch), inspect real response |
+| Database / migrations | Run migration AND query the table to confirm schema |
+| DevOps / CI / config | Run the pipeline/script AND read actual output |
+| Auth | Run tests AND exercise full login/logout flow |
 | Any code change | At minimum: run the relevant test suite |
+| Bug fix | Reproduce the bug first, then verify the fix eliminates it |
+
+**"Run tests" is never enough by itself for UI or API work.** You must also do a real check (Playwright for UI, curl/fetch for API).
+
+---
+
+## The Fix Loop (MANDATORY)
+
+When verification reveals a problem:
+
+1. **Do NOT report the failure to the user and stop.** Fix it yourself.
+2. Fix the root cause
+3. Run verification again
+4. Repeat until everything passes
+5. Only then report completion
+
+The ONLY time you stop and ask the user is when:
+- The fix requires a design decision you can't make
+- You've tried 3+ different approaches and none work
+- The issue is in external infrastructure you can't control
 
 ---
 
@@ -32,6 +56,12 @@ REQ verification tags are authoritative — see `workflow/testing-rules.md` for 
 
 **Main agent**: Verify in same context. Fix and re-run if anything fails before calling done.
 
-**Subagents**: Each verifies own workstream before returning. Main agent runs integration pass (tests, smoke check, or `/checkpoint`) after all subagents complete.
+**Subagents**: Each verifies own workstream before returning. Main agent runs integration pass after all subagents complete.
 
 **Agent Teams**: Each teammate verifies own REQs before marking task done. Lead runs `/checkpoint` as final gate.
+
+---
+
+## When a Spec Is Active
+
+REQ verification tags are authoritative — see `workflow/testing-rules.md` for tag definitions (`TEST` / `BROWSER` / `MANUAL`).

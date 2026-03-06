@@ -84,6 +84,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bash ./.claude/scripts/block-commit-unverified.sh"
+          },
+          {
+            "type": "command",
             "command": "if [ -f \".claude/scripts/pre-commit-checks.sh\" ]; then\n  bash ./.claude/scripts/pre-commit-checks.sh 2>&1 | head -50\nfi"
           },
           {
@@ -227,6 +231,24 @@
           {
             "type": "command",
             "command": "if [ -f \".claude/scripts/sync-deps.sh\" ]; then\n  bash ./.claude/scripts/sync-deps.sh 2>&1 | head -20\nfi || true"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\\\.(ts|tsx|js|jsx|py|go|rs|rb|java|css|scss|html|vue|svelte)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./.claude/scripts/set-needs-verification.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm test|npx (vitest|jest|playwright|mocha)|yarn test|pnpm test|pytest|cargo test|go test|rspec|mix test|npm run build|npx tsc|yarn build|pnpm build|curl |http )\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./.claude/scripts/clear-verification.sh"
           }
         ]
       }
