@@ -4,20 +4,16 @@ Canonical spec-first rules. Referenced by `task-protocol.md` and `orchestration/
 
 ---
 
-## When to Write a Spec (Self-Assessment — MANDATORY)
+## When to Write a Spec (ALWAYS — enforced by hooks)
 
-This is Claude's own judgment, independent of whether the `.plan-active` hook is active.
+**DEFAULT: ALWAYS write a spec.** The SessionStart hook sets a `.plan-active` flag that blocks all coding tools until a spec is written. Do NOT try to skip this.
 
-**Write a spec when ANY of these are true:**
-- New feature or user-facing behavior
-- Bug fix or refactor touching 2+ files or >10 lines
-- High-stakes domain: auth, payments, data schema, API contracts
-- Parallel implementation planned (spec defines workstream boundaries + REQ ownership)
-- Multiple acceptance criteria can be identified upfront
+**The ONLY exceptions** (where you may ask the user "Skip spec for this?"):
+- Single-line typo fix
+- Config file tweak (tsconfig, package.json, .env)
+- Doc-only change (README, comments)
 
-**Self-check**: "Would a future dev need this spec to understand what was built and why?" If yes → write it.
-
-**Skip for**: typos, single-line fixes, config tweaks, doc-only changes, trivial single-function additions.
+Everything else gets a spec. No self-assessment, no judgment calls. Write the spec.
 
 ---
 

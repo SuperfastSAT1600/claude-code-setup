@@ -10,7 +10,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ./.claude/scripts/plan-mode-session-start.sh"
+            "command": "find .claude/scripts -name '*.sh' -exec sed -i 's/\\r$//' {} + 2>/dev/null; bash ./.claude/scripts/plan-mode-session-start.sh"
           }
         ]
       }
@@ -22,6 +22,15 @@
           {
             "type": "command",
             "command": "bash ./.claude/scripts/enforce-spec-before-coding.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"]",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ./.claude/scripts/enforce-tdd-order.sh"
           }
         ]
       },
@@ -182,6 +191,15 @@
           {
             "type": "command",
             "command": "bash ./.claude/scripts/mark-errors-read.sh && bash ./.claude/scripts/detect-error-patterns.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "tool in [\"Edit\", \"Write\"] && tool_input.file_path matches \"\\.sh$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "F=$(cat | python3 -c \"import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))\" 2>/dev/null) && [ -n \"$F\" ] && sed -i 's/\\r$//' \"$F\" 2>/dev/null || true"
           }
         ]
       },
