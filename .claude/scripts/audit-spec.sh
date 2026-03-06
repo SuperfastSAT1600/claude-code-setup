@@ -243,7 +243,7 @@ audit_empty_descriptions() {
 
     # Check for placeholder descriptions
     local placeholders
-    placeholders=$(grep -cE '\{\{.*\}\}' "$spec_file" 2>/dev/null || echo 0)
+    placeholders=$(grep -cE '\{\{.*\}\}' "$spec_file" 2>/dev/null) || placeholders=0
 
     echo "$placeholders"
 }
@@ -262,7 +262,9 @@ audit_priority_coverage() {
 
 audit_todo_markers() {
     local spec_file="$1"
-    grep -ciE '\bTODO\b|\bTBD\b|\bFIXME\b|\bHACK\b' "$spec_file" 2>/dev/null || echo 0
+    local count
+    count=$(grep -ciE '\bTODO\b|\bTBD\b|\bFIXME\b|\bHACK\b' "$spec_file" 2>/dev/null) || count=0
+    echo "$count"
 }
 
 audit_dependency_refs() {

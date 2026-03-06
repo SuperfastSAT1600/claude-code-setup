@@ -19,7 +19,14 @@ CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
 # Extract REQ ID from task subject (convention: "REQ-XXX: description")
 REQ_ID=$(echo "$TASK_SUBJECT" | grep -oE 'REQ-[0-9]{3}' | head -1)
 
-# Not a REQ task — allow completion without checks
+# Check verification flag — blocks ALL task completion if code was written but not verified
+NEEDS_VERIFY="${WORK_DIR}/.claude/.needs-verification"
+if [[ -f "$NEEDS_VERIFY" ]]; then
+    echo "Verification enforcement: Code was written but not verified. Run tests or Playwright checks before completing this task." >&2
+    exit 2
+fi
+
+# Not a REQ task — allow completion (verification flag already checked above)
 if [[ -z "$REQ_ID" ]]; then
     exit 0
 fi

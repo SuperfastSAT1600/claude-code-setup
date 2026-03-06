@@ -28,12 +28,17 @@
 
 ---
 
-## Phase 3: POST-TASK
+## Phase 3: POST-TASK (VERIFY-FIX LOOP — MANDATORY)
 
-1. **Verify** — close the loop before anything else. See `workflow/verification.md`.
+1. **Verify** — run tests, check UI (Playwright), call API endpoints. See `workflow/verification.md`.
+   - If ANYTHING fails → **FIX THE ROOT CAUSE YOURSELF**. Never report failure to user.
+   - No surface-level patches or workarounds. Trace to the fundamental source and fix that.
+   - Re-verify after fix. Loop until everything passes. Never give up.
 2. **Report** — `OBSERVATIONS: [items or "none"]`
 3. **Auto-heal** — apply safe fixes (broken refs, typos); propose anything larger
 4. **Docs** — feature → README/API/changelog | API change → docs/examples | small (1-2 files) = direct, large (3+) = doc-updater subagent
+
+**CRITICAL**: Writing code and saying "done" without verification is NEVER acceptable. The `git commit` command is blocked until verification runs. See `workflow/verification.md`.
 
 ---
 

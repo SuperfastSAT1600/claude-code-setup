@@ -24,6 +24,12 @@ fi
 # Clear the plan-active flag
 rm -f "$FLAG_FILE" 2>/dev/null
 
+# Activate TDD enforcement: require test-first for next implementation cycle
+TDD_FLAG="$PROJECT_ROOT/.claude/.tdd-test-written"
+TDD_NEEDS_TEST="$PROJECT_ROOT/.claude/.tdd-needs-test"
+rm -f "$TDD_FLAG" 2>/dev/null
+touch "$TDD_NEEDS_TEST"
+
 # Run the spec audit
 echo "[Hook] Spec written: ${FILE_PATH##*/}" >&2
 echo "[Hook] Running audit..." >&2

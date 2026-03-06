@@ -20,7 +20,9 @@ For testing, specs, verification, git — see `workflow/`. For agents/skills —
 
 ## Coding Style
 
-- Files: <300 lines | Functions: <50 lines (ideally <20) | Max nesting: 3 levels
+- **No monolithic files.** Split into multiple small, focused files. Each file = one concern.
+- Files: <200 lines hard limit | Functions: <30 lines (ideally <15) | Max nesting: 3 levels
+- If a file is approaching 150 lines, proactively split it before it grows further.
 - See `coding-standards` skill for naming, immutability, early returns, magic numbers.
 
 ---

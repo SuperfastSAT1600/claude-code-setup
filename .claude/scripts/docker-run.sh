@@ -23,7 +23,7 @@ IMAGE_NAME="claude-code-yolo"
 if [ -f "$PROJECT_ROOT/.env" ]; then
     set -a
     # shellcheck disable=SC1090
-    source "$PROJECT_ROOT/.env"
+    source <(sed 's/\r//' "$PROJECT_ROOT/.env")
     set +a
 fi
 

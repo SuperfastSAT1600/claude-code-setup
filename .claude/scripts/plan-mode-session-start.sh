@@ -18,8 +18,8 @@ cat > /dev/null
 # Check if there's already a recent spec (within last hour)
 latest=""
 if [[ -d "$PLANS_DIR" ]]; then
-    latest=$(find "$PLANS_DIR" -name "*.md" -type f -mmin -60 -print0 2>/dev/null \
-        | xargs -0 ls -t 2>/dev/null \
+    latest=$(find "$PLANS_DIR" -name "*.md" -not -name "playwright-mcp.md" -type f -mmin -60 -print0 2>/dev/null \
+        | xargs -0 --no-run-if-empty ls -t 2>/dev/null \
         | head -n 1)
 fi
 
