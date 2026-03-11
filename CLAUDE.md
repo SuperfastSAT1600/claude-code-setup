@@ -13,16 +13,21 @@
 
 ## Primary Workflow: Spec-Driven TDD
 
-1. Enter plan mode → discuss approach with user
-2. **Write spec** to `.claude/plans/[feature].md` using `.claude/templates/spec.md.template`
-3. Spec auto-audited when written (blocks coding tools if spec fails validation)
-4. `/tdd` (single agent) or `/parallel-tdd` (multi-agent worktrees)
-5. `/checkpoint` → unified verification gate (types, lint, tests, build, security)
-6. `/commit-push-pr`
+All tasks follow one unified 6-phase workflow. See `.claude/rules/task-protocol.md` for the full protocol.
 
-**Enforcement**: A SessionStart hook sets a `.plan-active` flag. All coding tools (Edit, Write, Bash, Task) are BLOCKED until a valid spec is written to `.claude/plans/`. Writing the spec clears the flag and runs `audit-spec.sh` automatically.
+| Phase | What happens |
+|-------|-------------|
+| **0: INIT** | Read errors.md → load skills → read PRD |
+| **1: SPEC** | Write spec to `.claude/plans/[feature].md` — hooks block coding until valid spec exists |
+| **2: ORCHESTRATION** | Choose who codes: main agent / specialist subagents / parallel subagents / Agent Team |
+| **3: IMPLEMENT** | TDD Red→Green→Refactor per REQ — test file required before implementation |
+| **4: VERIFY** | Run tests + real check (Playwright/curl) — hooks block commit until done |
+| **5: GATE** | `/checkpoint` → types, lint, tests, build, security |
+| **6: SHIP** | `/commit-push-pr` → conventional commit → PR |
 
-**Before coding**: Call `Skill("skill-name")` to load domain patterns. See orchestration.md Skills-First table for which skills match your task type.
+**Enforcement**: Hooks block coding until spec written, block implementation until test written, block commit until verified.
+
+**Agent Team** (for large features): Fixed 6-role pipeline — Research → Architect → Builder×2 → Verifier → Integrator — via `/parallel-tdd`.
 
 **Spec template**: `.claude/templates/spec.md.template`
 **REQ format**: Each requirement gets REQ-XXX ID + (TEST)/(BROWSER)/(MANUAL) verification tag
