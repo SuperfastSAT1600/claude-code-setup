@@ -73,7 +73,16 @@
       "Bash(do echo:*)",
       "Bash(python3:*)",
       "Bash(GIT_CONFIG_NOSYSTEM=1 /usr/bin/git branch:*)",
-      "Bash(do:*)"
+      "Bash(do:*)",
+      "Read(//c/Edumo-develop/.claude/**)",
+      "Read(//c//**)",
+      "Read(//c/Users/Jason/OneDrive/문서/claude-code-setup/$HOME/.claude/**)",
+      "Read(//home/jason/.claude/**)",
+      "Read(//mnt/**)",
+      "Bash(wsl ls /home/jason/.claude/scripts/)",
+      "Read(///wsl$/Ubuntu/home/jason/.claude/**)",
+      "Read(///wsl$/Ubuntu/home/jason/.claude/scripts/**)",
+      "Bash(rm \"C:/Users/Jason/OneDrive/문서/claude-code-setup/.claude/rules/workflow/spec-rules.md\"\nrm \"C:/Users/Jason/OneDrive/문서/claude-code-setup/.claude/rules/workflow/testing-rules.md\"\nrm \"C:/Users/Jason/OneDrive/문서/claude-code-setup/.claude/rules/workflow/verification.md\"\nls \"C:/Users/Jason/OneDrive/문서/claude-code-setup/.claude/rules/workflow/\")"
     ],
     "deny": [
       "Bash(rm -rf /)",
