@@ -1,6 +1,6 @@
 ---
 description: Verify the latest task's code changes are complete, consistent, and clean
-allowed-tools: Bash(git diff:*), Bash(git status:*), Bash(git show:*), Bash(grep:*), Bash(find:*), Bash(npm test:*), Bash(npm run test:*), Bash(npx tsc:*), Bash(npx vitest:*), Read, Edit
+allowed-tools: Bash(git diff:*), Bash(git status:*), Bash(git show:*), Bash(grep:*), Bash(find:*), Bash(npm test:*), Bash(npm run test:*), Bash(npx tsc:*), Bash(npx vitest:*), Read, Edit, Agent
 ---
 
 # Verify Command
@@ -8,6 +8,8 @@ allowed-tools: Bash(git diff:*), Bash(git status:*), Bash(git show:*), Bash(grep
 After completing a task, verify that all code changes landed fully — nothing dangling, nothing accidentally broken by ripple, no cleanup left behind.
 
 This is a completeness check on the latest task, not a full codebase health check. For the latter, use `/health-check`.
+
+**Critical design principle**: verification is delegated to a fresh `code-reviewer` subagent with zero task context. The implementer (you) must not run the checks — confirmation bias produces false greens. The subagent reads the diff cold and assumes at least one mistake was made.
 
 ---
 
@@ -21,19 +23,48 @@ No arguments. Scopes automatically to the current uncommitted diff.
 
 ---
 
-## Scope Detection
+## Step 1 — Collect the Diff (main agent)
 
-Run `git diff HEAD` to identify all files changed since the last commit. This is the task boundary — deterministic, no guessing.
+Run these and capture the output — do not interpret it yet:
 
-If everything is already committed, run `git diff HEAD~1 HEAD` to inspect the most recent commit.
+```bash
+git diff HEAD
+```
 
-For each changed file, also identify its **impact radius**: all other files that import or reference it. These are candidates for cascade gaps.
+If everything is already committed:
+
+```bash
+git diff HEAD~1 HEAD
+```
+
+Also run:
+
+```bash
+git diff HEAD --name-only
+npx tsc --noEmit 2>&1 || true
+```
 
 ---
 
-## Checks
+## Step 2 — Spawn the Reviewer (main agent)
 
-Run all 6 checks in sequence. Each produces a status line and details if anything needs attention.
+Spawn a `code-reviewer` subagent. Pass it:
+
+1. The full raw diff output (no summarizing)
+2. The list of changed files
+3. The TypeScript output
+4. The check instructions below (copy verbatim)
+5. This adversarial framing — include it word for word at the top of the prompt:
+
+> **Your role**: adversarial reviewer. You have no knowledge of what this task was supposed to accomplish. Assume the implementer made at least one mistake. Your job is to find real problems in what the code *actually does*, not to confirm that it looks fine. Do not give benefit of the doubt. If something looks incomplete, flag it. If a test seems to pass but not actually cover the behavior, flag it. A clean report is a failure of your job unless the code is genuinely clean.
+
+Do not tell the subagent what the task was trying to do. Do not summarize or contextualize the diff. Hand over raw output only.
+
+---
+
+## Step 3 — Checks (run by the subagent)
+
+The subagent runs all 6 checks against the diff. Each produces a status line and details.
 
 ---
 
@@ -108,13 +139,9 @@ Look for half-finished changes where one side of a pair was updated but not the 
 
 > Do the changed files and their dependents still compile?
 
-Run TypeScript on the changed files and their direct dependents only — not the full project. Faster than a full `tsc`, scoped to what actually changed.
+Use the TypeScript output passed in. Flag any errors in changed files or their direct dependents.
 
-```bash
-npx tsc --noEmit
-```
-
-**Status**: ❌ if type errors in changed files or their dependents, ✅ if clean
+**Status**: ❌ if type errors present, ✅ if clean
 
 ---
 
@@ -124,24 +151,26 @@ npx tsc --noEmit
 
 Scan changed files only.
 
-**Auto-fix immediately (no confirmation needed):**
+**Flag for auto-fix by main agent (mark clearly):**
 - `console.log(...)` statements
 - `console.error(...)` / `console.warn(...)` used for debugging (not intentional error handling)
 - `debugger` statements
 - Unused imports (where safe to remove without breaking types)
 
-**Report only (don't auto-fix):**
+**Report only:**
 - `TODO` / `FIXME` comments planted during this task
 - Hardcoded values that look like they should be env vars (URLs, keys, magic numbers)
 - Commented-out blocks of old code
 
-**Status**: ✅ after auto-fixes applied, ⚠️ if reportable items remain
+**Status**: ✅ after flagging auto-fixes, ⚠️ if reportable items remain
 
 ---
 
-## Report Format
+## Step 4 — Surface the Report (main agent)
 
-After all checks, print a single consolidated report:
+Print the subagent's report **verbatim**. Do not editorialize, soften, or re-interpret findings.
+
+Report format the subagent should use:
 
 ```
 ── Verify Report ──────────────────────────────────────────
@@ -153,20 +182,20 @@ Files changed: 4  |  Impact radius: 7 files checked
 ❌  Test alignment  2 tests reference old function name `handleCheckout`
 ✅  Asymmetry       No structural gaps found
 ✅  Types           No errors in changed files or dependents
-✅  Cleanup         Removed 2 console.log statements (src/services/payment.ts:34, :67)
+✅  Cleanup         AUTO-FIX: console.log at src/services/payment.ts:34, :67
                    ⚠️  TODO left at src/services/payment.ts:91
 
 ───────────────────────────────────────────────────────────
-1 failure · 2 warnings · 2 auto-fixes applied
+1 failure · 2 warnings · 2 auto-fixes pending
 
 Next: address ❌ items before shipping. Proceed with ⚠️ items? (y / fix / ignore)
 ```
 
 ---
 
-## After the Report
+## Step 5 — Act on Results (main agent)
 
-**Auto-fixes already applied**: listed in the Cleanup line. No confirmation needed.
+**Auto-fixes**: apply all items the subagent marked for auto-fix. No confirmation needed.
 
 **For each ❌ (failure)**: describe exactly what needs fixing and where. Ask: "Fix this now? (y / skip)"
 
