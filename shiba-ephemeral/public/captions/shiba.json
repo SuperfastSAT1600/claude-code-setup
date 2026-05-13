@@ -1,0 +1,156 @@
+[
+  {
+    "text": "Ephemeral!",
+    "startMs": 50,
+    "endMs": 1140,
+    "timestampMs": 140,
+    "confidence": 0.282386
+  },
+  {
+    "text": " means",
+    "startMs": 1140,
+    "endMs": 1490,
+    "timestampMs": 1200,
+    "confidence": 0.913713
+  },
+  {
+    "text": " short-lived",
+    "startMs": 1490,
+    "endMs": 2360,
+    "timestampMs": 1560,
+    "confidence": 0.967485
+  },
+  {
+    "text": ",",
+    "startMs": 2360,
+    "endMs": 2390,
+    "timestampMs": 2440,
+    "confidence": 0.468878
+  },
+  {
+    "text": " like",
+    "startMs": 2390,
+    "endMs": 2750,
+    "timestampMs": 2460,
+    "confidence": 0.876587
+  },
+  {
+    "text": " treats",
+    "startMs": 2750,
+    "endMs": 3440,
+    "timestampMs": 2740,
+    "confidence": 0.985394
+  },
+  {
+    "text": ",",
+    "startMs": 3440,
+    "endMs": 3470,
+    "timestampMs": 3400,
+    "confidence": 0.904406
+  },
+  {
+    "text": " like",
+    "startMs": 3470,
+    "endMs": 3780,
+    "timestampMs": 3540,
+    "confidence": 0.925527
+  },
+  {
+    "text": " squirrel",
+    "startMs": 3780,
+    "endMs": 4560,
+    "timestampMs": 3880,
+    "confidence": 0.984494
+  },
+  {
+    "text": "s",
+    "startMs": 4560,
+    "endMs": 4610,
+    "timestampMs": 4220,
+    "confidence": 0.996814
+  },
+  {
+    "text": ",",
+    "startMs": 4610,
+    "endMs": 4670,
+    "timestampMs": 4460,
+    "confidence": 0.792934
+  },
+  {
+    "text": " like",
+    "startMs": 4670,
+    "endMs": 5010,
+    "timestampMs": 4680,
+    "confidence": 0.883603
+  },
+  {
+    "text": " this",
+    "startMs": 5010,
+    "endMs": 5110,
+    "timestampMs": 4860,
+    "confidence": 0.986645
+  },
+  {
+    "text": " video",
+    "startMs": 5110,
+    "endMs": 5400,
+    "timestampMs": 5220,
+    "confidence": 0.992801
+  },
+  {
+    "text": ",",
+    "startMs": 5400,
+    "endMs": 5850,
+    "timestampMs": 5700,
+    "confidence": 0.399187
+  },
+  {
+    "text": " b",
+    "startMs": 5850,
+    "endMs": 5870,
+    "timestampMs": 5900,
+    "confidence": 0.512072
+  },
+  {
+    "text": "ork",
+    "startMs": 5870,
+    "endMs": 6310,
+    "timestampMs": 6040,
+    "confidence": 0.94933
+  },
+  {
+    "text": " b",
+    "startMs": 6310,
+    "endMs": 6460,
+    "timestampMs": 6300,
+    "confidence": 0.644428
+  },
+  {
+    "text": "ork",
+    "startMs": 6460,
+    "endMs": 6910,
+    "timestampMs": 6460,
+    "confidence": 0.999605
+  },
+  {
+    "text": " b",
+    "startMs": 6910,
+    "endMs": 6960,
+    "timestampMs": 6740,
+    "confidence": 0.765502
+  },
+  {
+    "text": "ork",
+    "startMs": 6960,
+    "endMs": 7040,
+    "timestampMs": 6940,
+    "confidence": 0.999351
+  },
+  {
+    "text": ".",
+    "startMs": 7040,
+    "endMs": 7120,
+    "timestampMs": 7100,
+    "confidence": 0.611101
+  }
+]
