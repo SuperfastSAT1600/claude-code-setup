@@ -50,7 +50,7 @@ if bash "$AUDIT_SCRIPT" "$FILE_PATH" >&2; then
     if ls ~/.claude/teams/*/config.json 2>/dev/null | head -1 > /dev/null 2>&1; then
         echo "⚠️  WARNING: Active team session detected." >&2
         echo "   Spec changes may not be picked up by running teammates." >&2
-        echo "   Consider: /req-status to check coverage, then notify teammates." >&2
+        echo "   Notify teammates so they re-read the spec." >&2
     fi
 
     exit 0

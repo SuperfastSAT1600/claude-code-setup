@@ -69,6 +69,12 @@ log_warn() {
     echo -e "  ${YELLOW}WARN${NC} $*"
 }
 
+# Plain informational line. Step 9 called this before it existed, which aborted
+# the run under `set -e` right before the summary — the gate never reported.
+log_info() {
+    echo -e "$*"
+}
+
 run_step() {
     local name="$1"
     local cmd="$2"
@@ -100,6 +106,66 @@ skip_step() {
 }
 
 # =============================================================================
+# App directory
+# =============================================================================
+# Steps 1-6 (types, lint, format, tests, E2E, build) must run where the package
+# actually lives. That is usually the repo root, but plenty of repos keep the
+# app in a subdirectory (`app/`, `web/`, `frontend/`) with the root holding only
+# tooling. Running those steps at the root there reports "no tsconfig.json" and
+# "no test framework detected" — six skips that read as a green gate.
+#
+# Resolution order:
+#   1. CHECKPOINT_APP_DIR, from the environment or
+#      .claude/user/checkpoint.conf (path relative to the repo root)
+#   2. the repo root, if it has a package.json or tsconfig.json
+#   3. the single immediate subdirectory that has a package.json
+#   4. the repo root (unchanged behaviour when nothing else fits)
+# Per-project settings live in .claude/user/, the one directory
+# update-system.sh preserves — anything else here is overwritten on update.
+# It is a shell file, so it can set CHECKPOINT_APP_DIR, CHECKPOINT_TEST_CMD, etc.
+#
+# Sourced HERE, at the top level, and not inside resolve_app_dir: that runs in a
+# command substitution, and every variable it sets dies with the subshell. Only
+# the value it echoes survives — which silently lost CHECKPOINT_TEST_CMD.
+if [[ -f "$PROJECT_ROOT/.claude/user/checkpoint.conf" ]]; then
+    # shellcheck source=/dev/null
+    source "$PROJECT_ROOT/.claude/user/checkpoint.conf"
+fi
+
+resolve_app_dir() {
+    if [[ -n "${CHECKPOINT_APP_DIR:-}" ]]; then
+        if [[ -d "$PROJECT_ROOT/$CHECKPOINT_APP_DIR" ]]; then
+            echo "$PROJECT_ROOT/$CHECKPOINT_APP_DIR"
+        else
+            echo "$PROJECT_ROOT"
+        fi
+        return
+    fi
+
+    if [[ -f "$PROJECT_ROOT/package.json" ]] || [[ -f "$PROJECT_ROOT/tsconfig.json" ]]; then
+        echo "$PROJECT_ROOT"
+        return
+    fi
+
+    local candidate="" count=0 dir
+    for dir in "$PROJECT_ROOT"/*/; do
+        [[ -f "${dir}package.json" ]] || continue
+        candidate="${dir%/}"
+        count=$((count + 1))
+    done
+
+    # Exactly one candidate is an answer; two or more is a monorepo this script
+    # should not guess at.
+    if [[ $count -eq 1 ]]; then
+        echo "$candidate"
+    else
+        echo "$PROJECT_ROOT"
+    fi
+}
+
+readonly APP_DIR="$(resolve_app_dir)"
+
+# =============================================================================
 # Step 1: TypeScript Type Checking
 # =============================================================================
 
@@ -107,7 +173,7 @@ check_typescript() {
     echo ""
     echo -e "${BLUE}[1/10] TypeScript${NC}"
 
-    cd "$PROJECT_ROOT"
+    cd "$APP_DIR"
 
     if [[ -f "tsconfig.json" ]]; then
         if command -v npx > /dev/null 2>&1; then
@@ -128,7 +194,7 @@ check_lint() {
     echo ""
     echo -e "${BLUE}[2/10] Lint${NC}"
 
-    cd "$PROJECT_ROOT"
+    cd "$APP_DIR"
 
     local found_linter=false
 
@@ -178,7 +244,7 @@ check_format() {
     echo ""
     echo -e "${BLUE}[3/10] Format${NC}"
 
-    cd "$PROJECT_ROOT"
+    cd "$APP_DIR"
 
     local found_formatter=false
 
@@ -228,13 +294,19 @@ check_tests() {
     echo ""
     echo -e "${BLUE}[4/10] Tests${NC}"
 
-    cd "$PROJECT_ROOT"
+    cd "$APP_DIR"
 
     # Reuse detection logic from require-tests-pass.sh
     local test_cmd=""
 
+    # A project whose tests are not reachable through any of the conventions
+    # below can name its command in .claude/user/checkpoint.conf. Without this
+    # the step reports "no test framework detected" and the gate goes green on
+    # a suite it never ran — the worst possible failure for a gate.
+    if [[ -n "${CHECKPOINT_TEST_CMD:-}" ]]; then
+        test_cmd="$CHECKPOINT_TEST_CMD"
     # Check package.json for test script
-    if [[ -f "package.json" ]] && grep -q '"test"' package.json 2>/dev/null; then
+    elif [[ -f "package.json" ]] && grep -q '"test"' package.json 2>/dev/null; then
         test_cmd="npm test"
     elif [[ -f "vitest.config.ts" ]] || [[ -f "vitest.config.js" ]]; then
         test_cmd="npx vitest run"
@@ -288,7 +360,7 @@ check_build() {
     echo ""
     echo -e "${BLUE}[6/10] Build${NC}"
 
-    cd "$PROJECT_ROOT"
+    cd "$APP_DIR"
 
     if [[ "$SKIP_BUILD" == "true" ]]; then
         skip_step "Build" "skipped via --skip-build"
@@ -442,7 +514,11 @@ check_req_coverage() {
     fi
 
     local spec_file
-    spec_file=$(find "$plans_dir" -name "*.md" -type f -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -n 1)
+    # `head -n 1` closes the pipe while `ls` may still be writing; under
+    # `set -o pipefail` that SIGPIPE (141) becomes the assignment's status and
+    # `set -e` kills the run right before the summary. It is a race, so the gate
+    # died only sometimes. The value is already assigned — tolerate the status.
+    spec_file=$(find "$plans_dir" -name "*.md" -type f -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -n 1) || true
 
     if [[ -z "$spec_file" ]]; then
         skip_step "REQ Coverage" "no spec files in .claude/plans/"
@@ -488,6 +564,7 @@ main() {
     echo "Checkpoint — Unified Verification Gate"
     echo "=============================================="
     echo "Project: $PROJECT_ROOT"
+    [[ "$APP_DIR" != "$PROJECT_ROOT" ]] && echo "App:     $APP_DIR"
     echo "Date:    $(date '+%Y-%m-%d %H:%M:%S')"
 
     local total_start

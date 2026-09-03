@@ -76,16 +76,22 @@ main() {
     local browser_count=0
 
     # Parse verification tags from spec: REQ-XXX → (TEST)/(BROWSER)/(MANUAL)
-    declare -A req_tags=()
+    # Associative arrays need bash 4; macOS ships bash 3.2, where `declare -A`
+    # aborts the script outright. Keep the same REQ-ID → tag mapping in a plain
+    # newline-separated string instead, so this runs on a stock mac.
+    local req_tags=""
     while IFS= read -r line; do
         if [[ "$line" =~ (REQ-[0-9]{3}) ]]; then
             local rid="${BASH_REMATCH[1]}"
             if [[ "$line" =~ \(MANUAL\) ]]; then
-                req_tags["$rid"]="MANUAL"
+                req_tags="$req_tags$rid=MANUAL
+"
             elif [[ "$line" =~ \(BROWSER\) ]]; then
-                req_tags["$rid"]="BROWSER"
+                req_tags="$req_tags$rid=BROWSER
+"
             elif [[ "$line" =~ \(TEST\) ]]; then
-                req_tags["$rid"]="TEST"
+                req_tags="$req_tags$rid=TEST
+"
             fi
         fi
     done < "$spec_file"
@@ -100,7 +106,9 @@ main() {
         [[ -z "$req_id" ]] && continue
         total=$((total + 1))
 
-        local tag="${req_tags[$req_id]:-TEST}"
+        local tag
+        tag=$(printf '%s' "$req_tags" | grep -m1 "^$req_id=" | cut -d= -f2)
+        [[ -z "$tag" ]] && tag="TEST"
 
         # (MANUAL) requirements — no automated test expected
         if [[ "$tag" == "MANUAL" ]]; then

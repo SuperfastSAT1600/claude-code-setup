@@ -31,11 +31,11 @@ The setup wizard will:
 
 ## What's Included
 
-### Slash Commands (25)
+### Slash Commands (20)
 
 Development workflow commands invoked with `/command-name` in Claude Code:
 
-`/full-feature` | `/quick-fix` | `/commit-push-pr` | `/review` | `/tdd` | `/parallel-tdd` | `/checkpoint` | `/plan` | `/spike` | `/build-fix` | `/refactor-clean` | `/test-coverage` | `/test-ladder` | `/type-check` | `/e2e` | `/new-component` | `/create-migration` | `/update-docs` | `/session-report` | `/health-check` | `/req-status` | `/req-coverage` | `/generate-stubs` | `/open-localhost` | `/update-system`
+`/build-fix` | `/checkpoint` | `/commit-push-pr` | `/develop-commit-push` | `/e2e` | `/fixroot` | `/full-feature` | `/health-check` | `/open-localhost` | `/parallel-tdd` | `/quick-fix` | `/refactor-clean` | `/review` | `/serverlog` | `/spike` | `/test-coverage` | `/type-check` | `/update-docs` | `/update-system` | `/verify`
 
 ### Specialized Agents (11)
 
@@ -78,7 +78,7 @@ Domain pattern libraries loaded on demand via `Skill("name")`:
 1. Enter plan mode — discuss approach
 2. Write spec to `.claude/plans/[feature].md`
 3. Spec auto-audited (blocks coding if validation fails)
-4. `/tdd` (single agent) or `/parallel-tdd` (multi-agent worktrees)
+4. TDD in the main agent, or `/parallel-tdd` for multi-agent worktrees
 5. `/checkpoint` — unified verification gate
 6. `/commit-push-pr`
 

@@ -168,30 +168,23 @@ Spec-Driven TDD가 기본 워크플로우입니다. 계획 모드 진입 → 스
 
 | 상황 | 명령어 | 사용 이유 |
 |------|--------|-----------|
-| 기능 계획 | `/plan` | 스펙 기반 계획 수립 |
-| TDD 개발 | `/tdd` | 단일 에이전트 스펙 기반 TDD |
 | 병렬 TDD | `/parallel-tdd` | 다중 에이전트 워크트리 기반 TDD |
-| 검증 게이트 | `/checkpoint` | 타입, 린트, 테스트, 빌드, 보안 통합 검증 |
+| 검증 게이트 | `/checkpoint` | 타입, 린트, 포맷, 테스트, E2E, 빌드, 보안 10단계 통합 검증 |
 | PR 생성 | `/commit-push-pr` | 전체 워크플로우 자동화 |
 | 빠른 수정 | `/quick-fix` | 간단한 버그 수정 |
 | 코드 리뷰 | `/review` | 코드 품질 리뷰 |
 | 빌드 수정 | `/build-fix` | 자동화된 체계적 오류 해결 |
 | 타입 검사 | `/type-check` | TypeScript 타입 오류 수정 |
 | 커버리지 확인 | `/test-coverage` | 격차 식별 및 우선순위 지정 |
-| 테스트 확장 | `/test-ladder` | 단계별 테스트 확장 |
-| 컴포넌트 생성 | `/new-component` | React 컴포넌트 스캐폴딩 |
-| 마이그레이션 | `/create-migration` | 데이터베이스 마이그레이션 생성 |
 | E2E 테스트 | `/e2e` | 사용자 워크플로우 검증 |
 | 문서 업데이트 | `/update-docs` | 문서를 동기화 상태로 유지 |
 | 리팩토링 | `/refactor-clean` | 체계적 정리 및 현대화 |
 | 전체 기능 | `/full-feature` | 종합 기능 개발 워크플로우 |
 | 탐색 | `/spike` | 기술 탐색 및 프로토타이핑 |
 | 시스템 점검 | `/health-check` | 종합적인 시스템 감사 |
-| 세션 보고 | `/session-report` | 세션 요약 생성 |
 | 시스템 업데이트 | `/update-system` | 시스템 파일 업데이트 |
-| 요구사항 커버리지 | `/req-coverage` | REQ 커버리지 분석 |
-| 요구사항 상태 | `/req-status` | REQ 상태 확인 |
-| 스텁 생성 | `/generate-stubs` | 테스트 스텁 자동 생성 |
+| 요구사항 커버리지 | `bash .claude/scripts/req-coverage.sh` | REQ 커버리지 분석 |
+| 스텁 생성 | `bash .claude/scripts/generate-test-stubs.sh` | 테스트 스텁 자동 생성 |
 | 로컬 서버 | `/open-localhost` | 개발 서버를 브라우저에서 열기 |
 
 ### 2.3 에이전트 선택 매트릭스
