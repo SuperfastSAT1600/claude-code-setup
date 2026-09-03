@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Comprehensive code reviewer covering quality, security, TypeScript safety, tech debt, and refactoring
-model: sonnet
+model: opus
 disallowedTools: [Edit, Write]
 skills:
   - coding-standards

@@ -1,7 +1,7 @@
 ---
 name: auth-specialist
 description: Expert in authentication and authorization patterns, OAuth, JWT, and identity management
-model: sonnet
+model: opus
 skills:
   - auth-patterns
   - backend-patterns

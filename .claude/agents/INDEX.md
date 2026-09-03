@@ -7,10 +7,10 @@ Consolidated directory of 16 specialized agents. Main agent handles standard dev
 | Agent | Model | Purpose | Use When |
 |-------|-------|---------|----------|
 | **architect** | opus | System design, implementation planning, task breakdown, trade-off analysis | Architecture decisions, planning new features, technical reviews |
-| **code-reviewer** | sonnet | Code quality, security (OWASP), TypeScript safety, tech debt, refactoring | PR reviews, security audits, type safety fixes |
-| **test-writer** | sonnet | TDD coaching, unit/integration/E2E/load tests, app verification | Writing any tests, TDD workflow, pre-deployment checks |
+| **code-reviewer** | opus | Code quality, security (OWASP), TypeScript safety, tech debt, refactoring | PR reviews, security audits, type safety fixes |
+| **test-writer** | opus | TDD coaching, unit/integration/E2E/load tests, app verification | Writing any tests, TDD workflow, pre-deployment checks |
 | **backend-specialist** | sonnet | REST API design + OpenAPI specs, database schema, migrations | Complex API design, DB schema, migration scripts |
-| **auth-specialist** | sonnet | OAuth, JWT, MFA, session management | Authentication/authorization implementation |
+| **auth-specialist** | opus | OAuth, JWT, MFA, session management | Authentication/authorization implementation |
 | **devops-specialist** | sonnet | CI/CD, Docker, IaC, monitoring, runbooks, build errors, dependencies | Pipeline setup, containerization, infra, build failures |
 | **frontend-specialist** | sonnet | WCAG 2.1 AA accessibility, i18n/l10n, performance optimization | Accessibility audits, multi-language, Core Web Vitals |
 | **realtime-specialist** | sonnet | WebSockets, GraphQL (subscriptions + DataLoader) | Real-time features, GraphQL APIs |
@@ -28,10 +28,10 @@ Consolidated directory of 16 specialized agents. Main agent handles standard dev
 | Tier | Use For | Agents |
 |------|---------|--------|
 | **haiku** | Documentation, quick tasks | `doc-updater` |
-| **sonnet** | Most specialized work (DEFAULT) | `code-reviewer`, `test-writer`, `backend-specialist`, `auth-specialist`, `devops-specialist`, `frontend-specialist`, `realtime-specialist`, `ai-specialist`, `mobile-specialist`, `geo-ai-visibility`, `geo-content`, `geo-platform-analysis`, `geo-schema`, `geo-technical` |
-| **opus** | Critical architecture decisions | `architect` |
+| **sonnet** | Most specialized work (DEFAULT) | `backend-specialist`, `devops-specialist`, `frontend-specialist`, `realtime-specialist`, `ai-specialist`, `mobile-specialist`, `geo-ai-visibility`, `geo-content`, `geo-platform-analysis`, `geo-schema`, `geo-technical` |
+| **opus** | Work whose whole value is the judgement call — a missed bug, a weak auth flow, a test that passes on broken code | `architect`, `code-reviewer`, `auth-specialist`, `test-writer` |
 
-**Default**: Omit model parameter (uses sonnet). Only specify for `haiku` (`doc-updater`) or `opus` (`architect`).
+**Default**: Omit model parameter (uses sonnet). Specify `haiku` for mechanical work (`doc-updater`) and `opus` where a wrong judgement is expensive to discover later (`architect`, `code-reviewer`, `auth-specialist`, `test-writer`).
 
 ## Usage Philosophy
 

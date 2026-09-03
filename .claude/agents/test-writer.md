@@ -1,7 +1,7 @@
 ---
 name: test-writer
 description: Comprehensive testing specialist covering TDD, unit tests, integration tests, E2E, load tests, and app verification
-model: sonnet
+model: opus
 skills:
   - tdd-workflow
   - coding-standards
