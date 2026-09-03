@@ -2,7 +2,7 @@
 
 Lightweight directory of all available skills. Load full skill files only when needed for specific tasks.
 
-**Total Skills**: 34 (32 domain patterns + 1 meta-skill + 11 GEO skills — see GEO section below)
+**Total Skills**: 35 (23 general + 12 GEO — see GEO section below)
 
 **Documentation-Based Skills** (2026-01-23):
 Nine skills are now sourced from authoritative references (OpenAPI Spec, OWASP, GraphQL Spec, PostgreSQL docs, GitHub docs, RFC standards, Anthropic/OpenAI guides, LangChain, academic research). See individual skill files for sources.
