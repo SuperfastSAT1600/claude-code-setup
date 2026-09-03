@@ -1,0 +1,52 @@
+{
+  "name": "shiba-ephemeral",
+  "version": "1.0.0",
+  "description": "My Remotion video",
+  "repository": {},
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@remotion/captions": "^4.0.460",
+    "@remotion/cli": "4.0.460",
+    "@remotion/google-fonts": "^4.0.460",
+    "@remotion/install-whisper-cpp": "^4.0.460",
+    "@remotion/media": "^4.0.460",
+    "@remotion/sfx": "^4.0.460",
+    "@remotion/tailwind-v4": "4.0.460",
+    "@remotion/three": "^4.0.460",
+    "mediabunny": "^1.44.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.460",
+    "tailwindcss": "4.0.0",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.460",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.19.0",
+    "ffmpeg-static": "^5.3.0",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion bundle",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src && tsc",
+    "render:cartoon": "remotion render ShibaEphemeral out/shiba-cartoon.mp4 --log=warn",
+    "render:photoreal": "remotion render ShibaPhotoreal out/shiba-photoreal.mp4 --log=warn",
+    "render:photostill": "remotion render ShibaPhotoStill out/shiba-photostill.mp4 --log=warn",
+    "render:three": "remotion render ShibaThree out/shiba-three.mp4 --log=warn",
+    "render:blender": "remotion render ShibaBlender out/shiba-blender.mp4 --log=warn",
+    "blender:render": "node -e \"const{spawnSync}=require('child_process');const b=process.env.BLENDER||'blender';spawnSync(b,['--background','--factory-startup','--python','blender/render_shiba.py'],{stdio:'inherit'})\"",
+    "blender:encode": "npx tsx scripts/encode-blender.ts",
+    "render:all": "npm run render:cartoon && npm run render:photoreal && npm run render:photostill && npm run render:three && npm run render:blender"
+  },
+  "sideEffects": [
+    "*.css"
+  ]
+}

@@ -1,0 +1,15 @@
+node_modules
+dist
+.DS_Store
+.env
+
+# Render artifacts. Final MP4s in out/ are committed explicitly via
+# `git add -f` (the repo root .gitignore globally ignores `out/`); the
+# intermediate PNG sequence and dev stills stay out of version control.
+out/blender-frames/
+stills/
+
+# whisper-cpp binaries and model — large, re-fetched by the
+# generate-captions script when needed.
+whisper-bin-x64.zip
+whisper.cpp/

@@ -57,6 +57,12 @@ Skills now use directories for bundled resources:
 | **docker-patterns/** | Dockerfile, multi-stage builds, compose | Containerization | references/ |
 | **github-actions/** | CI/CD workflows with GitHub Actions (sourced from official GitHub docs) | CI/CD setup | - |
 
+## Video / Motion
+
+| Skill | Coverage | Load When | Resources |
+|-------|----------|-----------|-----------|
+| **remotion/** | Programmatic video creation with React (Remotion). Core mechanics + motion design (charts, typography, springs, social-media) + educational extras (KaTeX math, code highlighting, pedagogical structure for K-12/SAT/undergrad). | Building/editing Remotion videos, especially educational content | rules/ (44 topics) |
+
 ## Project Utilities
 
 | Skill | Coverage | Load When | Resources |
